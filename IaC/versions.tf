@@ -22,7 +22,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "terraform-venue-reservation"
+    bucket = "venue-reservation-terraform"
     key = "dev/terraform.tfstate"
     region = "ap-northeast-2"
 
