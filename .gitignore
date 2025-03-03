@@ -1,3 +1,4 @@
 /IaC/.terraform
 /IaC/terraform.tfstate
 /IaC/terraform.tfstate.backup
+/lambda/*.zip
