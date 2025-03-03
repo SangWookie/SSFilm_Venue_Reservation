@@ -36,12 +36,12 @@ resource "aws_lambda_function" "login_manager" {
 locals {
   lambda_functions = {
     "user_reservation_manager" = aws_lambda_function.user_reservation_manager.function_name
-    "login_manager" = aws_lambda_function.login_manager.function_name
+    "login_manager"            = aws_lambda_function.login_manager.function_name
   }
 }
 
 resource "aws_lambda_permission" "apigw_lambda" {
-for_each = local.lambda_functions
+  for_each      = local.lambda_functions
   statement_id  = "AllowExecutionFromAPIGateway-${each.key}"
   action        = "lambda:InvokeFunction"
   function_name = each.value
