@@ -13,6 +13,7 @@ resource "aws_lambda_function" "user_reservation_manager" {
   handler       = "lambda.lambda_handler"
   runtime       = "python3.12"
 
+  # comment this line to upload source code only once(untrack changes)
   source_code_hash = data.archive_file.user_reservation_manager_zip.output_base64sha256
 }
 
@@ -30,13 +31,33 @@ resource "aws_lambda_function" "login_manager" {
   handler       = "lambda.lambda_handler"
   runtime       = "python3.12"
 
+  # comment this line to upload source code only once(untrack changes)
   source_code_hash = data.archive_file.login_manager_zip.output_base64sha256
+}
+
+data "archive_file" "request_manager_zip" {
+  type        = "zip"
+  source_dir  = "../lambda_functions/request_manager"
+  output_path = "../lambda_functions/request_manager.zip"
+}
+
+resource "aws_lambda_function" "request_manager" {
+  description   = "handles user reservation related requests"
+  filename      = data.archive_file.request_manager_zip.output_path
+  function_name = "request_manager"
+  role          = aws_iam_role.role.arn
+  handler       = "lambda.lambda_handler"
+  runtime       = "python3.12"
+
+  # comment this line to upload source code only once(untrack changes)
+  source_code_hash = data.archive_file.request_manager_zip.output_base64sha256
 }
 
 locals {
   lambda_functions = {
     "user_reservation_manager" = aws_lambda_function.user_reservation_manager.function_name
     "login_manager"            = aws_lambda_function.login_manager.function_name
+    "request_manager"          = aws_lambda_function.request_manager.function_name
   }
 }
 
