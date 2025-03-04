@@ -71,12 +71,31 @@ resource "aws_lambda_function" "mode_manager" {
   source_code_hash = data.archive_file.mode_manager_zip.output_base64sha256
 }
 
+data "archive_file" "stat_handler_zip" {
+  type        = "zip"
+  source_dir  = "../lambda_functions/stat_handler"
+  output_path = "../lambda_functions/stat_handler.zip"
+}
+
+resource "aws_lambda_function" "stat_handler" {
+  description   = "handles stat related requests"
+  filename      = data.archive_file.stat_handler_zip.output_path
+  function_name = "stat_handler"
+  role          = aws_iam_role.role.arn
+  handler       = "lambda.lambda_handler"
+  runtime       = "python3.12"
+
+  # comment this line to upload source code only once(untrack changes)
+  source_code_hash = data.archive_file.stat_handler_zip.output_base64sha256
+}
+
 locals {
   lambda_functions = {
     "user_reservation_manager" = aws_lambda_function.user_reservation_manager.function_name
     "login_manager"            = aws_lambda_function.login_manager.function_name
     "request_manager"          = aws_lambda_function.request_manager.function_name
     "mode_manager"             = aws_lambda_function.mode_manager.function_name
+    "stat_handler"             = aws_lambda_function.stat_handler.function_name
   }
 }
 
