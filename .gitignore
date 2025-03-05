@@ -3,3 +3,5 @@
 /IaC/terraform.tfstate.backup
 /IaC/.terraform*
 /lambda_functions/*.zip
+node_modules
+package-lock.json
