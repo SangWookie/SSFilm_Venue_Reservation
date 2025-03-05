@@ -33,3 +33,28 @@ resource "aws_iam_role" "role" {
   name               = "myrole"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
+
+resource "aws_iam_role" "sqs_lambda_role" {
+  name               = "sqsLambdaRole"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+resource "aws_iam_policy" "sqs_send" {
+  name        = "LambdaSQSSendMessagePolicy"
+  description = "Allows Lambda to send messages to SQS"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "sqs:SendMessage"
+        Resource = aws_sqs_queue.reservation_queue.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_sqs_attach" {
+  role       = aws_iam_role.sqs_lambda_role.name
+  policy_arn = aws_iam_policy.sqs_send.arn
+}
