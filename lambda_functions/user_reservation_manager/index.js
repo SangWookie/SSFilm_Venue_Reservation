@@ -1,16 +1,11 @@
-const { SQSClient, SendMessageCommand } = require("@aws-sdk/client-sqs");
-
-const sqsClient = new SQSClient({ region: "ap-northeast-2" });
-
-const QUEUE_URL =
-    "https://sqs.ap-northeast-2.amazonaws.com/796973485724/reservation-queue.fifo";
+const requestReservation = require("./requestReservation");
 
 exports.handler = async (event, context) => {
     var method = event.requestContext.http.method;
-    var path = event.rawPath
+    var path = event.rawPath;
     var stage = event.requestContext.stage;
     let pathWithoutStage;
-    
+
     if (path.startsWith(`/${stage}/`)) {
         pathWithoutStage = path.substring(stage.length + 1);
     } else {
@@ -28,32 +23,36 @@ exports.handler = async (event, context) => {
     //     }),
     // };
 
-    if (pathWithoutStage === "/reservations") {
-        if (method === "GET") {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({ message: "this is / GET!" }),
-            };
-        } else if (method === "POST") {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({ message: "this is / POST!" }),
-            };
-        }
-    }
-
     try {
-        await sqsClient.send(
-            new SendMessageCommand({
-                QueueUrl: QUEUE_URL,
-                MessageBody: JSON.stringify({ message: "Hello from Lambda!" }),
-                MessageGroupId: "testGroup",
-            })
-        );
+        if (pathWithoutStage === "/reservations") {
+            if (method === "GET") {
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({ message: "this is / GET!" }),
+                };
+            } else if (method === "POST") {
+                let body = JSON.parse(event.body);
+                let result = await requestReservation(body);
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({ result: result }),
+                };
+            }
+        } else if (pathWithoutStage === "/reservations/unavailable-periods") {
+            // return unavailable periods
+            if (method === "GET") {
+                // query db
+            }
+        } else if (pathWithoutStage === "/reservations/auto-approval-periods") {
+            // return auto approval periods
+            if (method === "GET") {
+                // query db
+            }
+        }
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ "path": path, "method": method }),
+            body: JSON.stringify({ path: path, method: method }),
         };
     } catch (error) {
         return {
