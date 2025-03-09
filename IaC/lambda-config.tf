@@ -89,6 +89,30 @@ resource "aws_lambda_function" "stat_handler" {
   source_code_hash = data.archive_file.stat_handler_zip.output_base64sha256
 }
 
+data "archive_file" "reservation_queue_handler_zip" {
+  type        = "zip"
+  source_dir  = "../lambda_functions/reservation_queue_handler"
+  output_path = "../lambda_functions/reservation_queue_handler.zip"
+}
+
+resource "aws_lambda_function" "reservation_queue_handler" {
+  description   = "handles reservation queue"
+  filename      = data.archive_file.reservation_queue_handler_zip.output_path
+  function_name = "reservation_queue_handler"
+  role          = aws_iam_role.sqs_lambda_poll_role.arn
+  handler       = "lambda.lambda_handler"
+  runtime       = "python3.12"
+
+  # comment this line to upload source code only once(untrack changes)
+  source_code_hash = data.archive_file.reservation_queue_handler_zip.output_base64sha256
+}
+
+resource "aws_lambda_event_source_mapping" "sqs_trigger" {
+  event_source_arn = aws_sqs_queue.reservation_queue.arn
+  function_name    = aws_lambda_function.reservation_queue_handler.function_name
+  batch_size       = 5
+}
+
 locals {
   lambda_functions = {
     "user_reservation_manager" = aws_lambda_function.user_reservation_manager.function_name
