@@ -39,6 +39,11 @@ resource "aws_iam_role" "sqs_lambda_role" {
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
+resource "aws_iam_role" "sqs_lambda_poll_role" {
+  name               = "sqsLambdaPollRole"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
 resource "aws_iam_policy" "sqs_send" {
   name        = "LambdaSQSSendMessagePolicy"
   description = "Allows Lambda to send messages to SQS"
@@ -52,6 +57,30 @@ resource "aws_iam_policy" "sqs_send" {
       }
     ]
   })
+}
+
+resource "aws_iam_policy" "sqs_poll" {
+  name        = "LambdaSQSPollPolicy"
+  description = "Allows Lambda to poll messages from SQS"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+        ]
+        Resource = aws_sqs_queue.reservation_queue.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_sqs_poll_attach" {
+  role       = aws_iam_role.sqs_lambda_poll_role.name
+  policy_arn = aws_iam_policy.sqs_poll.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_sqs_attach" {
