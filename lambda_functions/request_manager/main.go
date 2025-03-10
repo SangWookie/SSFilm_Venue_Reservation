@@ -14,7 +14,7 @@ type RouteHandler func(request events.APIGatewayV2HTTPRequest) (events.APIGatewa
 var routes = map[string]RouteHandler{}
 
 func handleRequest(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
-	log.Info("New request received")
+	log.Info("New request received1")
 
 	var path = request.PathParameters["proxy"]
 
