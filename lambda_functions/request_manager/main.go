@@ -11,7 +11,12 @@ var log = logrus.New()
 
 type RouteHandler func(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error)
 
-var routes = map[string]RouteHandler{}
+var routes = map[string]RouteHandler{
+	"fetchPendingReservations":  FetchPendingReservations,
+	"handlePendingReservations": HandlePendingReservations,
+	"manageReservation":         ManageReservation,
+	"ModifyReservation":         ModifyReservation,
+}
 
 func handleRequest(request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	log.Info("New request received1")
