@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "lambda_functions/request_manager/**"
+    branches: [main]
 
 jobs:
   deploy:
@@ -12,10 +13,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Go 1.21.x
         uses: actions/setup-go@v5
@@ -27,8 +25,9 @@ jobs:
 
       - name: 🔨 Build Go Binary for Lambda
         run: |
-            GOOS=linux GOARCH=amd64 go build -o bootstrap
-            zip bootstrap.zip main
+          cd lambda_functions/request_manager
+          GOOS=linux GOARCH=amd64 go build -o bootstrap
+          zip bootstrap.zip main
 
       - name: Deploy Lambda Functions
         env:
@@ -36,5 +35,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "ap-northeast-2"
         run: |
-            aws lambda update-function-code --function-name request_manager \
-              --zip-file fileb://../bootstrap.zip
+            aws lambda update-function-code \
+              --function-name request_manager \
+              --zip-file fileb://lambda_functions/request_manager/bootstrap.zip
