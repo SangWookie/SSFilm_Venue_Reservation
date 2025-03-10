@@ -22,6 +22,7 @@ jobs:
 
       - name: 📥 Install Dependencies
         run: go mod download
+        working-directory: lambda_functions/request_manager
 
       - name: 🔨 Build Go Binary for Lambda
         run: |
