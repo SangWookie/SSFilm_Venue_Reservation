@@ -28,7 +28,7 @@ jobs:
         run: |
           cd lambda_functions/request_manager
           GOOS=linux GOARCH=amd64 go build -o bootstrap
-          zip bootstrap.zip main
+          zip bootstrap.zip bootstrap
 
       - name: Deploy Lambda Functions
         env:
