@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Go 1.21.x
+      - name: Setup Go 1.24.x
         uses: actions/setup-go@v5
         with:
           go-version: ${{ secrets.GO_VERSION }}
