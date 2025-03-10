@@ -10,8 +10,8 @@ resource "aws_lambda_function" "user_reservation_manager" {
   filename      = data.archive_file.user_reservation_manager_zip.output_path
   function_name = "user_reservation_manager"
   role          = aws_iam_role.sqs_lambda_role.arn
-  handler       = "index.handler"
-  runtime       = "nodejs22.x"
+  handler       = "lambda.lambda_handler"
+  runtime       = "python3.12"
 
   # comment this line to upload source code only once(untrack changes)
   source_code_hash = data.archive_file.user_reservation_manager_zip.output_base64sha256
