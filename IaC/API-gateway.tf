@@ -29,6 +29,31 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
+resource "aws_iam_policy" "cloudwatch_write" {
+  name        = "CloudWatchWritePolicy"
+  description = "Allows Lambda to write logs to CloudWatch"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "logs:CreateLogGroup"
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "logs:CreateLogStream"
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "logs:PutLogEvents"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role" "role" {
   name               = "myrole"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
@@ -106,4 +131,18 @@ resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attach" {
 resource "aws_iam_role_policy_attachment" "lambda_sqs_attach" {
   role       = aws_iam_role.sqs_lambda_role.name
   policy_arn = aws_iam_policy.sqs_send.arn
+}
+
+locals {
+  roles = [
+    aws_iam_role.role.name,
+    aws_iam_role.sqs_lambda_role.name,
+    aws_iam_role.sqs_lambda_poll_role.name
+  ]
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_cloudwatch_attach" {
+  for_each   = toset(local.roles)
+  role       = each.value
+  policy_arn = aws_iam_policy.cloudwatch_write.arn
 }
