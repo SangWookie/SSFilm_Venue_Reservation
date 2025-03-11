@@ -1,5 +1,6 @@
 resource "aws_lambda_function" "user_reservation_manager" {
   description   = "handles user reservation related requests"
+  filename      = data.archive_file.user_reservation_manager_zip.output_path
   function_name = "user_reservation_manager"
   role          = aws_iam_role.sqs_lambda_role.arn
   handler       = "lambda.lambda_handler"
@@ -8,6 +9,7 @@ resource "aws_lambda_function" "user_reservation_manager" {
 
 resource "aws_lambda_function" "login_manager" {
   description   = "handles user reservation related requests"
+  filename      = data.archive_file.login_manager_zip.output_path
   function_name = "login_manager"
   role          = aws_iam_role.role.arn
   handler       = "lambda.lambda_handler"
@@ -16,6 +18,7 @@ resource "aws_lambda_function" "login_manager" {
 
 resource "aws_lambda_function" "request_manager" {
   description   = "manages user reservations"
+  filename      = data.archive_file.request_manager_zip.output_path
   function_name = "request_manager"
   role          = aws_iam_role.role.arn
   handler       = "lambda.lambda_handler"
@@ -24,6 +27,7 @@ resource "aws_lambda_function" "request_manager" {
 
 resource "aws_lambda_function" "mode_manager" {
   description   = "sets limitations for reservations"
+  filename      = data.archive_file.mode_manager_zip.output_path
   function_name = "mode_manager"
   role          = aws_iam_role.role.arn
   handler       = "lambda.lambda_handler"
@@ -32,6 +36,7 @@ resource "aws_lambda_function" "mode_manager" {
 
 resource "aws_lambda_function" "stat_handler" {
   description   = "handles stat related requests"
+  filename      = data.archive_file.stat_handler_zip.output_path
   function_name = "stat_handler"
   role          = aws_iam_role.role.arn
   handler       = "lambda.lambda_handler"
@@ -40,6 +45,7 @@ resource "aws_lambda_function" "stat_handler" {
 
 resource "aws_lambda_function" "reservation_queue_handler" {
   description   = "handles reservation queue"
+  filename      = data.archive_file.reservation_queue_handler_zip.output_path
   function_name = "reservation_queue_handler"
   role          = aws_iam_role.sqs_lambda_poll_role.arn
   handler       = "lambda.lambda_handler"
