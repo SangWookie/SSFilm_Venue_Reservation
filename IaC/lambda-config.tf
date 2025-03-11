@@ -14,7 +14,7 @@ resource "aws_lambda_function" "user_reservation_manager" {
   runtime       = "python3.12"
 
   # comment this line to upload source code only once(untrack changes)
-  source_code_hash = data.archive_file.user_reservation_manager_zip.output_base64sha256
+  # source_code_hash = data.archive_file.user_reservation_manager_zip.output_base64sha256
 }
 
 data "archive_file" "login_manager_zip" {
@@ -32,7 +32,7 @@ resource "aws_lambda_function" "login_manager" {
   runtime       = "python3.12"
 
   # comment this line to upload source code only once(untrack changes)
-  source_code_hash = data.archive_file.login_manager_zip.output_base64sha256
+  # source_code_hash = data.archive_file.login_manager_zip.output_base64sha256
 }
 
 data "archive_file" "request_manager_zip" {
@@ -50,7 +50,7 @@ resource "aws_lambda_function" "request_manager" {
   runtime       = "python3.12"
 
   # comment this line to upload source code only once(untrack changes)
-  source_code_hash = data.archive_file.request_manager_zip.output_base64sha256
+  # source_code_hash = data.archive_file.request_manager_zip.output_base64sha256
 }
 
 data "archive_file" "mode_manager_zip" {
@@ -68,7 +68,7 @@ resource "aws_lambda_function" "mode_manager" {
   runtime       = "python3.12"
 
   # comment this line to upload source code only once(untrack changes)
-  source_code_hash = data.archive_file.mode_manager_zip.output_base64sha256
+  # source_code_hash = data.archive_file.mode_manager_zip.output_base64sha256
 }
 
 data "archive_file" "stat_handler_zip" {
@@ -86,7 +86,7 @@ resource "aws_lambda_function" "stat_handler" {
   runtime       = "python3.12"
 
   # comment this line to upload source code only once(untrack changes)
-  source_code_hash = data.archive_file.stat_handler_zip.output_base64sha256
+  # source_code_hash = data.archive_file.stat_handler_zip.output_base64sha256
 }
 
 data "archive_file" "reservation_queue_handler_zip" {
@@ -104,7 +104,7 @@ resource "aws_lambda_function" "reservation_queue_handler" {
   runtime       = "python3.12"
 
   # comment this line to upload source code only once(untrack changes)
-  source_code_hash = data.archive_file.reservation_queue_handler_zip.output_base64sha256
+  # source_code_hash = data.archive_file.reservation_queue_handler_zip.output_base64sha256
 }
 
 resource "aws_lambda_event_source_mapping" "sqs_trigger" {
