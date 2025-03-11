@@ -28,20 +28,26 @@ resource "aws_dynamodb_table" "pending_reservation" {
   }
 }
 
+resource "aws_dynamodb_table" "venue_info" {
+  name           = "venue_info"
+  hash_key       = "venue"
+  billing_mode   = "PAY_PER_REQUEST"
+  stream_enabled = false
+
+  attribute {
+    name = "venue"
+    type = "S"
+  }
+}
+
 resource "aws_dynamodb_table" "reservation_limit" {
   name           = "reservation_limit"
   hash_key       = "venueDate"
-  range_key      = "time"
   billing_mode   = "PAY_PER_REQUEST"
   stream_enabled = false
 
   attribute {
     name = "venueDate"
-    type = "S"
-  }
-
-  attribute {
-    name = "time"
     type = "S"
   }
 }
