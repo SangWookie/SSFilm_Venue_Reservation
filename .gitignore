@@ -3,6 +3,7 @@
 /IaC/terraform.tfstate.backup
 /IaC/.terraform*
 /lambda_functions/*.zip
+__pycache__
 node_modules
 package-lock.json
 
