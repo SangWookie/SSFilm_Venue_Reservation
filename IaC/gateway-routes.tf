@@ -74,11 +74,6 @@ resource "aws_apigatewayv2_integration" "admin_request" {
   payload_format_version = "2.0"
 }
 
-variable "admin_request_methods" {
-  type = list(string)
-  default = [ "GET", "POST", "PATCH", "DELETE" ]
-}
-
 resource "aws_apigatewayv2_route" "admin_request" {
   api_id    = aws_apigatewayv2_api.mainGW.id
   route_key = "ANY /admin/requests/{proxy+}"
