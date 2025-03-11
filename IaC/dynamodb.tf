@@ -1,18 +1,23 @@
 resource "aws_dynamodb_table" "current_reservation" {
   name           = "current_reservation"
-  hash_key       = "venueDate"
-  range_key      = "time"
+  hash_key       = "reservationId"
   billing_mode   = "PAY_PER_REQUEST"
   stream_enabled = false
+
+  attribute {
+    name = "reservationId"
+    type = "S"
+  }
 
   attribute {
     name = "venueDate"
     type = "S"
   }
 
-  attribute {
-    name = "time"
-    type = "S"
+  global_secondary_index {
+    name = "venueDate-index"
+    hash_key = "venueDate"
+    projection_type = "ALL"
   }
 }
 
