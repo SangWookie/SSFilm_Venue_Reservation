@@ -13,7 +13,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"main/response"
 	"net/http"
-	"os"
 )
 
 var log = logrus.New()
@@ -27,7 +26,7 @@ var (
 	// 람다 최적화를 위한 전역 변수 설정
 	ddbClient = dynamodb.NewFromConfig(sdkConfig)
 
-	tableName = os.Getenv("TABLE_NAME")
+	tableName = "venue_info"
 
 	ctx = context.Background()
 )
@@ -38,7 +37,7 @@ type RequestChangeMode struct {
 }
 
 func changeMod(key map[string]types.AttributeValue, mode string) (events.APIGatewayV2HTTPResponse, error) {
-	update := expression.Set(expression.Name("status"), expression.Value(mode))
+	update := expression.Set(expression.Name("allowPolicy"), expression.Value(mode))
 
 	// 업데이트 표현식 생성
 	expr, err := expression.NewBuilder().WithUpdate(update).Build()
@@ -65,9 +64,6 @@ func changeMod(key map[string]types.AttributeValue, mode string) (events.APIGate
 func handleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	if configErr != nil {
 		return response.APIGatewayResponseError("Not found configuration values", 400), nil
-	}
-	if tableName == "" {
-		return response.APIGatewayResponseError("Not found table name", 400), nil
 	}
 
 	var reqBody RequestChangeMode
