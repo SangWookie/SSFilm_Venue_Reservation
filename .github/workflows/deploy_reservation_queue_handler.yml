@@ -1,4 +1,4 @@
-name: Deploy user_reservation_manager lambda function
+name: Deploy reservation_queue_handler lambda function
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd lambda_functions/user_reservation_manager
+          cd lambda_functions/reservation_queue_handler
           pip install -r requirements.txt -t .
 
       - name: Install zip tool
