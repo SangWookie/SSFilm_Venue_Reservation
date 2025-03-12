@@ -26,7 +26,7 @@ func APIGatewayResponseError(msg string, code int) events.APIGatewayV2HTTPRespon
 	}
 }
 
-func APIGatewayResponseOK(body map[string]interface{}, code int) events.APIGatewayV2HTTPResponse {
+func APIGatewayResponseOK(body any, code int) events.APIGatewayV2HTTPResponse {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		fmt.Println("Error encoding JSON:", err)
