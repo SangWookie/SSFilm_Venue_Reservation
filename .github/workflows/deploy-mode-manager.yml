@@ -27,7 +27,7 @@ jobs:
       - name: 🔨 Build Go Binary for Lambda
         run: |
           cd lambda_functions/mode_manager
-          GOOS=linux GOARCH=arm64 go build -o bootstrap
+          GOOS=linux GOARCH=amd64 go build -o bootstrap
           zip bootstrap.zip bootstrap
 
       - name: Deploy Lambda Functions
