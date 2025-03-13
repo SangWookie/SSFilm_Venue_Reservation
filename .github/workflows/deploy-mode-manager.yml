@@ -22,11 +22,11 @@ jobs:
 
       - name: 📥 Install Dependencies
         run: go mod download
-        working-directory: lambda_functions/request_manager
+        working-directory: lambda_functions/mode_manager
 
       - name: 🔨 Build Go Binary for Lambda
         run: |
-          cd lambda_functions/request_manager
+          cd lambda_functions/mode_manager
           GOOS=linux GOARCH=arm64 go build -o bootstrap
           zip bootstrap.zip bootstrap
 
