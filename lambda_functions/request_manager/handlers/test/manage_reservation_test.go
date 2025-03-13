@@ -24,17 +24,17 @@ func TestManageReservation_Cancel(t *testing.T) {
 	// Mock IsItemExist response
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "current_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.GetItemOutput{
 		Item: map[string]types.AttributeValue{
-			"reservationID": &types.AttributeValueMemberS{Value: reservationID},
+			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
 		},
 	}, nil)
 
 	// Mock DeleteItem response
 	mockDDB.On("DeleteItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.DeleteItemInput) bool {
 		return *input.TableName == "pending_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.DeleteItemOutput{}, nil)
 
 	// Create request body
@@ -69,26 +69,26 @@ func TestManageReservation_Modify(t *testing.T) {
 	reservationID := "test-reservation-id"
 
 	// Create time values for the test
-	timeValues := []types.AttributeValue{
-		&types.AttributeValueMemberN{Value: "13"},
-		&types.AttributeValueMemberN{Value: "14"},
-		&types.AttributeValueMemberN{Value: "15"},
+	timeValues := []handlers.TimeValue{
+		{N: "13"},
+		{N: "14"},
+		{N: "15"},
 	}
 
 	// Mock IsItemExist response
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "current_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.GetItemOutput{
 		Item: map[string]types.AttributeValue{
-			"reservationID": &types.AttributeValueMemberS{Value: reservationID},
+			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
 		},
 	}, nil)
 
 	// Mock UpdateItem response
 	mockDDB.On("UpdateItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.UpdateItemInput) bool {
 		return *input.TableName == "current_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.UpdateItemOutput{}, nil)
 
 	// Create request body
@@ -126,7 +126,7 @@ func TestManageReservation_ItemNotFound(t *testing.T) {
 	// Mock IsItemExist response for non-existent item
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "current_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.GetItemOutput{
 		Item: nil, // No item found
 	}, nil)
@@ -166,10 +166,10 @@ func TestManageReservation_InvalidCode(t *testing.T) {
 	// Mock IsItemExist response
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "current_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.GetItemOutput{
 		Item: map[string]types.AttributeValue{
-			"reservationID": &types.AttributeValueMemberS{Value: reservationID},
+			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
 		},
 	}, nil)
 
