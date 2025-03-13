@@ -1,18 +1,21 @@
 import json
 from requestReservation import request_reservation
+from reservationQuery import current_reservation_query
 
 def lambda_handler(event, context):
     method = event['requestContext']['http']['method']
     path = event['rawPath']
     stage = event['requestContext']['stage']
     path_without_stage = path[len(stage) + 1:] if path.startswith(f"/{stage}/") else path
+    queryParams = event.get("queryStringParameters", {})
 
     try:
         if path_without_stage == "/reservations":
             if method == "GET":
+                result = current_reservation_query(queryParams)
                 return {
                     'statusCode': 200,
-                    'body': json.dumps({'message': 'this is / GET!'})
+                    'body': json.dumps(result)
                 }
             elif method == "POST":
                 body = json.loads(event['body'])
