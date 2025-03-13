@@ -3,7 +3,7 @@ name: Deploy request manager function
 on:
   push:
     paths:
-      - "lambda_functions/request_manager/**"
+      - "lambda_functions/mode_manager/**"
     branches: [main]
 
 jobs:
@@ -36,6 +36,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "ap-northeast-2"
         run: |
-            aws lambda update-function-code \
-              --function-name request_manager \
-              --zip-file fileb://lambda_functions/request_manager/bootstrap.zip
+          aws lambda update-function-code \
+            --function-name mode_manager \
+            --zip-file fileb://lambda_functions/mode_manager/bootstrap.zip

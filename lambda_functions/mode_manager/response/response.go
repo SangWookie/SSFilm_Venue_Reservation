@@ -8,7 +8,6 @@ import (
 )
 
 var log = logrus.New()
-
 var (
 	header = map[string]string{
 		"Access-Control-Allow-Origin":  "*",
@@ -19,7 +18,6 @@ var (
 
 func APIGatewayResponseError(msg string, code int) events.APIGatewayV2HTTPResponse {
 	log.Errorf(msg)
-
 	return events.APIGatewayV2HTTPResponse{
 		StatusCode: code,
 		Body:       msg,
