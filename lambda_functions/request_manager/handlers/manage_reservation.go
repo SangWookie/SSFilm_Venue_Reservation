@@ -23,7 +23,7 @@ func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPReque
 	}
 
 	key := map[string]types.AttributeValue{
-		"reservationID": &types.AttributeValueMemberS{Value: reqBody.Key},
+		"reservationId": &types.AttributeValueMemberS{Value: reqBody.Key},
 	}
 
 	requestChangeTime := reqBody.ChangeTime

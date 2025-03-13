@@ -31,8 +31,8 @@ type RouteHandler func(ctx context.Context, request events.APIGatewayV2HTTPReque
 var routes = map[string]RouteHandler{
 	"getPendingReservations":   handlers.GetPendingReservations,
 	"getReservations":          handlers.GetReservations,
-	"managePendingReservation": handlers.ManageReservation,
-	"manageReservation":        handlers.ManagePendingReservation,
+	"manageReservation":        handlers.ManageReservation,
+	"managePendingReservation": handlers.ManagePendingReservation,
 }
 
 func handleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
