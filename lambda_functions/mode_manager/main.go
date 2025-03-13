@@ -1,4 +1,4 @@
-package mode_manager
+package main
 
 import (
 	"context"
