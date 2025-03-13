@@ -77,7 +77,7 @@ func DeletePendingItem(ctx context.Context, ddbClient DDBClientiface, key map[st
 	return err
 }
 func DeleteReservationItem(ctx context.Context, ddbClient DDBClientiface, key map[string]types.AttributeValue) error {
-	tableName := "pending_reservation"
+	tableName := "current_reservation"
 
 	_, err := ddbClient.DeleteItem(ctx, &dynamodb.DeleteItemInput{
 		TableName: &tableName,

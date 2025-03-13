@@ -15,7 +15,7 @@ import (
 type RequestChangeTimeRequest struct {
 	Key        string `json:"reservationID"`
 	Code       string `json:"code"`
-	ChangeTime []int  `json:"changeTime"`
+	ChangeTime []int  `json:"changeTime" dynamodbav:"changeTime"`
 }
 
 func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPRequest, ddbClient actions.DDBClientiface) (events.APIGatewayV2HTTPResponse, error) {
@@ -28,9 +28,6 @@ func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPReque
 	key := map[string]types.AttributeValue{
 		"reservationId": &types.AttributeValueMemberS{Value: reqBody.Key},
 	}
-
-	// Convert the TimeValue slice to AttributeValue slice
-	requestChangeTime, err := attributevalue.MarshalMap(reqBody.ChangeTime)
 
 	isExist, err := actions.IsItemExist(ctx, ddbClient, "current_reservation", key)
 	if err != nil || !isExist {
@@ -46,7 +43,10 @@ func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPReque
 		}
 	case "MODIFY":
 		// 예약 시간 변경
-		err := actions.ChangeReservationTime(ctx, ddbClient, key, requestChangeTime)
+
+		// Convert the TimeValue slice to AttributeValue slice
+		requestChangeTime, err := attributevalue.MarshalMap(reqBody.ChangeTime)
+		err = actions.ChangeReservationTime(ctx, ddbClient, key, requestChangeTime)
 		if err != nil {
 			return response.APIGatewayResponseError("Failed to modify reservation time", http.StatusInternalServerError), nil
 		}
