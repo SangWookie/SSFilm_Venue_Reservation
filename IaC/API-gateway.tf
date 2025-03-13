@@ -133,6 +133,11 @@ resource "aws_iam_role_policy_attachment" "lambda_sqs_attach" {
   policy_arn = aws_iam_policy.sqs_send.arn
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_user_dynamodb" {
+  role       = aws_iam_role.sqs_lambda_role.name
+  policy_arn = aws_iam_policy.dynamodb_full_access.arn
+}
+
 locals {
   roles = [
     aws_iam_role.role.name,
