@@ -4,7 +4,7 @@ dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
 
 def get_unavailable_periods(queryParams, unavailable_periods=None):
     if unavailable_periods is None:
-        unavailable_periods = dynamodb.Table('unavailable_periods')
+        unavailable_periods = dynamodb.Table('reservation_limit')
         
     # parameters validation
     if "venue" not in queryParams:
