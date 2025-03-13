@@ -66,6 +66,9 @@ func handleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) 
 		return response.APIGatewayResponseError("Not found configuration values", 400), nil
 	}
 
+	log.Info("New request received")
+	log.Info("Client IP: ", request.RequestContext.HTTP.SourceIP)
+
 	var reqBody RequestChangeMode
 	err := json.Unmarshal([]byte(request.Body), &reqBody)
 	if err != nil {

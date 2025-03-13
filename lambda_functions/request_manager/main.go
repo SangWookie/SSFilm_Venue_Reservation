@@ -39,7 +39,7 @@ func handleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) 
 	if configErr != nil {
 		return response.APIGatewayResponseError("Not found configuration values", 400), nil
 	}
-	log.Info("New request received")
+	log.Info("New request received1")
 
 	var path = request.PathParameters["proxy"]
 
