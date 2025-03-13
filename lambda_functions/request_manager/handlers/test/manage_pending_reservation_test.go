@@ -19,9 +19,9 @@ func TestManagePendingReservation_Accept(t *testing.T) {
 	mockDDB := &mocks.MockDDBClient{}
 
 	// Mock reservation data
-	reservationID := "test-reservation-id"
+	requestId := "test-reservation-id"
 	pendingReservation := map[string]types.AttributeValue{
-		"requestId": &types.AttributeValueMemberS{Value: reservationID},
+		"requestId": &types.AttributeValueMemberS{Value: requestId},
 		"category":  &types.AttributeValueMemberS{Value: "수업"},
 		"companion": &types.AttributeValueMemberS{Value: "james, andrew"},
 		"email":     &types.AttributeValueMemberS{Value: "tester@tester.com"},
@@ -41,7 +41,7 @@ func TestManagePendingReservation_Accept(t *testing.T) {
 	// Mock GetItem response
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "pending_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["requestId"].(*types.AttributeValueMemberS).Value == requestId
 	})).Return(&dynamodb.GetItemOutput{
 		Item: pendingReservation,
 	}, nil)
@@ -54,12 +54,12 @@ func TestManagePendingReservation_Accept(t *testing.T) {
 	// Mock DeleteItem response
 	mockDDB.On("DeleteItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.DeleteItemInput) bool {
 		return *input.TableName == "pending_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["requestId"].(*types.AttributeValueMemberS).Value == requestId
 	})).Return(&dynamodb.DeleteItemOutput{}, nil)
 
 	// Create request body
 	requestBody := handlers.RequestDeleteType{
-		Key:  reservationID,
+		Key:  requestId,
 		Code: "ACCEPT",
 	}
 	bodyBytes, _ := json.Marshal(requestBody)
@@ -86,9 +86,9 @@ func TestManagePendingReservation_Deny(t *testing.T) {
 	mockDDB := &mocks.MockDDBClient{}
 
 	// Mock reservation data
-	reservationID := "test-reservation-id"
+	requestId := "test-reservation-id"
 	pendingReservation := map[string]types.AttributeValue{
-		"requestId": &types.AttributeValueMemberS{Value: reservationID},
+		"requestId": &types.AttributeValueMemberS{Value: requestId},
 		"category":  &types.AttributeValueMemberS{Value: "수업"},
 		"companion": &types.AttributeValueMemberS{Value: "james, andrew"},
 		"email":     &types.AttributeValueMemberS{Value: "tester@tester.com"},
@@ -108,7 +108,7 @@ func TestManagePendingReservation_Deny(t *testing.T) {
 	// Mock GetItem response
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "pending_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["requestId"].(*types.AttributeValueMemberS).Value == requestId
 	})).Return(&dynamodb.GetItemOutput{
 		Item: pendingReservation,
 	}, nil)
@@ -116,12 +116,12 @@ func TestManagePendingReservation_Deny(t *testing.T) {
 	// Mock DeleteItem response
 	mockDDB.On("DeleteItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.DeleteItemInput) bool {
 		return *input.TableName == "pending_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["requestId"].(*types.AttributeValueMemberS).Value == requestId
 	})).Return(&dynamodb.DeleteItemOutput{}, nil)
 
 	// Create request body
 	requestBody := handlers.RequestDeleteType{
-		Key:  reservationID,
+		Key:  requestId,
 		Code: "DENY",
 	}
 	bodyBytes, _ := json.Marshal(requestBody)
@@ -148,28 +148,22 @@ func TestManagePendingReservation_InvalidCode(t *testing.T) {
 	mockDDB := &mocks.MockDDBClient{}
 
 	// Mock reservation data
-	reservationID := "test-reservation-id"
+	requestId := "test-reservation-id"
 	pendingReservation := map[string]types.AttributeValue{
-		"reservationID": &types.AttributeValueMemberS{Value: reservationID},
+		"requestId": &types.AttributeValueMemberS{Value: requestId},
 	}
 
 	// Mock GetItem response
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "pending_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
+			input.Key["requestId"].(*types.AttributeValueMemberS).Value == requestId
 	})).Return(&dynamodb.GetItemOutput{
 		Item: pendingReservation,
 	}, nil)
 
-	// Mock DeleteItem response
-	mockDDB.On("DeleteItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.DeleteItemInput) bool {
-		return *input.TableName == "pending_reservation" &&
-			input.Key["reservationID"].(*types.AttributeValueMemberS).Value == reservationID
-	})).Return(&dynamodb.DeleteItemOutput{}, nil)
-
 	// Create request body with invalid code
 	requestBody := handlers.RequestDeleteType{
-		Key:  reservationID,
+		Key:  requestId,
 		Code: "INVALID_CODE",
 	}
 	bodyBytes, _ := json.Marshal(requestBody)
@@ -185,7 +179,7 @@ func TestManagePendingReservation_InvalidCode(t *testing.T) {
 
 	// Assert results
 	assert.NoError(t, err)
-	assert.Equal(t, 200, response.StatusCode)
+	assert.Equal(t, 404, response.StatusCode)
 
 	// Verify mocks were called
 	mockDDB.AssertExpectations(t)

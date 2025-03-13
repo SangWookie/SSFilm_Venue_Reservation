@@ -2,7 +2,6 @@ package test
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
 	"request_manager/handlers"
 	"request_manager/mocks"
 	"testing"
@@ -13,8 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
-
-var log = logrus.New()
 
 func TestGetReservations_Success(t *testing.T) {
 	mockDDB := &mocks.MockDDBClient{}
@@ -47,6 +44,4 @@ func TestGetReservations_Success(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, 200, response.StatusCode)
-
-	log.Info(response.Body)
 }

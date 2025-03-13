@@ -11,7 +11,7 @@ import (
 )
 
 type RequestDeleteType struct {
-	Key  string `json:"requestId"`
+	Key  string `json:"requestID"`
 	Code string `json:"code"`
 }
 
@@ -31,10 +31,10 @@ func ManagePendingReservation(ctx context.Context, request events.APIGatewayV2HT
 	}
 
 	key := map[string]types.AttributeValue{
-		"reservationID": &types.AttributeValueMemberS{Value: reqBody.Key},
+		"requestId": &types.AttributeValueMemberS{Value: reqBody.Key},
 	}
 
-	isExist, err := actions.IsItemExist(ctx, ddbClient, "current_reservation", key)
+	isExist, err := actions.IsItemExist(ctx, ddbClient, "pending_reservation", key)
 	if err != nil || !isExist {
 		return response.APIGatewayResponseError("Not found Item", http.StatusNotFound), nil
 	}
@@ -49,6 +49,8 @@ func ManagePendingReservation(ctx context.Context, request events.APIGatewayV2HT
 		}
 	case "DENY":
 		// 사용자에게 취소 이메일 발송
+	default:
+		return response.APIGatewayResponseError("Not Found", http.StatusNotFound), nil
 	}
 
 	err = actions.DeletePendingItem(ctx, ddbClient, key)

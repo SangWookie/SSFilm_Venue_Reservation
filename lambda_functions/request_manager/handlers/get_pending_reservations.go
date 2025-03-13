@@ -9,10 +9,10 @@ import (
 	"request_manager/response"
 )
 
-func GetReservations(ctx context.Context, request events.APIGatewayV2HTTPRequest, ddbClient actions.DDBClientiface) (events.APIGatewayV2HTTPResponse, error) {
+func GetPendingReservations(ctx context.Context, request events.APIGatewayV2HTTPRequest, ddbClient actions.DDBClientiface) (events.APIGatewayV2HTTPResponse, error) {
 	var scanResults []map[string]types.AttributeValue
 
-	scanResults, err := actions.ScanTable(ctx, ddbClient, "current_reservation")
+	scanResults, err := actions.ScanTable(ctx, ddbClient, "pending_reservation")
 	if err != nil {
 		return response.APIGatewayResponseError("Internal Server Error", 500), err
 	}

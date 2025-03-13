@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/sirupsen/logrus"
-	"sync"
 )
 
 var log = logrus.New()
@@ -50,20 +49,17 @@ type TableScanResult struct {
 }
 
 // ScanTable 함수 (DynamoDB Scan 실행)
-func ScanTable(ctx context.Context, ddbClient DDBClientiface, tableName string, wg *sync.WaitGroup, results chan<- TableScanResult) {
-	defer wg.Done()
-
+func ScanTable(ctx context.Context, ddbClient DDBClientiface, tableName string) ([]map[string]types.AttributeValue, error) {
 	// Scan 실행
 	resp, err := ddbClient.Scan(ctx, &dynamodb.ScanInput{
 		TableName: &tableName,
 	})
 
-	// 결과를 채널에 전송
-	results <- TableScanResult{
-		TableName: tableName,
-		Items:     resp.Items,
-		Err:       err,
+	if err != nil {
+		return nil, err
 	}
+
+	return resp.Items, err
 }
 
 func DeletePendingItem(ctx context.Context, ddbClient DDBClientiface, key map[string]types.AttributeValue) error {

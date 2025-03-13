@@ -29,6 +29,7 @@ var (
 type RouteHandler func(ctx context.Context, request events.APIGatewayV2HTTPRequest, ddbClient actions.DDBClientiface) (events.APIGatewayV2HTTPResponse, error)
 
 var routes = map[string]RouteHandler{
+	"getPendingReservations":   handlers.GetPendingReservations,
 	"getReservations":          handlers.GetReservations,
 	"managePendingReservation": handlers.ManageReservation,
 	"manageReservation":        handlers.ManagePendingReservation,
@@ -38,7 +39,7 @@ func handleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) 
 	if configErr != nil {
 		return response.APIGatewayResponseError("Not found configuration values", 400), nil
 	}
-	log.Info("New request received1")
+	log.Info("New request received")
 
 	var path = request.PathParameters["proxy"]
 
