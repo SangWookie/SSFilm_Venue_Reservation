@@ -1,6 +1,7 @@
 import json
 from requestReservation import request_reservation
 from reservationQuery import current_reservation_query
+from unavailablePeriods import get_unavailable_periods
 
 def lambda_handler(event, context):
     method = event['requestContext']['http']['method']
@@ -13,6 +14,8 @@ def lambda_handler(event, context):
         if path_without_stage == "/reservations":
             if method == "GET":
                 result = current_reservation_query(queryParams)
+                unavailable_periods = get_unavailable_periods(queryParams)
+                result['unavailable_periods'] = unavailable_periods
                 return {
                     'statusCode': 200,
                     'body': json.dumps(result)
