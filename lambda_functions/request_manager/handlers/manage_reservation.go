@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"net/http"
 	"request_manager/actions"
 	"request_manager/response"
@@ -11,15 +12,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-// TimeValue represents the JSON structure for time values
-type TimeValue struct {
-	N string `json:"N"`
-}
-
 type RequestChangeTimeRequest struct {
-	Key        string      `json:"reservationID"`
-	Code       string      `json:"code"`
-	ChangeTime []TimeValue `json:"changeTime"`
+	Key        string `json:"reservationID"`
+	Code       string `json:"code"`
+	ChangeTime []int  `json:"changeTime"`
 }
 
 func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPRequest, ddbClient actions.DDBClientiface) (events.APIGatewayV2HTTPResponse, error) {
@@ -34,10 +30,7 @@ func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPReque
 	}
 
 	// Convert the TimeValue slice to AttributeValue slice
-	requestChangeTime := make([]types.AttributeValue, len(reqBody.ChangeTime))
-	for i, tv := range reqBody.ChangeTime {
-		requestChangeTime[i] = &types.AttributeValueMemberN{Value: tv.N}
-	}
+	requestChangeTime, err := attributevalue.MarshalMap(reqBody.ChangeTime)
 
 	isExist, err := actions.IsItemExist(ctx, ddbClient, "current_reservation", key)
 	if err != nil || !isExist {

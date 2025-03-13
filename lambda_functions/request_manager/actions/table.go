@@ -142,7 +142,7 @@ func AcceptReservation(ctx context.Context, ddbClient DDBClientiface, reservatio
 	return err
 }
 
-func ChangeReservationTime(ctx context.Context, ddbClient DDBClientiface, key map[string]types.AttributeValue, time []types.AttributeValue) error {
+func ChangeReservationTime(ctx context.Context, ddbClient DDBClientiface, key map[string]types.AttributeValue, time map[string]types.AttributeValue) error {
 	tableName := "current_reservation"
 
 	// 업데이트할 속성 정의
