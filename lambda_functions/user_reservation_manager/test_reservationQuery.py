@@ -83,4 +83,5 @@ def test_basic_query(dynamodb_setup):
     
     assert response['date'] == '2025-03-01'
     assert response['venue'] == 'studio'
+    assert response['reservations'][0]['time'] == [10, 11, 12]
     assert len(response['reservations']) == 2

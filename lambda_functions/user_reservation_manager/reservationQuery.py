@@ -31,9 +31,11 @@ def current_reservation_query(queryParams, current_reservation=None):
     }
     
     for item in items:
+        converted_time = [int(x) for x in item.get("time", [])]
+        
         response["reservations"].append({
             "name": item.get("name", ""),
-            "time": item.get("time", []),
+            "time": converted_time,
             "purpose": item.get("purpose", ""),
             "category": item.get("category", ""),
         })
