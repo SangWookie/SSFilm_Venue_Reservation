@@ -23,14 +23,14 @@ jobs:
         uses: montudor/action-zip@v1
 
       - name: create zip file for lambda function
-        run: cd lambda_functions && zip -r code.zip .
+        run: cd lambda_functions/user_reservation_manager && zip -r code.zip .
 
       - name: AWS CLI v2
         uses: imehedi/actions-awscli-v2@latest
         with:
           args: "lambda update-function-code \
-            --function-name arn:aws:lambda:ap-northeast-2:796973485724:function:user_reservation_manager \
-            --zip-file fileb://lambda_functions/code.zip"
+            --function-name user_reservation_manager \
+            --zip-file fileb://lambda_functions/user_reservation_manager/code.zip"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
