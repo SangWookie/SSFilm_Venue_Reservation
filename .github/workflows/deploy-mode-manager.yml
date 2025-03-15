@@ -1,0 +1,41 @@
+name: Deploy request manager function
+
+on:
+  push:
+    paths:
+      - "lambda_functions/mode_manager/**"
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy go Lambda
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go 1.24.x
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ secrets.GO_VERSION }}
+
+      - name: 📥 Install Dependencies
+        run: go mod download
+        working-directory: lambda_functions/mode_manager
+
+      - name: 🔨 Build Go Binary for Lambda
+        run: |
+          cd lambda_functions/mode_manager
+          GOOS=linux GOARCH=amd64 go build -o bootstrap
+          zip bootstrap.zip bootstrap
+
+      - name: Deploy Lambda Functions
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "ap-northeast-2"
+        run: |
+          aws lambda update-function-code \
+            --function-name mode_manager \
+            --zip-file fileb://lambda_functions/mode_manager/bootstrap.zip
