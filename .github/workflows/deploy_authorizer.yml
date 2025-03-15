@@ -1,0 +1,37 @@
+name: Deploy authorizer lambda function
+
+on:
+  push:
+    paths:
+      - "lambda_functions/authorizer/**"
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          cd lambda_functions/authorizer
+          pip install -r requirements.txt -t .
+
+      - name: Install zip tool
+        uses: montudor/action-zip@v1
+
+      - name: create zip file for lambda function
+        run: cd lambda_functions/authorizer && zip -r code.zip .
+
+      - name: AWS CLI v2
+        uses: imehedi/actions-awscli-v2@latest
+        with:
+          args: "lambda update-function-code \
+            --function-name authorizer \
+            --zip-file fileb://lambda_functions/authorizer/code.zip"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "ap-northeast-2"
