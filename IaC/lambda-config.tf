@@ -107,6 +107,24 @@ resource "aws_lambda_function" "reservation_queue_handler" {
   # source_code_hash = data.archive_file.reservation_queue_handler_zip.output_base64sha256
 }
 
+data "archive_file" "authorizer_zip" {
+  type        = "zip"
+  source_dir  = "../lambda_functions/authorizer"
+  output_path = "../lambda_functions/authorizer.zip"
+}
+
+resource "aws_lambda_function" "authorizer" {
+  description   = "authorizer for admin requests"
+  filename      = data.archive_file.authorizer_zip.output_path
+  function_name = "authorizer"
+  role          = aws_iam_role.sqs_lambda_poll_role.arn
+  handler       = "lambda.lambda_handler"
+  runtime       = "python3.12"
+
+  # comment this line to upload source code only once(untrack changes)
+  # source_code_hash = data.archive_file.reservation_queue_handler_zip.output_base64sha256
+}
+
 resource "aws_lambda_event_source_mapping" "sqs_trigger" {
   event_source_arn = aws_sqs_queue.reservation_queue.arn
   function_name    = aws_lambda_function.reservation_queue_handler.function_name
@@ -120,6 +138,7 @@ locals {
     "request_manager"          = aws_lambda_function.request_manager.function_name
     "mode_manager"             = aws_lambda_function.mode_manager.function_name
     "stat_handler"             = aws_lambda_function.stat_handler.function_name
+    "authorizer"               = aws_lambda_function.authorizer.function_name
   }
 }
 
