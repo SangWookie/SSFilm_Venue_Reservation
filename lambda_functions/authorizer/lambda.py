@@ -11,20 +11,17 @@ def lambda_handler(event, context):
             "username": "admin",
         }
     }
-    
+    print(event)
     try:
-        verify_access_token(event['auth_token'])
+        token = event['identitySource'][0]
+        verify_access_token(token)
         return auth
-    
     except Exception as error:
         auth["isAuthorized"] = False
-        auth["error"] = str(error)
+        print(error)
         return auth
         
         
 def verify_access_token(token):
-    try:
-        payload = jwt.decode(token, TOKEN_SECRET, algorithms=["HS256"])
-        return payload
-    except Exception as error:
-        return None
+    payload = jwt.decode(token, TOKEN_SECRET, algorithms=["HS256"])
+    return payload
