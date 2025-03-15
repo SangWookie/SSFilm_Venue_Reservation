@@ -8,6 +8,16 @@ resource "aws_apigatewayv2_api" "mainGW" {
   }
 }
 
+resource "aws_apigatewayv2_authorizer" "authorizer" {
+  api_id                            = aws_apigatewayv2_api.mainGW.id
+  name                              = "authorizer"
+  authorizer_type                   = "REQUEST"
+  identity_sources                  = ["$request.header.auth_token"]
+  authorizer_uri                    = aws_lambda_function.authorizer.invoke_arn
+  authorizer_payload_format_version = "2.0"
+  enable_simple_responses           = true
+}
+
 resource "aws_apigatewayv2_stage" "dev" {
   api_id      = aws_apigatewayv2_api.mainGW.id
   description = "stage for development environment"
