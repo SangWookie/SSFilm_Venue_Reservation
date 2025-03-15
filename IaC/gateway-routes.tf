@@ -78,8 +78,9 @@ resource "aws_apigatewayv2_route" "admin_request" {
   api_id    = aws_apigatewayv2_api.mainGW.id
   route_key = "ANY /admin/requests/{proxy+}"
 
-  target        = "integrations/${aws_apigatewayv2_integration.admin_request.id}"
-  authorizer_id = aws_apigatewayv2_authorizer.authorizer.id
+  target             = "integrations/${aws_apigatewayv2_integration.admin_request.id}"
+  authorizer_id      = aws_apigatewayv2_authorizer.authorizer.id
+  authorization_type = "CUSTOM"
 }
 
 resource "aws_apigatewayv2_integration" "mode_manager" {
@@ -98,8 +99,9 @@ resource "aws_apigatewayv2_route" "mode_manager" {
   api_id    = aws_apigatewayv2_api.mainGW.id
   route_key = "PUT /admin/mode/{proxy+}"
 
-  target        = "integrations/${aws_apigatewayv2_integration.mode_manager.id}"
-  authorizer_id = aws_apigatewayv2_authorizer.authorizer.id
+  target             = "integrations/${aws_apigatewayv2_integration.mode_manager.id}"
+  authorizer_id      = aws_apigatewayv2_authorizer.authorizer.id
+  authorization_type = "CUSTOM"
 }
 
 resource "aws_apigatewayv2_integration" "stat_handler" {
@@ -118,6 +120,7 @@ resource "aws_apigatewayv2_route" "stat_handler" {
   api_id    = aws_apigatewayv2_api.mainGW.id
   route_key = "GET /admin/statistic"
 
-  target        = "integrations/${aws_apigatewayv2_integration.stat_handler.id}"
-  authorizer_id = aws_apigatewayv2_authorizer.authorizer.id
+  target             = "integrations/${aws_apigatewayv2_integration.stat_handler.id}"
+  authorizer_id      = aws_apigatewayv2_authorizer.authorizer.id
+  authorization_type = "CUSTOM"
 }
