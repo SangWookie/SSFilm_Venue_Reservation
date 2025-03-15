@@ -45,9 +45,9 @@ resource "aws_lambda_function" "request_manager" {
   description   = "manages user reservations"
   filename      = data.archive_file.request_manager_zip.output_path
   function_name = "request_manager"
-  role          = aws_iam_role.role.arn
-  handler       = "lambda.lambda_handler"
-  runtime       = "python3.12"
+  role          = aws_iam_role.sqs_lambda_role.arn
+  handler       = "bootstrap"
+  runtime       = "provided.al2023"
 
   # comment this line to upload source code only once(untrack changes)
   # source_code_hash = data.archive_file.request_manager_zip.output_base64sha256
@@ -63,9 +63,9 @@ resource "aws_lambda_function" "mode_manager" {
   description   = "sets limitations for reservations"
   filename      = data.archive_file.mode_manager_zip.output_path
   function_name = "mode_manager"
-  role          = aws_iam_role.role.arn
-  handler       = "lambda.lambda_handler"
-  runtime       = "python3.12"
+  role          = aws_iam_role.sqs_lambda_role.arn
+  handler       = "bootstrap"
+  runtime       = "provided.al2023"
 
   # comment this line to upload source code only once(untrack changes)
   # source_code_hash = data.archive_file.mode_manager_zip.output_base64sha256
@@ -81,7 +81,7 @@ resource "aws_lambda_function" "stat_handler" {
   description   = "handles stat related requests"
   filename      = data.archive_file.stat_handler_zip.output_path
   function_name = "stat_handler"
-  role          = aws_iam_role.role.arn
+  role          = aws_iam_role.sqs_lambda_role.arn
   handler       = "lambda.lambda_handler"
   runtime       = "python3.12"
 
