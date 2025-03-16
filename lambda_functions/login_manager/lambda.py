@@ -2,14 +2,17 @@ import json
 import jwt
 import datetime
 import os
+import bcrypt
 
 TOKEN_SECRET = os.environ["token_key"]
+USERNAME = os.environ["username"]
+PASSWORD = os.environ["password"]
 
 def lambda_handler(event, context):
     body = json.loads(event["body"])
     
     try:
-        if(body["username"] == "admin" and body["password"] == "admin"):
+        if(body["username"] == USERNAME and verify_password(body["password"])):
             
             token = issue_access_token(body["username"])
             
@@ -41,3 +44,6 @@ def issue_access_token(username):
     token = jwt.encode(payload, TOKEN_SECRET, algorithm="HS256")
     
     return token
+
+def verify_password(password):
+    return bcrypt.checkpw(password.encode("utf-8"), PASSWORD.encode("utf-8"))

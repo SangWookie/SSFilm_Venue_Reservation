@@ -13,3 +13,15 @@ variable "token_key" {
   type        = string
   sensitive   = true
 }
+
+variable "admin_id" {
+  description = "value for admin id"
+  type        = string
+  sensitive   = true
+}
+
+variable "admin_passwd" {
+  description = "value for admin password"
+  type        = string
+  sensitive   = true
+}
