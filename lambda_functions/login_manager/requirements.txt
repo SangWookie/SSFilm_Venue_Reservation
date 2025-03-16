@@ -1,2 +1,2 @@
 pyjwt
-bcrypt
+argon2-cffi

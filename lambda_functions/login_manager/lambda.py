@@ -2,17 +2,19 @@ import json
 import jwt
 import datetime
 import os
-import bcrypt
+from argon2 import PasswordHasher
 
 TOKEN_SECRET = os.environ["token_key"]
 USERNAME = os.environ["username"]
 PASSWORD = os.environ["password"]
 
+ph = PasswordHasher()
+
 def lambda_handler(event, context):
     body = json.loads(event["body"])
     
     try:
-        if(body["username"] == USERNAME and verify_password(body["password"])):
+        if(body["username"] == USERNAME and ph.verify(PASSWORD, body["password"])):
             
             token = issue_access_token(body["username"])
             
@@ -44,6 +46,3 @@ def issue_access_token(username):
     token = jwt.encode(payload, TOKEN_SECRET, algorithm="HS256")
     
     return token
-
-def verify_password(password):
-    return bcrypt.checkpw(password.encode("utf-8"), PASSWORD.encode("utf-8"))
