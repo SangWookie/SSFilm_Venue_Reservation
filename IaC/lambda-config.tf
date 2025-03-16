@@ -30,7 +30,11 @@ resource "aws_lambda_function" "login_manager" {
   role          = aws_iam_role.role.arn
   handler       = "lambda.lambda_handler"
   runtime       = "python3.12"
-
+  environment {
+    variables = {
+      token_key = var.token_key
+    }
+  }
   # comment this line to upload source code only once(untrack changes)
   # source_code_hash = data.archive_file.login_manager_zip.output_base64sha256
 }
@@ -120,7 +124,11 @@ resource "aws_lambda_function" "authorizer" {
   role          = aws_iam_role.sqs_lambda_poll_role.arn
   handler       = "lambda.lambda_handler"
   runtime       = "python3.12"
-
+  environment {
+    variables = {
+      token_key = var.token_key
+    }
+  }
   # comment this line to upload source code only once(untrack changes)
   # source_code_hash = data.archive_file.reservation_queue_handler_zip.output_base64sha256
 }

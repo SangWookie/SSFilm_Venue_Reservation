@@ -1,8 +1,8 @@
 import json
 import jwt
-import datetime
+import os
 
-TOKEN_SECRET = "asdfqwer1234"
+TOKEN_SECRET = os.environ["token_key"]
 
 def lambda_handler(event, context):
     auth = {
