@@ -1,16 +1,17 @@
 import json
 import jwt
 import datetime
+import os
 
-TOKEN_SECRET = "asdfqwer1234"
+TOKEN_SECRET = os.environ["token_key"]
 
 def lambda_handler(event, context):
-    body = event.get("body", {})
+    body = json.loads(event["body"])
     
     try:
-        if(body.get("username") == "admin" and body.get("password") == "admin"):
+        if(body["username"] == "admin" and body["password"] == "admin"):
             
-            token = issue_access_token(body.get("username"))
+            token = issue_access_token(body["username"])
             
             return {
                 'statusCode': 200,
@@ -19,7 +20,11 @@ def lambda_handler(event, context):
                     'auth_token': token
                 }
             }
-            
+        else:
+            return {
+                'statusCode': 401,
+                'body': json.dumps({'error': 'Invalid credentials'})
+            }
         
     except Exception as error:
         return {
@@ -31,16 +36,8 @@ def issue_access_token(username):
     payload = {
         "username": username
     }
-    payload["iat"] = datetime.datetime.now()
-    payload["exp"] = datetime.datetime.now() + datetime.timedelta(minutes=1)
+    payload["exp"] = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=10)
     
     token = jwt.encode(payload, TOKEN_SECRET, algorithm="HS256")
     
     return token
-
-def verify_access_token(token):
-    try:
-        payload = jwt.decode(token, TOKEN_SECRET, algorithms=["HS256"])
-        return payload
-    except Exception as error:
-        return None
