@@ -97,7 +97,7 @@ resource "aws_apigatewayv2_integration" "mode_manager" {
 
 resource "aws_apigatewayv2_route" "mode_manager" {
   api_id    = aws_apigatewayv2_api.mainGW.id
-  route_key = "PUT /admin/mode/{proxy+}"
+  route_key = "PUT /admin/mode"
 
   target             = "integrations/${aws_apigatewayv2_integration.mode_manager.id}"
   authorizer_id      = aws_apigatewayv2_authorizer.authorizer.id
