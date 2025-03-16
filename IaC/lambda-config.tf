@@ -33,6 +33,8 @@ resource "aws_lambda_function" "login_manager" {
   environment {
     variables = {
       token_key = var.token_key
+      username  = var.admin_id
+      password  = var.admin_passwd
     }
   }
   # comment this line to upload source code only once(untrack changes)
