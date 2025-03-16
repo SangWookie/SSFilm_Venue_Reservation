@@ -32,11 +32,11 @@ var (
 )
 
 type RequestChangeMode struct {
-	Key  map[string]types.AttributeValue `json:"key"`
-	Mode string                          `json:"mode"`
+	ReservationID string `json:"reservationId"`
+	Mode          string `json:"mode"`
 }
 
-func changeMod(key map[string]types.AttributeValue, mode string) (events.APIGatewayV2HTTPResponse, error) {
+func changeMod(ReservationID string, mode string) (events.APIGatewayV2HTTPResponse, error) {
 	update := expression.Set(expression.Name("allowPolicy"), expression.Value(mode))
 
 	// 업데이트 표현식 생성
@@ -44,6 +44,10 @@ func changeMod(key map[string]types.AttributeValue, mode string) (events.APIGate
 	if err != nil {
 		log.Printf("Couldn't build expression for update. Error: %v\n", err)
 		return response.APIGatewayResponseError("Internal Server Error", 500), err
+	}
+
+	key := map[string]types.AttributeValue{
+		"reservationId": &types.AttributeValueMemberS{Value: ReservationID},
 	}
 
 	_, err = ddbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
@@ -74,7 +78,7 @@ func handleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) 
 	if err != nil {
 	}
 
-	return changeMod(reqBody.Key, reqBody.Mode)
+	return changeMod(reqBody.ReservationID, reqBody.Mode)
 }
 func main() {
 	lambda.Start(handleRequest)

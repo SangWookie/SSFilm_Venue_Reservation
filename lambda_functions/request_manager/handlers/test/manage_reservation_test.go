@@ -33,7 +33,7 @@ func TestManageReservation_Cancel(t *testing.T) {
 
 	// Mock DeleteItem response
 	mockDDB.On("DeleteItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.DeleteItemInput) bool {
-		return *input.TableName == "pending_reservation" &&
+		return *input.TableName == "current_reservation" &&
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.DeleteItemOutput{}, nil)
 
@@ -231,7 +231,7 @@ func TestManageReservation_CancelError(t *testing.T) {
 
 	// Mock DeleteItem response with error
 	mockDDB.On("DeleteItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.DeleteItemInput) bool {
-		return *input.TableName == "pending_reservation" &&
+		return *input.TableName == "current_reservation" &&
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.DeleteItemOutput{}, assert.AnError)
 

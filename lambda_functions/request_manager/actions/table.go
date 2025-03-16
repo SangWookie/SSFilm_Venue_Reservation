@@ -49,7 +49,7 @@ type TableScanResult struct {
 }
 
 // ScanTable 함수 (DynamoDB Scan 실행)
-func ScanTable(ctx context.Context, ddbClient DDBClientiface, tableName string) ([]map[string]types.AttributeValue, error) {
+func ScanTable(ctx context.Context, ddbClient DDBClientiface, tableName string) (*dynamodb.ScanOutput, error) {
 	// Scan 실행
 	resp, err := ddbClient.Scan(ctx, &dynamodb.ScanInput{
 		TableName: &tableName,
@@ -59,7 +59,7 @@ func ScanTable(ctx context.Context, ddbClient DDBClientiface, tableName string) 
 		return nil, err
 	}
 
-	return resp.Items, err
+	return resp, err
 }
 
 func DeletePendingItem(ctx context.Context, ddbClient DDBClientiface, key map[string]types.AttributeValue) error {

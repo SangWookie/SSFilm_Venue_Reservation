@@ -34,6 +34,22 @@ func TestGetReservations_Success(t *testing.T) {
 				},
 				"venueDate": &types.AttributeValueMemberS{Value: "2025-03-31#studio"},
 			},
+			{
+				"reservationId": &types.AttributeValueMemberS{Value: "dkf0kk030412fk203..."},
+				"category":      &types.AttributeValueMemberS{Value: "강의"},
+				"companion":     &types.AttributeValueMemberS{Value: "james"},
+				"email":         &types.AttributeValueMemberS{Value: "tester1@tester.com"},
+				"name":          &types.AttributeValueMemberS{Value: "tester1"},
+				"purpose":       &types.AttributeValueMemberS{Value: "specific purpose for usage"},
+				"studentId":     &types.AttributeValueMemberN{Value: "20201766"},
+				"time": &types.AttributeValueMemberL{
+					Value: []types.AttributeValue{
+						&types.AttributeValueMemberN{Value: "10"},
+						&types.AttributeValueMemberN{Value: "11"},
+					},
+				},
+				"venueDate": &types.AttributeValueMemberS{Value: "2025-03-30#studio"},
+			},
 		},
 	}, nil)
 
