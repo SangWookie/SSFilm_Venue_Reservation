@@ -25,7 +25,10 @@ type ReservationType struct {
 	VenueDate     string `dynamodbav:"venueDate"`
 }
 
-func GetReservations(ctx context.Context, request events.APIGatewayV2HTTPRequest, ddbClient actions.DDBClientiface) (events.APIGatewayV2HTTPResponse, error) {
+func GetReservations(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error) {
+	ctx := context.Background()
+	ddbClient := params.DdbClient
+
 	var scanResults *dynamodb.ScanOutput
 
 	scanResults, err := actions.ScanTable(ctx, ddbClient, "current_reservation")

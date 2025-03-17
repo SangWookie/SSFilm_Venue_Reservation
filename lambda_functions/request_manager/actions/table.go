@@ -84,14 +84,10 @@ func DeleteReservationItem(ctx context.Context, ddbClient DDBClientiface, key ma
 		Key:       key,
 	})
 
-	if err != nil {
-		log.Errorln("err", err)
-	}
-
 	return err
 }
 
-func IsItemExist(ctx context.Context, ddbClient DDBClientiface, tableName string, key map[string]types.AttributeValue) (bool, error) {
+func IsItemExist(ctx context.Context, ddbClient DDBClientiface, tableName string, key map[string]types.AttributeValue) (map[string]types.AttributeValue, error) {
 	result, err := ddbClient.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: &tableName,
 		Key:       key,
@@ -99,10 +95,10 @@ func IsItemExist(ctx context.Context, ddbClient DDBClientiface, tableName string
 
 	if err != nil {
 		log.Errorln("err", err)
-		return false, err
+		return nil, err
 	}
 
-	return result.Item != nil, nil
+	return result.Item, nil
 }
 func GetPendingItem(ctx context.Context, ddbClient DDBClientiface, key map[string]types.AttributeValue) (map[string]types.AttributeValue, error) {
 	tableName := "pending_reservation"

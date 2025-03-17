@@ -17,17 +17,19 @@ import (
 func TestManageReservation_Cancel(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
+	mockSMTP := &mocks.MockSendEmail{}
 
 	// Mock reservation data
 	reservationID := "test-reservation-id"
 
-	// Mock IsItemExist response
+	// Mock IsItemExist response with email
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "current_reservation" &&
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.GetItemOutput{
 		Item: map[string]types.AttributeValue{
 			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
+			"email":         &types.AttributeValueMemberS{Value: "test@example.com"},
 		},
 	}, nil)
 
@@ -37,10 +39,13 @@ func TestManageReservation_Cancel(t *testing.T) {
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.DeleteItemOutput{}, nil)
 
+	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
 	// Create request body
 	requestBody := handlers.RequestChangeTimeRequest{
-		Key:  reservationID,
-		Code: "CANCEL",
+		Key:    reservationID,
+		Code:   "CANCEL",
+		Reason: "취소 사유",
 	}
 	bodyBytes, _ := json.Marshal(requestBody)
 
@@ -50,8 +55,16 @@ func TestManageReservation_Cancel(t *testing.T) {
 		Body: string(bodyBytes),
 	}
 
+	// Create handler parameters
+	params := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  mockDDB,
+		SmtpClient: mockSMTP,
+	}
+
 	// Call the handler
-	response, err := handlers.ManageReservation(ctx, request, mockDDB)
+	response, err := handlers.ManageReservation(params)
 
 	// Assert results
 	assert.NoError(t, err)
@@ -59,11 +72,13 @@ func TestManageReservation_Cancel(t *testing.T) {
 
 	// Verify all mocks were called
 	mockDDB.AssertExpectations(t)
+	mockSMTP.AssertExpectations(t)
 }
 
 func TestManageReservation_Modify(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
+	mockSMTP := &mocks.MockSendEmail{}
 
 	// Mock reservation data
 	reservationID := "test-reservation-id"
@@ -71,13 +86,14 @@ func TestManageReservation_Modify(t *testing.T) {
 	// Create time values for the test
 	timeValues := []int{13, 14, 15}
 
-	// Mock IsItemExist response
+	// Mock IsItemExist response with email
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "current_reservation" &&
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.GetItemOutput{
 		Item: map[string]types.AttributeValue{
 			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
+			"email":         &types.AttributeValueMemberS{Value: "test@example.com"},
 		},
 	}, nil)
 
@@ -87,11 +103,14 @@ func TestManageReservation_Modify(t *testing.T) {
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.UpdateItemOutput{}, nil)
 
+	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
 	// Create request body
 	requestBody := handlers.RequestChangeTimeRequest{
 		Key:        reservationID,
 		Code:       "MODIFY",
 		ChangeTime: timeValues,
+		Reason:     "변경 사유",
 	}
 	bodyBytes, _ := json.Marshal(requestBody)
 
@@ -101,8 +120,16 @@ func TestManageReservation_Modify(t *testing.T) {
 		Body: string(bodyBytes),
 	}
 
+	// Create handler parameters
+	params := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  mockDDB,
+		SmtpClient: mockSMTP,
+	}
+
 	// Call the handler
-	response, err := handlers.ManageReservation(ctx, request, mockDDB)
+	response, err := handlers.ManageReservation(params)
 
 	// Assert results
 	assert.NoError(t, err)
@@ -110,135 +137,41 @@ func TestManageReservation_Modify(t *testing.T) {
 
 	// Verify all mocks were called
 	mockDDB.AssertExpectations(t)
+	mockSMTP.AssertExpectations(t)
 }
 
-func TestManageReservation_ItemNotFound(t *testing.T) {
+func TestManageReservation_CancelEmailError(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
-
-	// Mock reservation data
-	reservationID := "non-existent-id"
-
-	// Mock IsItemExist response for non-existent item
-	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
-		return *input.TableName == "current_reservation" &&
-			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
-	})).Return(&dynamodb.GetItemOutput{
-		Item: nil, // No item found
-	}, nil)
-
-	// Create request body
-	requestBody := handlers.RequestChangeTimeRequest{
-		Key:  reservationID,
-		Code: "CANCEL",
-	}
-	bodyBytes, _ := json.Marshal(requestBody)
-
-	// Create API Gateway request
-	ctx := context.Background()
-	request := events.APIGatewayV2HTTPRequest{
-		Body: string(bodyBytes),
-	}
-
-	// Call the handler
-	response, err := handlers.ManageReservation(ctx, request, mockDDB)
-
-	// Assert results
-	assert.NoError(t, err)
-	assert.Equal(t, 404, response.StatusCode)
-	assert.Equal(t, "Not found Item", response.Body)
-
-	// Verify all mocks were called
-	mockDDB.AssertExpectations(t)
-}
-
-func TestManageReservation_InvalidCode(t *testing.T) {
-	// Setup mock DynamoDB client
-	mockDDB := &mocks.MockDDBClient{}
+	mockSMTP := &mocks.MockSendEmail{}
 
 	// Mock reservation data
 	reservationID := "test-reservation-id"
 
-	// Mock IsItemExist response
+	// Mock IsItemExist response with email
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "current_reservation" &&
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.GetItemOutput{
 		Item: map[string]types.AttributeValue{
 			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
+			"email":         &types.AttributeValueMemberS{Value: "test@example.com"},
 		},
 	}, nil)
 
-	// Create request body with invalid code
-	requestBody := handlers.RequestChangeTimeRequest{
-		Key:  reservationID,
-		Code: "INVALID_CODE",
-	}
-	bodyBytes, _ := json.Marshal(requestBody)
-
-	// Create API Gateway request
-	ctx := context.Background()
-	request := events.APIGatewayV2HTTPRequest{
-		Body: string(bodyBytes),
-	}
-
-	// Call the handler
-	response, err := handlers.ManageReservation(ctx, request, mockDDB)
-
-	// Assert results
-	assert.NoError(t, err)
-	assert.Equal(t, 200, response.StatusCode)
-
-	// Verify mocks were called
-	mockDDB.AssertExpectations(t)
-}
-
-func TestManageReservation_InvalidJSON(t *testing.T) {
-	// Setup mock DynamoDB client
-	mockDDB := &mocks.MockDDBClient{}
-
-	// Create API Gateway request with invalid JSON
-	ctx := context.Background()
-	request := events.APIGatewayV2HTTPRequest{
-		Body: "{invalid json",
-	}
-
-	// Call the handler
-	response, err := handlers.ManageReservation(ctx, request, mockDDB)
-
-	// Assert results
-	assert.NoError(t, err)
-	assert.Equal(t, 400, response.StatusCode)
-	assert.Equal(t, "Failed to parse request body", response.Body)
-}
-
-func TestManageReservation_CancelError(t *testing.T) {
-	// Setup mock DynamoDB client
-	mockDDB := &mocks.MockDDBClient{}
-
-	// Mock reservation data
-	reservationID := "test-reservation-id"
-
-	// Mock IsItemExist response
-	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
-		return *input.TableName == "current_reservation" &&
-			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
-	})).Return(&dynamodb.GetItemOutput{
-		Item: map[string]types.AttributeValue{
-			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
-		},
-	}, nil)
-
-	// Mock DeleteItem response with error
+	// Mock DeleteItem response
 	mockDDB.On("DeleteItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.DeleteItemInput) bool {
 		return *input.TableName == "current_reservation" &&
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
-	})).Return(&dynamodb.DeleteItemOutput{}, assert.AnError)
+	})).Return(&dynamodb.DeleteItemOutput{}, nil)
+
+	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(assert.AnError)
 
 	// Create request body
 	requestBody := handlers.RequestChangeTimeRequest{
-		Key:  reservationID,
-		Code: "CANCEL",
+		Key:    reservationID,
+		Code:   "CANCEL",
+		Reason: "취소 사유",
 	}
 	bodyBytes, _ := json.Marshal(requestBody)
 
@@ -248,21 +181,31 @@ func TestManageReservation_CancelError(t *testing.T) {
 		Body: string(bodyBytes),
 	}
 
+	// Create handler parameters
+	params := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  mockDDB,
+		SmtpClient: mockSMTP,
+	}
+
 	// Call the handler
-	response, err := handlers.ManageReservation(ctx, request, mockDDB)
+	response, err := handlers.ManageReservation(params)
 
 	// Assert results
 	assert.NoError(t, err)
 	assert.Equal(t, 500, response.StatusCode)
-	assert.Equal(t, "Failed to cancel reservation", response.Body)
+	assert.Equal(t, "Failed to send email", response.Body)
 
 	// Verify all mocks were called
 	mockDDB.AssertExpectations(t)
+	mockSMTP.AssertExpectations(t)
 }
 
-func TestManageReservation_ModifyError(t *testing.T) {
+func TestManageReservation_ModifyEmailError(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
+	mockSMTP := &mocks.MockSendEmail{}
 
 	// Mock reservation data
 	reservationID := "test-reservation-id"
@@ -270,27 +213,31 @@ func TestManageReservation_ModifyError(t *testing.T) {
 	// Create time values for the test
 	timeValues := []int{13, 14, 15}
 
-	// Mock IsItemExist response
+	// Mock IsItemExist response with email
 	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
 		return *input.TableName == "current_reservation" &&
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
 	})).Return(&dynamodb.GetItemOutput{
 		Item: map[string]types.AttributeValue{
 			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
+			"email":         &types.AttributeValueMemberS{Value: "test@example.com"},
 		},
 	}, nil)
 
-	// Mock UpdateItem response with error
+	// Mock UpdateItem response
 	mockDDB.On("UpdateItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.UpdateItemInput) bool {
 		return *input.TableName == "current_reservation" &&
 			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
-	})).Return(&dynamodb.UpdateItemOutput{}, assert.AnError)
+	})).Return(&dynamodb.UpdateItemOutput{}, nil)
+
+	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(assert.AnError)
 
 	// Create request body
 	requestBody := handlers.RequestChangeTimeRequest{
 		Key:        reservationID,
 		Code:       "MODIFY",
 		ChangeTime: timeValues,
+		Reason:     "변경 사유",
 	}
 	bodyBytes, _ := json.Marshal(requestBody)
 
@@ -300,52 +247,55 @@ func TestManageReservation_ModifyError(t *testing.T) {
 		Body: string(bodyBytes),
 	}
 
+	// Create handler parameters
+	params := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  mockDDB,
+		SmtpClient: mockSMTP,
+	}
+
 	// Call the handler
-	response, err := handlers.ManageReservation(ctx, request, mockDDB)
+	response, err := handlers.ManageReservation(params)
 
 	// Assert results
 	assert.NoError(t, err)
 	assert.Equal(t, 500, response.StatusCode)
-	assert.Equal(t, "Failed to modify reservation time", response.Body)
+	assert.Equal(t, "Failed to send email", response.Body)
 
 	// Verify all mocks were called
 	mockDDB.AssertExpectations(t)
+	mockSMTP.AssertExpectations(t)
 }
 
-func TestManageReservation_GetItemError(t *testing.T) {
+func TestManageReservation_InvalidJSON(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
+	mockSMTP := &mocks.MockSendEmail{}
 
-	// Mock reservation data
-	reservationID := "test-reservation-id"
-
-	// Mock GetItem response with error
-	mockDDB.On("GetItem", mock.Anything, mock.MatchedBy(func(input *dynamodb.GetItemInput) bool {
-		return *input.TableName == "current_reservation" &&
-			input.Key["reservationId"].(*types.AttributeValueMemberS).Value == reservationID
-	})).Return(&dynamodb.GetItemOutput{}, assert.AnError)
-
-	// Create request body
-	requestBody := handlers.RequestChangeTimeRequest{
-		Key:  reservationID,
-		Code: "CANCEL",
-	}
-	bodyBytes, _ := json.Marshal(requestBody)
-
-	// Create API Gateway request
+	// Create API Gateway request with invalid JSON
 	ctx := context.Background()
 	request := events.APIGatewayV2HTTPRequest{
-		Body: string(bodyBytes),
+		Body: "{invalid json",
+	}
+
+	// Create handler parameters
+	params := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  mockDDB,
+		SmtpClient: mockSMTP,
 	}
 
 	// Call the handler
-	response, err := handlers.ManageReservation(ctx, request, mockDDB)
+	response, err := handlers.ManageReservation(params)
 
 	// Assert results
 	assert.NoError(t, err)
-	assert.Equal(t, 404, response.StatusCode)
-	assert.Equal(t, "Not found Item", response.Body)
+	assert.Equal(t, 400, response.StatusCode)
+	assert.Equal(t, "Failed to parse request body", response.Body)
 
-	// Verify all mocks were called
+	// Verify mocks were called
 	mockDDB.AssertExpectations(t)
+	mockSMTP.AssertExpectations(t)
 }

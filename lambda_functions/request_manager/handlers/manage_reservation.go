@@ -3,10 +3,11 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"net/http"
 	"request_manager/actions"
 	"request_manager/response"
+
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
@@ -16,9 +17,15 @@ type RequestChangeTimeRequest struct {
 	Key        string `json:"reservationID"`
 	Code       string `json:"code"`
 	ChangeTime []int  `json:"changeTime"`
+	Reason     string `json:"reason"`
 }
 
-func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPRequest, ddbClient actions.DDBClientiface) (events.APIGatewayV2HTTPResponse, error) {
+func ManageReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error) {
+	request := params.Request
+	ctx := context.Background()
+	ddbClient := params.DdbClient
+	smtpClient := params.SmtpClient
+
 	var reqBody RequestChangeTimeRequest
 	err := json.Unmarshal([]byte(request.Body), &reqBody)
 	if err != nil {
@@ -29,8 +36,8 @@ func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPReque
 		"reservationId": &types.AttributeValueMemberS{Value: reqBody.Key},
 	}
 
-	isExist, err := actions.IsItemExist(ctx, ddbClient, "current_reservation", key)
-	if err != nil || !isExist {
+	reservationItem, err := actions.IsItemExist(ctx, ddbClient, "current_reservation", key)
+	if err != nil {
 		return response.APIGatewayResponseError("Not found Item", http.StatusNotFound), nil
 	}
 
@@ -41,6 +48,16 @@ func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPReque
 		if err != nil {
 			return response.APIGatewayResponseError("Failed to cancel reservation", http.StatusInternalServerError), nil
 		}
+
+		// 이메일 추출 및 전송
+		if emailAttr, ok := reservationItem["email"]; ok {
+			if emailValue, ok := emailAttr.(*types.AttributeValueMemberS); ok {
+				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 취소 확인", reqBody.Reason)
+				if err != nil {
+					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
+				}
+			}
+		}
 	case "MODIFY":
 		// 예약 시간 변경
 
@@ -49,6 +66,16 @@ func ManageReservation(ctx context.Context, request events.APIGatewayV2HTTPReque
 		err = actions.ChangeReservationTime(ctx, ddbClient, key, requestChangeTime)
 		if err != nil {
 			return response.APIGatewayResponseError("Failed to modify reservation time", http.StatusInternalServerError), nil
+		}
+
+		// 이메일 추출 및 전송
+		if emailAttr, ok := reservationItem["email"]; ok {
+			if emailValue, ok := emailAttr.(*types.AttributeValueMemberS); ok {
+				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 시간 변경 확인", reqBody.Reason)
+				if err != nil {
+					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
+				}
+			}
 		}
 	}
 

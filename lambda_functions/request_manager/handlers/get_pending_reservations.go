@@ -9,9 +9,11 @@ import (
 	"request_manager/response"
 )
 
-func GetPendingReservations(ctx context.Context, request events.APIGatewayV2HTTPRequest, ddbClient actions.DDBClientiface) (events.APIGatewayV2HTTPResponse, error) {
-	var scanResults *dynamodb.ScanOutput
+func GetPendingReservations(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error) {
+	ctx := context.Background()
+	ddbClient := params.DdbClient
 
+	var scanResults *dynamodb.ScanOutput
 	scanResults, err := actions.ScanTable(ctx, ddbClient, "pending_reservation")
 	if err != nil {
 		return response.APIGatewayResponseError("Internal Server Error", 500), err
