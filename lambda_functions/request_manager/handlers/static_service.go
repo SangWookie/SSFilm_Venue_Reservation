@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"net/http"
 	"request_manager/actions"
 	"request_manager/response"
@@ -28,27 +30,41 @@ func GetStatic(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse,
 		return response.APIGatewayResponseError("Failed to parse request body", http.StatusBadRequest), nil
 	}
 
+	var executionResults *dynamodb.ExecuteStatementOutput
+	var result []ReservationType
+
 	if reqBody.Venue != "" {
 		// TODO 방 통계
 		fmt.Printf("Venue: %s\n", reqBody.Venue)
 
-		result, err := actions.GetReservationsWithVenue(ctx, ddbClient, "current_reservation", reqBody.Venue, reqBody.Month)
+		executionResults, err = actions.GetReservationsWithVenue(ctx, ddbClient, "current_reservation", reqBody.Venue, reqBody.Month)
 
 		if err != nil {
 			return response.APIGatewayResponseError(err.Error(), http.StatusBadRequest), nil
 		}
 
-		return response.APIGatewayResponseOK(result, http.StatusOK), nil
 	} else {
 		// TODO 학생 통계
 		fmt.Printf("StudentID: %s\n", reqBody.StudentID)
 
-		result, err := actions.GetReservationsWithStudentID(ctx, ddbClient, "current_reservation", reqBody.StudentID, reqBody.Month)
+		executionResults, err = actions.GetReservationsWithStudentID(ctx, ddbClient, "current_reservation", reqBody.StudentID, reqBody.Month)
 
 		if err != nil {
 			return response.APIGatewayResponseError(err.Error(), http.StatusBadRequest), nil
 		}
 
-		return response.APIGatewayResponseOK(result, http.StatusOK), nil
 	}
+
+	for _, executionResult := range executionResults.Items {
+		var tmp ReservationType
+		err = attributevalue.UnmarshalMap(executionResult, &tmp)
+		if err != nil {
+			log.Errorln("Parser Error", err)
+			return response.APIGatewayResponseError("Internal Server Error", 500), err
+		}
+
+		result = append(result, tmp)
+	}
+
+	return response.APIGatewayResponseOK(result, http.StatusOK), nil
 }
