@@ -17,6 +17,7 @@ type DDBClientiface interface {
 	PutItem(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error)
 	DeleteItem(ctx context.Context, params *dynamodb.DeleteItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.DeleteItemOutput, error)
 	UpdateItem(ctx context.Context, params *dynamodb.UpdateItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error)
+	Query(ctx context.Context, params *dynamodb.QueryInput, optFns ...func(*dynamodb.Options)) (*dynamodb.QueryOutput, error)
 }
 
 type DDBClient struct {
@@ -41,11 +42,25 @@ func (r *DDBClient) DeleteItem(ctx context.Context, params *dynamodb.DeleteItemI
 func (r *DDBClient) UpdateItem(ctx context.Context, params *dynamodb.UpdateItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error) {
 	return r.DynamoDbClient.UpdateItem(ctx, params, optFns...)
 }
+func (r *DDBClient) Query(ctx context.Context, params *dynamodb.QueryInput, optFns ...func(*dynamodb.Options)) (*dynamodb.QueryOutput, error) {
+	return r.DynamoDbClient.Query(ctx, params, optFns...)
+}
 
 type TableScanResult struct {
 	TableName string
 	Items     []map[string]types.AttributeValue
 	Err       error
+}
+
+func GetQueryResult(ctx context.Context, ddbClient DDBClientiface, queryInput *dynamodb.QueryInput) (*dynamodb.QueryOutput, error) {
+	result, err := ddbClient.Query(ctx, queryInput)
+
+	if err != nil {
+		log.Errorln("Query Error", err)
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // ScanTable 함수 (DynamoDB Scan 실행)
