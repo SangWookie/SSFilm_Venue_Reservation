@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"request_manager/actions"
 	"request_manager/response"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 
@@ -52,7 +53,19 @@ func ManageReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPR
 		// 이메일 추출 및 전송
 		if emailAttr, ok := reservationItem["email"]; ok {
 			if emailValue, ok := emailAttr.(*types.AttributeValueMemberS); ok {
-				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 취소 확인", reqBody.Reason)
+				venueDate := reservationItem["venueDate"].(*types.AttributeValueMemberS).Value
+				date := strings.Split(venueDate, "#")[0]
+				room := strings.Split(venueDate, "#")[1]
+
+				// TODO 시간 변경을 어떻게 보여주지?
+				emailContent, err := actions.GetReservationCanceledTemplate(actions.ReservationEmailData{
+					Name:     reservationItem["name"].(*types.AttributeValueMemberS).Value,
+					Location: room,
+					Time:     date,
+					Category: reservationItem["category"].(*types.AttributeValueMemberS).Value,
+					Details:  reqBody.Reason,
+				})
+				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 취소 확인", emailContent)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}
@@ -60,8 +73,6 @@ func ManageReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPR
 		}
 	case "MODIFY":
 		// 예약 시간 변경
-
-		// Convert the TimeValue slice to AttributeValue slice
 		requestChangeTime, err := attributevalue.Marshal(reqBody.ChangeTime)
 		err = actions.ChangeReservationTime(ctx, ddbClient, key, requestChangeTime)
 		if err != nil {
@@ -71,7 +82,19 @@ func ManageReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPR
 		// 이메일 추출 및 전송
 		if emailAttr, ok := reservationItem["email"]; ok {
 			if emailValue, ok := emailAttr.(*types.AttributeValueMemberS); ok {
-				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 시간 변경 확인", reqBody.Reason)
+				venueDate := reservationItem["venueDate"].(*types.AttributeValueMemberS).Value
+				date := strings.Split(venueDate, "#")[0]
+				room := strings.Split(venueDate, "#")[1]
+
+				// TODO 시간 변경을 어떻게 보여주지?
+				emailContent, err := actions.GetReservationModifiedTemplate(actions.ReservationEmailData{
+					Name:     reservationItem["name"].(*types.AttributeValueMemberS).Value,
+					Location: room,
+					Time:     date,
+					Category: reservationItem["category"].(*types.AttributeValueMemberS).Value,
+					Details:  reqBody.Reason,
+				})
+				err = actions.SendEmail(smtpClient, emailValue.Value, "관리자 예약 시간 변경", emailContent)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}

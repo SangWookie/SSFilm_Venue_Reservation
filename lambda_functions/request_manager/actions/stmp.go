@@ -14,9 +14,9 @@ var (
 )
 
 type EmailRequest struct {
-	To      string `json:"to"`
-	Subject string `json:"subject"`
-	Body    string `json:"body"`
+	To      string
+	Subject string
+	Body    string
 }
 
 // EmailSender is a function type for sending emails

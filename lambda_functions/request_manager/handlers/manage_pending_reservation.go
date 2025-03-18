@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"request_manager/actions"
 	"request_manager/response"
+	"strings"
 )
 
 type RequestDeleteType struct {
@@ -49,7 +50,19 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 		// 이메일 추출 및 전송
 		if emailAttr, ok := isExist["email"]; ok {
 			if emailValue, ok := emailAttr.(*types.AttributeValueMemberS); ok {
-				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 승인", "예약 승인")
+				venueDate := isExist["venueDate"].(*types.AttributeValueMemberS).Value
+				date := strings.Split(venueDate, "#")[0]
+				room := strings.Split(venueDate, "#")[1]
+
+				// TODO 시간 변경을 어떻게 보여주지?
+				emailContent, err := actions.GetReservationCompleteTemplate(actions.ReservationEmailData{
+					Name:     isExist["name"].(*types.AttributeValueMemberS).Value,
+					Location: room,
+					Time:     date,
+					Category: isExist["category"].(*types.AttributeValueMemberS).Value,
+					Details:  "",
+				})
+				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 취소 확인", emailContent)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}
@@ -59,7 +72,19 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 		// 이메일 추출 및 전송
 		if emailAttr, ok := isExist["email"]; ok {
 			if emailValue, ok := emailAttr.(*types.AttributeValueMemberS); ok {
-				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 거부", "예약 거부")
+				venueDate := isExist["venueDate"].(*types.AttributeValueMemberS).Value
+				date := strings.Split(venueDate, "#")[0]
+				room := strings.Split(venueDate, "#")[1]
+
+				// TODO 시간 변경을 어떻게 보여주지?
+				emailContent, err := actions.GetReservationCanceledTemplate(actions.ReservationEmailData{
+					Name:     isExist["name"].(*types.AttributeValueMemberS).Value,
+					Location: room,
+					Time:     date,
+					Category: isExist["category"].(*types.AttributeValueMemberS).Value,
+					Details:  "",
+				})
+				err = actions.SendEmail(smtpClient, emailValue.Value, "관리자 예약 반려", emailContent)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}
