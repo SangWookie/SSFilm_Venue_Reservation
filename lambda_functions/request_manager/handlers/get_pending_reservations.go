@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"net/http"
 	"request_manager/actions"
@@ -19,5 +20,16 @@ func GetPendingReservations(params RouterHandlerParameters) (events.APIGatewayV2
 		return response.APIGatewayResponseError("Internal Server Error", 500), err
 	}
 
-	return response.APIGatewayResponseOK(scanResults, http.StatusOK), nil
+	var reservations []ReservationType
+	for _, scanResult := range scanResults.Items {
+		var tmp ReservationType
+		err = attributevalue.UnmarshalMap(scanResult, &tmp)
+		if err != nil {
+			log.Errorln("Parser Error", err)
+			return response.APIGatewayResponseError("Internal Server Error", 500), err
+		}
+
+		reservations = append(reservations, tmp)
+	}
+	return response.APIGatewayResponseOK(reservations, http.StatusOK), nil
 }

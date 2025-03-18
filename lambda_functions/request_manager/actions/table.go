@@ -70,10 +70,10 @@ func GetReservationsWithVenue(ctx context.Context, ddbClient DDBClientiface, tab
 	return result, nil
 
 }
-func GetReservationsWithStudentID(ctx context.Context, ddbClient DDBClientiface, tableName, studentID, date string) (*dynamodb.ExecuteStatementOutput, error) {
+func GetReservationsWithStudentID(ctx context.Context, ddbClient DDBClientiface, tableName, studentId, date string) (*dynamodb.ExecuteStatementOutput, error) {
 	query := fmt.Sprintf("select * from \"%s\" where studentId = ? and begins_with(venueDate, ?)", tableName)
 	params := []types.AttributeValue{
-		&types.AttributeValueMemberS{Value: studentID},
+		&types.AttributeValueMemberS{Value: studentId},
 		&types.AttributeValueMemberS{Value: date},
 	}
 
@@ -85,6 +85,7 @@ func GetReservationsWithStudentID(ctx context.Context, ddbClient DDBClientiface,
 	if err != nil {
 		return nil, err
 	}
+
 	return result, nil
 }
 

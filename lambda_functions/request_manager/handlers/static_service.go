@@ -14,7 +14,7 @@ import (
 )
 
 type StaticRequest struct {
-	StudentID string `json:"student_id,omitempty"`
+	StudentID string `json:"studentID,omitempty"`
 	Venue     string `json:"venue,omitempty"`
 	Month     string `json:"month"`
 }
