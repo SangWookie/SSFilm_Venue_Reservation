@@ -10,6 +10,18 @@ import (
 	"request_manager/response"
 )
 
+type PendingReservationType struct {
+	RequestID string `dynamodbav:"requestId" json:"requestID"`
+	Category  string `dynamodbav:"category" json:"category"`
+	Companion string `dynamodbav:"companion" json:"companion"`
+	Email     string `dynamodbav:"email" json:"email"`
+	Name      string `dynamodbav:"name" json:"name"`
+	Purpose   string `dynamodbav:"purpose" json:"purpose"`
+	StudentID string `dynamodbav:"studentId" json:"studentID"`
+	Time      []int  `dynamodbav:"time" json:"time"`
+	VenueDate string `dynamodbav:"venueDate" json:"venueDate"`
+}
+
 func GetPendingReservations(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error) {
 	ctx := context.Background()
 	ddbClient := params.DdbClient
@@ -20,9 +32,9 @@ func GetPendingReservations(params RouterHandlerParameters) (events.APIGatewayV2
 		return response.APIGatewayResponseError("Internal Server Error", 500), err
 	}
 
-	var reservations []ReservationType
+	var reservations []PendingReservationType
 	for _, scanResult := range scanResults.Items {
-		var tmp ReservationType
+		var tmp PendingReservationType
 		err = attributevalue.UnmarshalMap(scanResult, &tmp)
 		if err != nil {
 			log.Errorln("Parser Error", err)

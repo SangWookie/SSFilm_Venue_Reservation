@@ -14,15 +14,15 @@ import (
 var log = logrus.New()
 
 type ReservationType struct {
-	reservationID string `dynamodbav:"reservationId"`
-	category      string `dynamodbav:"category"`
-	companion     string `dynamodbav:"companion"`
-	email         string `dynamodbav:"email"`
-	name          string `dynamodbav:"name"`
-	purpose       string `dynamodbav:"purpose"`
-	studentID     string `dynamodbav:"studentId"`
-	time          []int  `dynamodbav:"time"`
-	venueDate     string `dynamodbav:"venueDate"`
+	ReservationID string `dynamodbav:"reservationId" json:"reservationID"`
+	Category      string `dynamodbav:"category" json:"category"`
+	Companion     string `dynamodbav:"companion" json:"companion"`
+	Email         string `dynamodbav:"email" json:"email"`
+	Name          string `dynamodbav:"name" json:"name"`
+	Purpose       string `dynamodbav:"purpose" json:"purpose"`
+	StudentID     string `dynamodbav:"studentId" json:"studentID"`
+	Time          []int  `dynamodbav:"time" json:"time"`
+	VenueDate     string `dynamodbav:"venueDate" json:"venueDate"`
 }
 
 func GetReservations(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error) {
