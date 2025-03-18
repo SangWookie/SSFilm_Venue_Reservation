@@ -35,3 +35,12 @@ func (m *MockDDBClient) UpdateItem(ctx context.Context, params *dynamodb.UpdateI
 	args := m.Called(ctx, params)
 	return args.Get(0).(*dynamodb.UpdateItemOutput), args.Error(1)
 }
+
+type MockSendEmail struct {
+	mock.Mock
+}
+
+func (r *MockSendEmail) SendEmailWithGoogle(to, subject, body string) error {
+	args := r.Called(to, subject, body)
+	return args.Error(0)
+}

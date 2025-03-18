@@ -17,6 +17,7 @@ import (
 func TestManagePendingReservation_Accept(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
+	mockSMTP := &mocks.MockSendEmail{}
 
 	// Mock reservation data
 	requestId := "test-reservation-id"
@@ -57,12 +58,14 @@ func TestManagePendingReservation_Accept(t *testing.T) {
 			input.Key["requestId"].(*types.AttributeValueMemberS).Value == requestId
 	})).Return(&dynamodb.DeleteItemOutput{}, nil)
 
+	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
 	// Create request body
-	requestBody := handlers.RequestDeleteType{
+	reqBody := handlers.RequestDeleteType{
 		Key:  requestId,
 		Code: "ACCEPT",
 	}
-	bodyBytes, _ := json.Marshal(requestBody)
+	bodyBytes, _ := json.Marshal(reqBody)
 
 	// Create API Gateway request
 	ctx := context.Background()
@@ -70,8 +73,16 @@ func TestManagePendingReservation_Accept(t *testing.T) {
 		Body: string(bodyBytes),
 	}
 
+	// Create handler parameters
+	params := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  mockDDB,
+		SmtpClient: mockSMTP,
+	}
+
 	// Call the handler
-	response, err := handlers.ManagePendingReservation(ctx, request, mockDDB)
+	response, err := handlers.ManagePendingReservation(params)
 
 	// Assert results
 	assert.NoError(t, err)
@@ -79,11 +90,13 @@ func TestManagePendingReservation_Accept(t *testing.T) {
 
 	// Verify all mocks were called
 	mockDDB.AssertExpectations(t)
+	mockSMTP.AssertExpectations(t)
 }
 
 func TestManagePendingReservation_Deny(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
+	mockSMTP := &mocks.MockSendEmail{}
 
 	// Mock reservation data
 	requestId := "test-reservation-id"
@@ -119,6 +132,8 @@ func TestManagePendingReservation_Deny(t *testing.T) {
 			input.Key["requestId"].(*types.AttributeValueMemberS).Value == requestId
 	})).Return(&dynamodb.DeleteItemOutput{}, nil)
 
+	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
 	// Create request body
 	requestBody := handlers.RequestDeleteType{
 		Key:  requestId,
@@ -132,8 +147,16 @@ func TestManagePendingReservation_Deny(t *testing.T) {
 		Body: string(bodyBytes),
 	}
 
+	// Create handler parameters
+	params := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  mockDDB,
+		SmtpClient: mockSMTP,
+	}
+
 	// Call the handler
-	response, err := handlers.ManagePendingReservation(ctx, request, mockDDB)
+	response, err := handlers.ManagePendingReservation(params)
 
 	// Assert results
 	assert.NoError(t, err)
@@ -141,11 +164,13 @@ func TestManagePendingReservation_Deny(t *testing.T) {
 
 	// Verify all mocks were called
 	mockDDB.AssertExpectations(t)
+	mockSMTP.AssertExpectations(t)
 }
 
 func TestManagePendingReservation_InvalidCode(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
+	mockSMTP := &mocks.MockSendEmail{}
 
 	// Mock reservation data
 	requestId := "test-reservation-id"
@@ -174,8 +199,16 @@ func TestManagePendingReservation_InvalidCode(t *testing.T) {
 		Body: string(bodyBytes),
 	}
 
+	// Create handler parameters
+	params := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  mockDDB,
+		SmtpClient: mockSMTP,
+	}
+
 	// Call the handler
-	response, err := handlers.ManagePendingReservation(ctx, request, mockDDB)
+	response, err := handlers.ManagePendingReservation(params)
 
 	// Assert results
 	assert.NoError(t, err)
@@ -183,4 +216,5 @@ func TestManagePendingReservation_InvalidCode(t *testing.T) {
 
 	// Verify mocks were called
 	mockDDB.AssertExpectations(t)
+	mockSMTP.AssertExpectations(t)
 }

@@ -24,9 +24,11 @@ var (
 	ddbClient = &actions.DDBClient{
 		DynamoDbClient: dynamodb.NewFromConfig(sdkConfig),
 	}
+
+	smtpClient = &actions.SMTPManager{}
 )
 
-type RouteHandler func(ctx context.Context, request events.APIGatewayV2HTTPRequest, ddbClient actions.DDBClientiface) (events.APIGatewayV2HTTPResponse, error)
+type RouteHandler func(params handlers.RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error)
 
 var routes = map[string]RouteHandler{
 	"getPendingReservations":   handlers.GetPendingReservations,
@@ -46,8 +48,15 @@ func handleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) 
 	log.Info("Path parameters: ", path)
 	log.Info("Client IP: ", request.RequestContext.HTTP.SourceIP)
 
+	routerHandlerParameters := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  ddbClient,
+		SmtpClient: smtpClient,
+	}
+
 	if handler, exist := routes[path]; exist {
-		return handler(ctx, request, ddbClient)
+		return handler(routerHandlerParameters)
 	}
 
 	return response.APIGatewayResponseError("Internal Server Error", 500), nil

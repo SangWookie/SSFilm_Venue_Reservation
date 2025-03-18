@@ -13,51 +13,43 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestGetReservations_Success(t *testing.T) {
+func TestGetReservations(t *testing.T) {
+	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
-	mockDDB.On("Scan", mock.Anything, mock.Anything).Return(&dynamodb.ScanOutput{
+	mockSMTP := &mocks.MockSendEmail{}
+
+	// Mock Scan response
+	mockDDB.On("Scan", mock.Anything, mock.MatchedBy(func(input *dynamodb.ScanInput) bool {
+		return *input.TableName == "current_reservation"
+	})).Return(&dynamodb.ScanOutput{
 		Items: []map[string]types.AttributeValue{
 			{
-				"reservationId": &types.AttributeValueMemberS{Value: "0c6cb985d405b..."},
-				"category":      &types.AttributeValueMemberS{Value: "수업"},
-				"companion":     &types.AttributeValueMemberS{Value: "james, andrew"},
-				"email":         &types.AttributeValueMemberS{Value: "tester@tester.com"},
-				"name":          &types.AttributeValueMemberS{Value: "tester"},
-				"purpose":       &types.AttributeValueMemberS{Value: "specific purpose for usage"},
-				"studentId":     &types.AttributeValueMemberN{Value: "20201728"},
-				"time": &types.AttributeValueMemberL{
-					Value: []types.AttributeValue{
-						&types.AttributeValueMemberN{Value: "10"},
-						&types.AttributeValueMemberN{Value: "11"},
-						&types.AttributeValueMemberN{Value: "12"},
-					},
-				},
-				"venueDate": &types.AttributeValueMemberS{Value: "2025-03-31#studio"},
-			},
-			{
-				"reservationId": &types.AttributeValueMemberS{Value: "dkf0kk030412fk203..."},
-				"category":      &types.AttributeValueMemberS{Value: "강의"},
-				"companion":     &types.AttributeValueMemberS{Value: "james"},
-				"email":         &types.AttributeValueMemberS{Value: "tester1@tester.com"},
-				"name":          &types.AttributeValueMemberS{Value: "tester1"},
-				"purpose":       &types.AttributeValueMemberS{Value: "specific purpose for usage"},
-				"studentId":     &types.AttributeValueMemberN{Value: "20201766"},
-				"time": &types.AttributeValueMemberL{
-					Value: []types.AttributeValue{
-						&types.AttributeValueMemberN{Value: "10"},
-						&types.AttributeValueMemberN{Value: "11"},
-					},
-				},
-				"venueDate": &types.AttributeValueMemberS{Value: "2025-03-30#studio"},
+				"reservationId": &types.AttributeValueMemberS{Value: "test-id"},
+				"email":         &types.AttributeValueMemberS{Value: "test@example.com"},
 			},
 		},
 	}, nil)
 
+	// Create API Gateway request
 	ctx := context.Background()
 	request := events.APIGatewayV2HTTPRequest{}
 
-	response, err := handlers.GetReservations(ctx, request, mockDDB)
+	// Create handler parameters
+	params := handlers.RouterHandlerParameters{
+		Ctx:        ctx,
+		Request:    request,
+		DdbClient:  mockDDB,
+		SmtpClient: mockSMTP,
+	}
 
+	// Call the handler
+	response, err := handlers.GetReservations(params)
+
+	// Assert results
 	assert.NoError(t, err)
 	assert.Equal(t, 200, response.StatusCode)
+
+	// Verify mock was called
+	mockDDB.AssertExpectations(t)
+	mockSMTP.AssertExpectations(t)
 }
