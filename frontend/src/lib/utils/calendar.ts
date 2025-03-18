@@ -1,7 +1,11 @@
 import type { ReservationSingleResponse } from '$lib/interfaces/api';
-import type { MinimalCalendarUIItem } from '$lib/interfaces/calendar';
+import type {
+    MinimalCalendarUIItem,
+    MinimalCalendarUIItemWithHref
+} from '$lib/interfaces/calendar';
 import { DateTime, Interval, Settings } from 'luxon';
 import { intoDateString } from './date';
+import type { DateString } from '$lib/interfaces/date';
 
 Settings.defaultZone = 'Asia/Seoul';
 Settings.defaultWeekSettings = {
@@ -92,7 +96,8 @@ export const getTwoWeekRange = () =>
 
 export const mergeReservationsIntoCalendar = (
     reservations: ReservationSingleResponse[],
-    calendar: MinimalCalendarUIItem[]
+    calendar: MinimalCalendarUIItem[],
+    forEachCallBack?: (dateString: DateString, item: MinimalCalendarUIItem) => void
 ): MinimalCalendarUIItem[] => {
     console.log('mergeReservationsIntoCalendar', reservations, calendar);
     const reservedDays = reservations.filter((r) => r.reservations.length > 0).map((r) => r.date);
@@ -103,14 +108,32 @@ export const mergeReservationsIntoCalendar = (
         const dateString = intoDateString(item.date);
 
         if (item.mark == null) item.mark = {};
-        
+
         item.mark.reserved = reservedDays.includes(dateString);
         item.mark.unavailable = unavilableDays.includes(dateString);
-        if (item.mark.unavailable) console.log(item.mark.unavailable);
+        if (item.mark.unavailable) console.log('unavailable', item.mark.unavailable);
         
-        
+        forEachCallBack?.(dateString, item);
     });
-    console.log('reservedDays', reservedDays, 'unavilableDays', unavilableDays, 'calendar', calendar);
+    console.log(
+        'reservedDays',
+        reservedDays,
+        'unavilableDays',
+        unavilableDays,
+        'calendar',
+        calendar
+    );
 
     return calendar;
 };
+
+export const getCalendarPlaceholder = (): MinimalCalendarUIItemWithHref[] =>
+    getTwoWeekRange().map((date) => {
+        return {
+            date,
+            mark: {
+                today: date.hasSame(DateTime.local(), 'day'),
+                past: date.diff(DateTime.local(), 'hours').hours < -1
+            }
+        };
+    });

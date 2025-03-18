@@ -1,28 +1,31 @@
 <script lang="ts">
     import type { SelectableItem } from '$lib/interfaces/ui';
+    import type { Snippet } from 'svelte';
 
     let {
         list = $bindable([]),
         selected = $bindable([]),
         disabled = $bindable(false),
-        isRadio = $bindable(false)
+        isRadio = $bindable(false),
+        labelSnippet
     }: {
-        list: SelectableItem[];
-        selected?: SelectableItem[];
+        list: SelectableItem<unknown>[];
+        selected?: SelectableItem<unknown>[];
         disabled?: boolean;
         isRadio?: boolean;
+        labelSnippet?: Snippet<[ item: SelectableItem<unknown> ]>;
     } = $props();
 
-    const clickHandler = (item: SelectableItem) => {
+    const clickHandler = (item: SelectableItem<unknown>) => {
         if (disabled || item.disabled) return;
         if (isRadio) {
             if (selected.length > 0) selected = [];
-            selected.push(item);
+            selected = [item];
         } else {
             if (selected.includes(item)) {
                 selected = selected.filter((i) => i !== item);
             } else {
-                selected.push(item);
+                selected = list.filter((i) => selected?.includes(i) || i == item);
             }
         }
     };
@@ -36,7 +39,11 @@
             class:toggle={selected?.includes(item)}
             onclick={() => clickHandler(item)}
         >
-            {item.label}
+            {#if labelSnippet}
+                {@render labelSnippet(item)}
+            {:else}
+                {item.label}
+            {/if}
         </button>
     {/each}
 </div>

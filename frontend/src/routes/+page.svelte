@@ -1,39 +1,51 @@
 <script lang="ts">
     import Calendar from '$lib/components/ui/calendar.svelte';
-    import { getWeek } from '$lib/calculator';
     import NavbarEmbed from '$lib/components/ui/navbar-embed.svelte';
+    import { getCalendarPlaceholder, mergeReservationsIntoCalendar } from '$lib/utils/calendar';
+    import { getReservations } from '$lib/api/mock';
+    import type { ReservationSingleResponse } from '$lib/interfaces/api';
     import type { MinimalCalendarUIItemWithHref } from '$lib/interfaces/calendar';
     //import { getReservations } from '$lib/api/nonstate.mock';
 
     const calendar_props = $state({
-        data: {
-            items: [
-                ...getWeek(2025, 0).slice(2, 4),
-                //...getWeek(2025, 0),
-                ...getWeek(2025, 1),
-                ...getWeek(2025, 2),
-                ...getWeek(2025, 3),
-                ...getWeek(2025, 4)
-            ].map((item) => {
-                return {
-                    date: item,
-                    mark: []
-                };
-            })
-        },
-        status: 'available' as 'available' | 'loading' | 'disabled',
+        items: getCalendarPlaceholder(),
+        status: 'loading' as 'available' | 'loading' | 'disabled',
         onPositionChangeRequest: undefined,
-        onDateClick: (num: MinimalCalendarUIItemWithHref) => {
-            console.log(num);
-            num.mark =
-                num.mark && num.mark.length > 0
-                    ? []
-                    : ['reserved', 'unavailable', 'today', 'selected'];
-        }
     });
+    
+    let reservations: ReservationSingleResponse[] = $state([]);
 
-    $effect(() => {});
+    $effect(() => {
+        getReservations().then(res => {
+            reservations = res;
+            calendar_props.items = mergeReservationsIntoCalendar(reservations, calendar_props.items, ((date, item) => {
+                (item as MinimalCalendarUIItemWithHref).href = `#date-${date}`;
+            }))
+            calendar_props.status = 'available';
+            
+        });
+    });
 </script>
 
 <NavbarEmbed />
 <Calendar {...calendar_props} />
+
+<ul>
+    {#each reservations as reservation (reservation)}
+        <li id={`date-${reservation.date}`}>
+            <ul>
+                <li>기간: {reservation.date}</li>
+                <li>장소: {reservation.venue}</li>
+                <li>예약:
+                    <ul>
+                        {#each reservation.reservations as r (r)}
+                            <li>
+                                {r.time.map(i => `${i}시`).join(", ")}
+                            </li>
+                        {/each}
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    {/each}
+</ul>

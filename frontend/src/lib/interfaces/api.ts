@@ -27,7 +27,7 @@ export interface ReservationRequest {
     time: HourString[];
 
     name: string;
-    email: string;
+    //email: string;
     /// 학번
     studentID: string;
     birthday: string;
@@ -47,3 +47,17 @@ export interface Venue {
     requirement?: string;
     approval_mode: 'auto' | 'manual';
 }
+
+export interface RequestNewReservationResponse {
+    success: boolean;
+    message: string;
+}
+
+export interface AppState {
+    venues: Venue[];
+    api_url: string;
+    
+    purposes: string[];
+}
+
+export type LazyAppState = Partial<AppState>;

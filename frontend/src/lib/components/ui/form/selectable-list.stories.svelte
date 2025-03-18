@@ -8,16 +8,16 @@
         component: SelectableList
     });
 
-    const list: SelectableItem[] = Array(10)
+    const list: SelectableItem<string>[] = Array(10)
         .keys()
         .map((i) => {
             return {
+                value: `${i}`,
+                key: `${i}`,
                 label: `#${i} Item`,
-                toggle: false
             };
         })
         .toArray();
-    
 </script>
 
 <Story name="default" args={{ list }}></Story>

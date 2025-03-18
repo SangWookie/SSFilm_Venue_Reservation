@@ -7,12 +7,10 @@
     import { untrack } from 'svelte';
 
     interface Props {
-        data: {
-            /// The dates to be displayed in the calendar
-            /// IT must be starts with Sunday and ends with Saturday
-            items: MinimalCalendarUIItemWithHref[];
-            selected?: MinimalCalendarUIItemWithHref[];
-        };
+        /// The dates to be displayed in the calendar
+        /// IT must be starts with Sunday and ends with Saturday
+        items: MinimalCalendarUIItemWithHref[];
+        selected?: MinimalCalendarUIItemWithHref[];
         /**
          * The UI state of calendar, not the item.
          * available: The calendar is available
@@ -32,7 +30,7 @@
 
     const props: Props = $props();
 
-    let previous_data_items = props.data.items;
+    let previous_data_items = props.items;
     let generated_calendars: (MinimalCalendarUIItemWithHref | undefined)[][] = $state([]);
 
     const generateDateText = (datetime?: DateTime) =>
@@ -47,14 +45,14 @@
         if (
             generated_calendars == null ||
             generated_calendars.length === 0 ||
-            previous_data_items != props.data.items
+            previous_data_items != props.items
         )
-            generated_calendars = generateCalendarFromProps(untrack(() => props.data.items));
+            generated_calendars = generateCalendarFromProps(untrack(() => props.items));
     });
 
     const derivation = $derived.by(() => {
-        const start_day = props.data.items.at(0);
-        const end_day = props.data.items.at(-1);
+        const start_day = props.items.at(0);
+        const end_day = props.items.at(-1);
 
         const placeholders = {
             start_day: {
@@ -87,7 +85,7 @@
         class:unavailable={data?.mark?.unavailable}
         class:past={data?.mark?.past}
         class:today={data?.mark?.today}
-        class:selected={data && props.data.selected?.includes(data)}
+        class:selected={data && props.selected?.includes(data)}
     >
         <a href={data?.href} onclick={(e) => props?.onDateClick?.(data, e)}>
             {#if number}
@@ -193,17 +191,17 @@ div.calendar
                                 opacity: 1
                                 display: block
                     &.unavailable, &.past
-                        color: #ccc !important
                         a
+                            color: #ccc !important
                             text-decoration: line-through
                     &.today
                         border: 2px solid var(--color-bg)
                     &.selected
                         background: var(--color-bg)
-                        color: white !important
                         &:hover
                             background: var(--color-hover)
                         a
+                            color: white !important
                             .indicator-dot
                                 background-color: white
                     a
@@ -213,6 +211,7 @@ div.calendar
                         flex-direction: column
                         align-items: center
                         justify-content: center
+                        color: black
                         text-decoration: none
                         div.indicator-dot
                             position: absolute
@@ -224,7 +223,8 @@ div.calendar
                             margin-top: 4px
                             display: none
                     &.sun
-                        color: var(--color-bg)
+                        a
+                            color: var(--color-bg)
 
                     &:hover
                         background: rgba(0, 0, 0, 0.1)

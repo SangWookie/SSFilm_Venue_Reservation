@@ -3,21 +3,21 @@
     import type { Snippet } from 'svelte';
 
     let {
-        isError = $bindable(true),
+        isValid = $bindable(false),
         message,
         children
     }: {
-        isError: boolean;
+        isValid: boolean;
         message?: string;
         children?: Snippet;
     } = $props();
 </script>
 
-<div class="ui-form-validate-message" class:error={isError}>
-    {#if isError}
-        <X size={16} color="red" />
-    {:else}
+<div class="ui-form-validate-message" class:error={isValid}>
+    {#if isValid}
         <Check size={16} color="green" />
+    {:else}
+        <X size={16} color="red" />
     {/if}
 
     {@render children?.()}
