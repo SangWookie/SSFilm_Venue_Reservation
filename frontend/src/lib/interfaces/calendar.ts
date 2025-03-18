@@ -10,7 +10,8 @@ export interface MinimalCalendarUIItemMark {
     unavailable?: boolean;
     past?: boolean;
     today?: boolean;
-    selected?: boolean;
+    // selected?: boolean;
+    // use selected props on calendar instaed.
 }
 export interface MinimalCalendarUIItem {
     date: DateTime;

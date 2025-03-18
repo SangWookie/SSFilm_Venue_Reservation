@@ -3,10 +3,12 @@
 
     let {
         list = $bindable([]),
+        selected = $bindable([]),
         disabled = $bindable(false),
         isRadio = $bindable(false)
     }: {
         list: SelectableItem[];
+        selected?: SelectableItem[];
         disabled?: boolean;
         isRadio?: boolean;
     } = $props();
@@ -14,20 +16,24 @@
     const clickHandler = (item: SelectableItem) => {
         if (disabled || item.disabled) return;
         if (isRadio) {
-            list.filter((i) => i != item).forEach((i) => (i.toggle = false));
-            item.toggle = true;
+            if (selected.length > 0) selected = [];
+            selected.push(item);
         } else {
-            item.toggle = !item.toggle;
+            if (selected.includes(item)) {
+                selected = selected.filter((i) => i !== item);
+            } else {
+                selected.push(item);
+            }
         }
     };
 </script>
 
-<div class="ui-form-selectable-list" class:disabled={disabled}>
+<div class="ui-form-selectable-list" class:disabled>
     {#each list as item (item.label)}
         <button
             class="item"
             class:disabled={item.disabled}
-            class:toggle={item.toggle}
+            class:toggle={selected?.includes(item)}
             onclick={() => clickHandler(item)}
         >
             {item.label}

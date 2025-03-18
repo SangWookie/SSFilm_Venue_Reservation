@@ -11,6 +11,7 @@
             /// The dates to be displayed in the calendar
             /// IT must be starts with Sunday and ends with Saturday
             items: MinimalCalendarUIItemWithHref[];
+            selected?: MinimalCalendarUIItemWithHref[];
         };
         /**
          * The UI state of calendar, not the item.
@@ -44,7 +45,7 @@
     $effect(() => {
         // If generated calendars are not exist, or data is new, create it.
         if (
-            generated_calendars == null||
+            generated_calendars == null ||
             generated_calendars.length === 0 ||
             previous_data_items != props.data.items
         )
@@ -68,7 +69,7 @@
 
         const moveWeekDeltaCallback = (delta: number) =>
             placeholders.start_day.week &&
-            props.onPositionCcalendarhangeRequest?.(placeholders.start_day.week + delta);
+            props.onPositionChangeRequest?.(placeholders.start_day.week + delta);
 
         return { placeholders, moveWeekDeltaCallback };
     });
@@ -79,13 +80,14 @@
 {#snippet dateBlock(data?: MinimalCalendarUIItemWithHref)}
     {@const number = data?.date?.day?.toString()}
     {@const weekNumber = data?.date?.weekday}
-    <td class='date-block' 
+    <td
+        class="date-block"
         class:sun={weekNumber === 7}
         class:reserved={data?.mark?.reserved}
         class:unavailable={data?.mark?.unavailable}
         class:past={data?.mark?.past}
         class:today={data?.mark?.today}
-        class:selected={data?.mark?.selected}
+        class:selected={data && props.data.selected?.includes(data)}
     >
         <a href={data?.href} onclick={(e) => props?.onDateClick?.(data, e)}>
             {#if number}

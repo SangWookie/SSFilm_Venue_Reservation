@@ -7,6 +7,7 @@ export interface NavbarItem {
 export interface SelectableItem {
     key: unknown;
     label: string;
-    toggle: boolean;
+    // toggle: boolean;
+    // use selected props on selectable-list instead.
     disabled?: boolean;
 }
