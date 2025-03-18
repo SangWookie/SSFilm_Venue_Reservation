@@ -37,7 +37,7 @@ func GetStatic(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse,
 
 		result, err := actions.GetQueryResult(ctx, ddbClient, &dynamodb.QueryInput{
 			TableName:              aws.String("current_reservation"),
-			KeyConditionExpression: aws.String("venueDate begins_with :date"),
+			KeyConditionExpression: aws.String("begins_with(venueDate, :date)"),
 			FilterExpression:       aws.String("contains(venueDate, :room)"),
 			ExpressionAttributeValues: map[string]types.AttributeValue{
 				":date": &types.AttributeValueMemberS{Value: reqBody.Month},
