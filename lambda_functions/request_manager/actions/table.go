@@ -73,7 +73,7 @@ func GetReservationsWithVenue(ctx context.Context, ddbClient DDBClientiface, tab
 func GetReservationsWithStudentID(ctx context.Context, ddbClient DDBClientiface, tableName, studentId, date string) (*dynamodb.ExecuteStatementOutput, error) {
 	query := fmt.Sprintf("select * from \"%s\" where studentId = ? and begins_with(venueDate, ?)", tableName)
 	params := []types.AttributeValue{
-		&types.AttributeValueMemberS{Value: studentId},
+		&types.AttributeValueMemberN{Value: studentId},
 		&types.AttributeValueMemberS{Value: date},
 	}
 
