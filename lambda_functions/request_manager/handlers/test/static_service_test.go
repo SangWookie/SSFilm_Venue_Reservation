@@ -19,13 +19,13 @@ func TestGetStaticVenue(t *testing.T) {
 	mockDDB := new(mocks.MockDDBClient)
 	mockSMTP := new(mocks.MockSendEmail)
 
-	// Mock Query response for venue statistics
-	mockDDB.On("Query", mock.Anything, mock.MatchedBy(func(input *dynamodb.QueryInput) bool {
-		return *input.TableName == "current_reservation"
-	})).Return(&dynamodb.QueryOutput{
+	// Mock ExecuteStatement response for venue statistics
+	mockDDB.On("ExecuteStatement", mock.Anything, mock.MatchedBy(func(input *dynamodb.ExecuteStatementInput) bool {
+		return true // Add more specific matching if needed
+	})).Return(&dynamodb.ExecuteStatementOutput{
 		Items: []map[string]types.AttributeValue{
 			{
-				"venueDate": &types.AttributeValueMemberS{Value: "2024-03-Room1"},
+				"venueDate": &types.AttributeValueMemberS{Value: "2024-03-23#Room1"},
 				"venue":     &types.AttributeValueMemberS{Value: "Room1"},
 			},
 		},
@@ -67,13 +67,13 @@ func TestGetStaticStudent(t *testing.T) {
 	mockDDB := new(mocks.MockDDBClient)
 	mockSMTP := new(mocks.MockSendEmail)
 
-	// Mock Query response for student statistics
-	mockDDB.On("Query", mock.Anything, mock.MatchedBy(func(input *dynamodb.QueryInput) bool {
-		return *input.TableName == "current_reservation"
-	})).Return(&dynamodb.QueryOutput{
+	// Mock ExecuteStatement response for student statistics
+	mockDDB.On("ExecuteStatement", mock.Anything, mock.MatchedBy(func(input *dynamodb.ExecuteStatementInput) bool {
+		return true // Add more specific matching if needed
+	})).Return(&dynamodb.ExecuteStatementOutput{
 		Items: []map[string]types.AttributeValue{
 			{
-				"venueDate": &types.AttributeValueMemberS{Value: "2024-03-Room1"},
+				"venueDate": &types.AttributeValueMemberS{Value: "2024-03-23#Room1"},
 				"studentId": &types.AttributeValueMemberS{Value: "12345"},
 			},
 		},

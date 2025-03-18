@@ -30,6 +30,16 @@ func TestManageReservation_Cancel(t *testing.T) {
 		Item: map[string]types.AttributeValue{
 			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
 			"email":         &types.AttributeValueMemberS{Value: "test@example.com"},
+			"venueDate":     &types.AttributeValueMemberS{Value: "2025-03-03#studio"},
+			"name":          &types.AttributeValueMemberS{Value: "test"},
+			"category":      &types.AttributeValueMemberS{Value: "test"},
+			"time": &types.AttributeValueMemberL{
+				Value: []types.AttributeValue{
+					&types.AttributeValueMemberN{Value: "10"},
+					&types.AttributeValueMemberN{Value: "11"},
+					&types.AttributeValueMemberN{Value: "12"},
+				},
+			},
 		},
 	}, nil)
 
@@ -94,6 +104,16 @@ func TestManageReservation_Modify(t *testing.T) {
 		Item: map[string]types.AttributeValue{
 			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
 			"email":         &types.AttributeValueMemberS{Value: "test@example.com"},
+			"venueDate":     &types.AttributeValueMemberS{Value: "2025-03-03#studio"},
+			"name":          &types.AttributeValueMemberS{Value: "test"},
+			"category":      &types.AttributeValueMemberS{Value: "test"},
+			"time": &types.AttributeValueMemberL{
+				Value: []types.AttributeValue{
+					&types.AttributeValueMemberN{Value: "10"},
+					&types.AttributeValueMemberN{Value: "11"},
+					&types.AttributeValueMemberN{Value: "12"},
+				},
+			},
 		},
 	}, nil)
 
@@ -156,6 +176,16 @@ func TestManageReservation_CancelEmailError(t *testing.T) {
 		Item: map[string]types.AttributeValue{
 			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
 			"email":         &types.AttributeValueMemberS{Value: "test@example.com"},
+			"venueDate":     &types.AttributeValueMemberS{Value: "2025-03-03#studio"},
+			"name":          &types.AttributeValueMemberS{Value: "test"},
+			"category":      &types.AttributeValueMemberS{Value: "test"},
+			"time": &types.AttributeValueMemberL{
+				Value: []types.AttributeValue{
+					&types.AttributeValueMemberN{Value: "10"},
+					&types.AttributeValueMemberN{Value: "11"},
+					&types.AttributeValueMemberN{Value: "12"},
+				},
+			},
 		},
 	}, nil)
 
@@ -221,6 +251,16 @@ func TestManageReservation_ModifyEmailError(t *testing.T) {
 		Item: map[string]types.AttributeValue{
 			"reservationId": &types.AttributeValueMemberS{Value: reservationID},
 			"email":         &types.AttributeValueMemberS{Value: "test@example.com"},
+			"venueDate":     &types.AttributeValueMemberS{Value: "2025-03-03#studio"},
+			"name":          &types.AttributeValueMemberS{Value: "test"},
+			"category":      &types.AttributeValueMemberS{Value: "test"},
+			"time": &types.AttributeValueMemberL{
+				Value: []types.AttributeValue{
+					&types.AttributeValueMemberN{Value: "10"},
+					&types.AttributeValueMemberN{Value: "11"},
+					&types.AttributeValueMemberN{Value: "12"},
+				},
+			},
 		},
 	}, nil)
 

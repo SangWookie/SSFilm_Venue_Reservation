@@ -122,7 +122,8 @@ const reservationModifiedTemplate = `
         <h2>예약이 변경되었습니다.</h2>
         <div class="details">
             <p><span class="label">이름:</span> {{.Name}}</p>
-            <p><span class="label">시간:</span><span class="changed">{{.Time}}</span></p>
+			<p><span class="label">장소:</span> {{.Location}}</p>
+            <p><span class="label">시간:</span><span class="changed"> {{.Time}}</span></p>
             <p><span class="label">카테고리:</span> {{.Category}}</p>
             <p><span class="label">세부사항:</span> {{.Details}}</p>
         </div>

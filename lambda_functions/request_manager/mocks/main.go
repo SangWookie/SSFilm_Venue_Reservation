@@ -41,6 +41,11 @@ func (m *MockDDBClient) Query(ctx context.Context, params *dynamodb.QueryInput, 
 	return args.Get(0).(*dynamodb.QueryOutput), args.Error(1)
 }
 
+func (m *MockDDBClient) ExecuteStatement(ctx context.Context, params *dynamodb.ExecuteStatementInput, optFns ...func(*dynamodb.Options)) (*dynamodb.ExecuteStatementOutput, error) {
+	args := m.Called(ctx, params)
+	return args.Get(0).(*dynamodb.ExecuteStatementOutput), args.Error(1)
+}
+
 type MockSendEmail struct {
 	mock.Mock
 }

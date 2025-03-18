@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"request_manager/actions"
 	"request_manager/response"
@@ -85,12 +86,12 @@ func ManageReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPR
 				venueDate := reservationItem["venueDate"].(*types.AttributeValueMemberS).Value
 				date := strings.Split(venueDate, "#")[0]
 				room := strings.Split(venueDate, "#")[1]
-
+				time := fmt.Sprintf("%s [%d - %d]", date, reqBody.ChangeTime[0], reqBody.ChangeTime[len(reqBody.ChangeTime)-1])
 				// TODO 시간 변경을 어떻게 보여주지?
 				emailContent, err := actions.GetReservationModifiedTemplate(actions.ReservationEmailData{
 					Name:     reservationItem["name"].(*types.AttributeValueMemberS).Value,
 					Location: room,
-					Time:     date,
+					Time:     time,
 					Category: reservationItem["category"].(*types.AttributeValueMemberS).Value,
 					Details:  reqBody.Reason,
 				})

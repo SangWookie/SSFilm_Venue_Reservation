@@ -9,9 +9,6 @@ import (
 	"request_manager/response"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 type StaticRequest struct {
@@ -35,15 +32,7 @@ func GetStatic(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse,
 		// TODO 방 통계
 		fmt.Printf("Venue: %s\n", reqBody.Venue)
 
-		result, err := actions.GetQueryResult(ctx, ddbClient, &dynamodb.QueryInput{
-			TableName:              aws.String("current_reservation"),
-			KeyConditionExpression: aws.String("begins_with(venueDate, :date)"),
-			FilterExpression:       aws.String("contains(venueDate, :room)"),
-			ExpressionAttributeValues: map[string]types.AttributeValue{
-				":date": &types.AttributeValueMemberS{Value: reqBody.Month},
-				":room": &types.AttributeValueMemberS{Value: reqBody.Venue},
-			},
-		})
+		result, err := actions.GetReservationsWithVenue(ctx, ddbClient, "current_reservation", reqBody.Venue, reqBody.Month)
 
 		if err != nil {
 			return response.APIGatewayResponseError(err.Error(), http.StatusBadRequest), nil
@@ -54,14 +43,7 @@ func GetStatic(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse,
 		// TODO 학생 통계
 		fmt.Printf("StudentID: %s\n", reqBody.StudentID)
 
-		result, err := actions.GetQueryResult(ctx, ddbClient, &dynamodb.QueryInput{
-			TableName:              aws.String("current_reservation"),
-			KeyConditionExpression: aws.String("venueDate begins_with :date and studentId = :studentId"),
-			ExpressionAttributeValues: map[string]types.AttributeValue{
-				":date":      &types.AttributeValueMemberS{Value: reqBody.Month},
-				":studentId": &types.AttributeValueMemberS{Value: reqBody.StudentID},
-			},
-		})
+		result, err := actions.GetReservationsWithStudentID(ctx, ddbClient, "current_reservation", reqBody.StudentID, reqBody.Month)
 
 		if err != nil {
 			return response.APIGatewayResponseError(err.Error(), http.StatusBadRequest), nil
