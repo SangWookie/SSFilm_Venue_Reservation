@@ -29,7 +29,7 @@
         disabled?: boolean;
         isRadio?: boolean;
         clickHandler?: (item: SelectableItem<unknown>) => void;
-        labelSnippet?: Snippet<[ item: SelectableItem<unknown> ]>;
+        labelSnippet?: Snippet<[item: SelectableItem<unknown>]>;
     } = $props();
 </script>
 

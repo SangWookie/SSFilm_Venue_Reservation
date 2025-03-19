@@ -65,5 +65,5 @@ export const getAppState = async (): Promise<AppState> => {
         venues: Data.venue as Venue[],
         api_url: '/api',
         purposes: ['목적 A', '목적 B', '목적 C', '기타']
-    }
+    };
 };

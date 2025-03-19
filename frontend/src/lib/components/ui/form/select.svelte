@@ -1,34 +1,29 @@
 <script lang="ts">
-    import type { FormSelectItem } from "$lib/interfaces/ui";
+    import type { FormSelectItem } from '$lib/interfaces/ui';
 
     // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
     interface Props {
-        disabled?: boolean,
-        required?: boolean,
-        options: FormSelectItem<unknown>[],
+        disabled?: boolean;
+        required?: boolean;
+        options: FormSelectItem<unknown>[];
         /// The current value of the select element
-        value: FormSelectItem<unknown> | undefined,
+        value: FormSelectItem<unknown> | undefined;
     }
 
     let {
         disabled = $bindable(false),
         required = $bindable(false),
         options = $bindable([]),
-        value = $bindable(undefined),
+        value = $bindable(undefined)
     }: Props = $props();
-    
+
     let bindedValue = $state();
     $effect(() => {
-        value = options.find(opt => opt.key === bindedValue);
+        value = options.find((opt) => opt.key === bindedValue);
     });
-    </script>
+</script>
 
-<select 
-    class="ui-form-select"
-    {disabled} 
-    {required} 
-    bind:value={bindedValue}
->
+<select class="ui-form-select" {disabled} {required} bind:value={bindedValue}>
     {#each options as item (item.label)}
         <option value={item.key} selected={item.key === value?.key}>
             {#if item.labelSnippet}

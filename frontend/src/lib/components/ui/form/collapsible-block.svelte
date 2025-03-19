@@ -15,15 +15,15 @@
     let offsetHeight = $state(0);
 </script>
 
-<div class="ui-form-collapsible-block" class:open={open}>
+<div class="ui-form-collapsible-block" class:open>
     <summary>
         {@render header?.()}
-        <button class="control" onclick={() => open = !open}>
+        <button class="control" onclick={() => (open = !open)}>
             <ChevronDownIcon />
         </button>
     </summary>
     <div class="content-wrapper" style:--content-height={offsetHeight + 24 + 'px'}>
-        <div class="content" bind:offsetHeight={offsetHeight}>
+        <div class="content" bind:offsetHeight>
             {@render children?.()}
         </div>
     </div>

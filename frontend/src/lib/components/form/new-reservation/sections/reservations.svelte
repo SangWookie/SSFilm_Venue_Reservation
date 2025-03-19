@@ -104,7 +104,7 @@
                 internal_states.reservations.current_reservations_data,
                 internal_states.reservations.rendered_calendar
             );
-        })
+        });
 
         internal_states.reservations.current_reservations_data;
     });
@@ -135,7 +135,7 @@
             >
                 {#snippet labelSnippet(item: SelectableItem<unknown>)}
                     {item.label}
-                    
+
                     {#if (item as SelectableItem<Venue>).value?.approval_mode == 'manual'}
                         (수동)
                     {/if}
@@ -176,7 +176,10 @@
         />
     </InputBox>
 
-    <InputBox title="시간 선택" description={form_data.reservations.hours.map(i => `${i}시`).join(", ")}>
+    <InputBox
+        title="시간 선택"
+        description={form_data.reservations.hours.map((i) => `${i}시`).join(', ')}
+    >
         {#snippet custom()}
             <SelectableList
                 bind:list={internal_states.reservations.selectable_hour}

@@ -105,8 +105,8 @@ export const mergeReservationsIntoCalendar = (
             ...item.mark,
             reserved: reservedDays.includes(dateString),
             unavailable: unavilableDays.includes(dateString)
-        }
-        
+        };
+
         forEachCallBack?.(dateString, item);
     });
     console.log(

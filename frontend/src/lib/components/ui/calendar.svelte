@@ -90,7 +90,7 @@
         class:blank={!number}
     >
         {#if number}
-        <a href={data?.href} onclick={(e) => props?.onDateClick?.(data, e)}>
+            <a href={data?.href} onclick={(e) => props?.onDateClick?.(data, e)}>
                 {zeroPad(number)}
                 <div class="indicator-dot"></div>
             </a>

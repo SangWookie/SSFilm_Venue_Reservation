@@ -1,4 +1,4 @@
-import type { Snippet } from "svelte";
+import type { Snippet } from 'svelte';
 
 export interface NavbarItem {
     label: string;
@@ -16,7 +16,7 @@ export interface SelectableItem<T> {
 
 export interface FormSelectItem<T> {
     value: T;
-    
+
     /// The option value in select element.
     key: string;
     label: string;

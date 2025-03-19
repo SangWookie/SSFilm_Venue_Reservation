@@ -14,7 +14,7 @@
             return {
                 value: `${i}`,
                 key: `${i}`,
-                label: `#${i} Item`,
+                label: `#${i} Item`
             };
         })
         .toArray();

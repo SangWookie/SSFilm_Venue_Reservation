@@ -1,10 +1,10 @@
 <script lang="ts">
-    import LoadingIcon from '$lib/components/ui/loading_icon.svelte'
+    import LoadingIcon from '$lib/components/ui/loading_icon.svelte';
 
-    let { size = 16, enabled = false }: { size?: number, enabled: boolean } = $props()
+    let { size = 16, enabled = false }: { size?: number; enabled: boolean } = $props();
 </script>
 
-<div class="loading-box" class:enabled={enabled} style:--size={`${size}px`}>
+<div class="loading-box" class:enabled style:--size={`${size}px`}>
     <LoadingIcon {size} />
 </div>
 

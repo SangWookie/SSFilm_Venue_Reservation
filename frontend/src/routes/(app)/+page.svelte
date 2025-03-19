@@ -11,22 +11,25 @@
     const calendar_props = $state({
         items: getCalendarPlaceholder(),
         status: 'loading' as 'available' | 'loading' | 'disabled',
-        onPositionChangeRequest: undefined,
+        onPositionChangeRequest: undefined
     });
-    
+
     let loading_status = $state(false);
     let reservations: ReservationSingleResponse[] = $state([]);
 
     $effect(() => {
         loading_status = true;
-        getReservations().then(res => {
+        getReservations().then((res) => {
             reservations = res;
-            calendar_props.items = mergeReservationsIntoCalendar(reservations, calendar_props.items, ((date, item) => {
-                (item as MinimalCalendarUIItemWithHref).href = `#date-${date}`;
-            }))
+            calendar_props.items = mergeReservationsIntoCalendar(
+                reservations,
+                calendar_props.items,
+                (date, item) => {
+                    (item as MinimalCalendarUIItemWithHref).href = `#date-${date}`;
+                }
+            );
             calendar_props.status = 'available';
             loading_status = false;
-            
         });
     });
 </script>
@@ -47,11 +50,12 @@
                 <ul>
                     <li>기간: {reservation.date}</li>
                     <li>장소: {reservation.venue}</li>
-                    <li>예약:
+                    <li>
+                        예약:
                         <ul>
                             {#each reservation.reservations as r (r)}
                                 <li>
-                                    {r.time.map(i => `${i}시`).join(", ")}
+                                    {r.time.map((i) => `${i}시`).join(', ')}
                                 </li>
                             {/each}
                         </ul>
@@ -61,7 +65,6 @@
         {/each}
     </ul>
 </div>
-
 
 <style lang="sass">
 div.page

@@ -84,14 +84,15 @@ export interface Validations {
 }
 
 export const isAllValidated = (validations: Validations): boolean => {
-    console.log(validations)
+    console.log(validations);
     return is_valid(validations);
 };
 
-const is_valid = (obj: object): boolean => Object.values(obj).every(i => {
-    if (typeof i === 'object') return is_valid(i);
-    return i;
-})
+const is_valid = (obj: object): boolean =>
+    Object.values(obj).every((i) => {
+        if (typeof i === 'object') return is_valid(i);
+        return i;
+    });
 
 /// props from form component.
 export interface FormProps {
@@ -166,7 +167,7 @@ export const validate = (form_data: FormData, internal_states: InternalStates): 
         const school_id = !isNaN(parseInt(data.school_id));
         // validate email
         let email = data.email.length > 0 && data.email.includes('@');
-        
+
         if (email) {
             const split = data.email.split('@');
             email = split.length === 2 && split[1].includes('.');
@@ -241,15 +242,13 @@ export const requestNewReservationFromData = async (
 ): Promise<RequestNewReservationResponse> =>
     requestNewReservation({
         name: data.requester_info.name,
-        //email: data.requester_info.email,
         studentID: data.requester_info.school_id,
-        email: data.requester_info.email as string,
+        email: data.requester_info.email,
 
         date: data.reservations.date as DateString,
         venue: data.reservations.venue,
         time: data.reservations.hours,
 
-        // FIXME
         category: data.reservations.purpose,
         purpose: data.reservations.purpose_detail,
         companions: data.reservations.companions

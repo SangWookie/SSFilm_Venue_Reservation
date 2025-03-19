@@ -31,11 +31,11 @@
         });
     });
     let announcement = $state('');
-    globalAppState.subscribe(state => {
+    globalAppState.subscribe((state) => {
         if (state && state.announcement) {
             announcement = state.announcement;
         }
-    })
+    });
 </script>
 
 <Announcement text={announcement} />

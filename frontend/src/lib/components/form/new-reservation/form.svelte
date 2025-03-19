@@ -89,6 +89,6 @@
     {#if submissionState != 'done'}
         예약하기
     {:else}
-        <CheckIcon/> &nbsp; 예약 요청 완료. 달력을 확인해주세요!
+        <CheckIcon /> &nbsp; 예약 요청 완료. 달력을 확인해주세요!
     {/if}
 </Button>
