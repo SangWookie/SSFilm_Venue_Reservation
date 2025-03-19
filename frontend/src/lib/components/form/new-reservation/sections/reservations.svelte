@@ -4,6 +4,7 @@
     import type { HourString } from '$lib/interfaces/date';
     import { untrack } from 'svelte';
     import CollapsibleBlock from '$lib/components/ui/form/collapsible-block.svelte';
+    import LoadingBox from '$lib/components/ui/loading_box.svelte';
     import InputBox from '$lib/components/ui/form/input-box.svelte';
     import SelectableList from '$lib/components/ui/form/selectable-list.svelte';
     import ValidateMessage from '$lib/components/ui/form/validate-message.svelte';
@@ -152,6 +153,7 @@
 
     <InputBox title="일자 선택" description={form_data.reservations.date}>
         {#snippet custom()}
+            <LoadingBox enabled={calendar_status === 'loading'} />
             <div class="calendar-wrapper">
                 <Calendar
                     items={internal_states.reservations.rendered_calendar}
