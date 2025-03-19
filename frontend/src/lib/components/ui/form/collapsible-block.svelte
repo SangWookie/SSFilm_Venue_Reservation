@@ -12,7 +12,7 @@
         children?: Snippet;
     } = $props();
 
-    let contentThis: HTMLDivElement;
+    let offsetHeight = $state(0);
 </script>
 
 <div class="ui-form-collapsible-block" class:open={open}>
@@ -22,8 +22,8 @@
             <ChevronDownIcon />
         </button>
     </summary>
-    <div class="content-wrapper" style:--content-height={contentThis?.offsetHeight + 24 + 'px'}>
-        <div class="content" bind:this={contentThis}>
+    <div class="content-wrapper" style:--content-height={offsetHeight + 24 + 'px'}>
+        <div class="content" bind:offsetHeight={offsetHeight}>
             {@render children?.()}
         </div>
     </div>
