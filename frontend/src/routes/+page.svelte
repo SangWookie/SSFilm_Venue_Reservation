@@ -36,32 +36,48 @@
 -->
 <LoadingBox enabled={loading_status} size={32} />
 
-<div class="calendar-wrapper">
-    <Calendar {...calendar_props} />
+<div class="page">
+    <div class="calendar-wrapper">
+        <Calendar {...calendar_props} />
+    </div>
+    <!-- current it breaks some centering issue however will fixed afterwards.-->
+    <ul>
+        {#each reservations as reservation (reservation)}
+            <li id={`date-${reservation.date}`}>
+                <ul>
+                    <li>기간: {reservation.date}</li>
+                    <li>장소: {reservation.venue}</li>
+                    <li>예약:
+                        <ul>
+                            {#each reservation.reservations as r (r)}
+                                <li>
+                                    {r.time.map(i => `${i}시`).join(", ")}
+                                </li>
+                            {/each}
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        {/each}
+    </ul>
 </div>
-<ul>
-    {#each reservations as reservation (reservation)}
-        <li id={`date-${reservation.date}`}>
-            <ul>
-                <li>기간: {reservation.date}</li>
-                <li>장소: {reservation.venue}</li>
-                <li>예약:
-                    <ul>
-                        {#each reservation.reservations as r (r)}
-                            <li>
-                                {r.time.map(i => `${i}시`).join(", ")}
-                            </li>
-                        {/each}
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    {/each}
-</ul>
+
 
 <style lang="sass">
+div.page
+    display: flex
+    flex-direction: row
+    flex-wrap: wrap
+    justify-content: center
+    gap: 12px
+
     div.calendar-wrapper
         display: flex
         justify-content: center
+        flex-grow: 2
+        min-width: 350px
+    
+    ul
+        flex-grow: 1
 
 </style>
