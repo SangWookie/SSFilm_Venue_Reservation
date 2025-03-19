@@ -15,7 +15,7 @@ def lambda_handler(event, context):
             if method == "GET":
                 venueResult = r.get_venue_info()
                 result = {
-                    'date': '',
+                    'date': queryParams.get('date', ''),
                     'venues': venueResult
                 }
                 for v in result['venues']:
