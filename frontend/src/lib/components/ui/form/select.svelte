@@ -40,3 +40,12 @@
         </option>
     {/each}
 </select>
+
+<style lang="sass">
+select.ui-form-select
+    padding: 12px
+    border: 1px solid white
+    border-radius: 8px
+    font-size: 16px
+    background: white
+</style>

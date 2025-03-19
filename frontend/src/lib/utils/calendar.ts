@@ -19,10 +19,6 @@ Settings.defaultWeekSettings = {
  * @returns 달력 Array. 해당 주에 없는 데이트가 존재할 경우 undefined로 저장됨.
  */
 export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined)[][] => {
-    console.log(
-        'generateCalendar',
-        dates.map((date) => date.toISO())
-    );
     const temp_total: (undefined | T)[][] = []; // total week.
     let temp_week: (undefined | T)[] = []; // single week
     let previous_date: undefined | T = undefined;
@@ -50,7 +46,6 @@ export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined
             if (!date.hasSame(previous_date, 'week', { useLocaleWeeks: true })) {
                 // pushes previous week.
                 pushCurrentWeek();
-                console.log('pushCurrentWeek', date.weekdayShort);
                 // the generation work will be continued on below.
             }
         }
@@ -99,7 +94,6 @@ export const mergeReservationsIntoCalendar = (
     calendar: MinimalCalendarUIItem[],
     forEachCallBack?: (dateString: DateString, item: MinimalCalendarUIItem) => void
 ): MinimalCalendarUIItem[] => {
-    console.log('mergeReservationsIntoCalendar', reservations, calendar);
     const reservedDays = reservations.filter((r) => r.reservations.length > 0).map((r) => r.date);
     const unavilableDays = reservations
         .filter((r) => r.unavailable_periods.length > 0)
@@ -107,11 +101,11 @@ export const mergeReservationsIntoCalendar = (
     calendar.forEach((item) => {
         const dateString = intoDateString(item.date);
 
-        if (item.mark == null) item.mark = {};
-
-        item.mark.reserved = reservedDays.includes(dateString);
-        item.mark.unavailable = unavilableDays.includes(dateString);
-        if (item.mark.unavailable) console.log('unavailable', item.mark.unavailable);
+        item.mark = {
+            ...item.mark,
+            reserved: reservedDays.includes(dateString),
+            unavailable: unavilableDays.includes(dateString)
+        }
         
         forEachCallBack?.(dateString, item);
     });

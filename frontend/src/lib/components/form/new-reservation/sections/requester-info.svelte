@@ -1,7 +1,7 @@
 <script lang="ts">
-    import CollapsibleBlock from '../../../collapsible-block.svelte';
-    import InputBox from '../../../input-box.svelte';
-    import ValidateMessage from '../../../validate-message.svelte';
+    import CollapsibleBlock from '$lib/components/ui/form/collapsible-block.svelte';
+    import InputBox from '$lib/components/ui/form/input-box.svelte';
+    import ValidateMessage from '$lib/components/ui/form/validate-message.svelte';
     import type { FormData, InternalStates, Validations } from '../index.ts';
     const {
         form_data = $bindable(),

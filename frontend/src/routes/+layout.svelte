@@ -2,6 +2,7 @@
     import './../app.sass';
     import Navbar from '$lib/components/ui/navbar.svelte';
     import Announcement from '$lib/components/ui/announcement.svelte';
+    import { onNavigate } from '$app/navigation';
 
     let { children } = $props();
     const announcement_props = {
@@ -19,6 +20,17 @@
             };
         })
     };
+
+    onNavigate((navigation) => {
+        if (!document.startViewTransition) return;
+
+        return new Promise((resolve) => {
+            document.startViewTransition(async () => {
+                resolve();
+                await navigation.complete;
+            });
+        });
+    });
 </script>
 
 <Announcement {...announcement_props} hidden={true} />

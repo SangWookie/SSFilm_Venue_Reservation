@@ -13,7 +13,6 @@ export const getReservations = async (
     date?: DateString,
     venue?: string
 ): Promise<ReservationSingleResponse[]> => {
-    console.log("getReservations", date, venue)
     // 500ms delay
     await new Promise((resolve) => setTimeout(resolve, 500));
     const reservations = Object.groupBy(
@@ -50,6 +49,7 @@ export const requestNewReservation = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reservation: ReservationRequest
 ): Promise<RequestNewReservationResponse> => {
+    console.log('requestNewReservation', reservation);
     // 3000ms delay
     await new Promise((resolve) => setTimeout(resolve, 3000));
     return {

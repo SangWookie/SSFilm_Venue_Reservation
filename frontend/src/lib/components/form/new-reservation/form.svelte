@@ -15,11 +15,12 @@
     import RequesterInfoSection from './sections/requester-info.svelte';
     import ReservationsSection from './sections/reservations.svelte';
     import Button from '$lib/components/ui/button.svelte';
-    import { globalAppState } from '../../../../../../store.svelte';
+    import { globalAppState } from '$lib/store.svelte.ts';
     //import AgreementSection from './sections/agreement.svelte'
 
     import { getReservations } from '$lib/api/mock';
     import { requestNewReservationFromData } from '.';
+    import { CheckIcon } from '@lucide/svelte';
 
     let form_data: FormData = $state(init_form_data());
     let internal_states: InternalStates = $state(init_internal_states());
@@ -63,6 +64,10 @@
         if (submissionState !== 'available') return;
         submissionState = 'waiting';
 
+        internal_states.collapsed.requester_info = false;
+        internal_states.collapsed.reservations = false;
+        internal_states.collapsed.agreement = false;
+
         requestNewReservationFromData(form_data)
             .then((response) => {
                 if (response.success) submissionState = 'done';
@@ -73,7 +78,8 @@
             })
             .catch((e) => {
                 console.error('Failed to request form', e);
-                errorMessage = `서버와 통신 중 오류가 발생했습니다. ${e.message}`;
+                errorMessage = `서버와 통신 중 오류가 발생했습니다. 다시 요청이 가능합니다. ${e.message}`;
+                alert(errorMessage);
                 submissionState = 'available';
             });
     };
@@ -87,11 +93,6 @@
     {#if submissionState != 'done'}
         예약하기
     {:else}
-        예약 요청 완료. 달력을 확인해주세요!
+        <CheckIcon/> &nbsp; 예약 요청 완료. 달력을 확인해주세요!
     {/if}
 </Button>
-
-{JSON.stringify(form_data)}
-{JSON.stringify(internal_states)}
-{JSON.stringify(form_props)}
-{JSON.stringify(validations)}

@@ -63,6 +63,7 @@
 
 <style lang="sass">
 nav
+    view-transition-name: header
     display: flex
     position: sticky
     top: 0

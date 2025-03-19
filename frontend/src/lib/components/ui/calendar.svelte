@@ -46,8 +46,9 @@
             generated_calendars == null ||
             generated_calendars.length === 0 ||
             previous_data_items != props.items
-        )
+        ) {
             generated_calendars = generateCalendarFromProps(untrack(() => props.items));
+        }
     });
 
     const derivation = $derived.by(() => {
@@ -147,8 +148,11 @@
 
 <style lang="sass">
 div.calendar
+    view-transition-name: calendar
     display: flex
     flex-direction: column
+    max-width: 500px
+    flex-grow: 1
     div.header
         display: flex
         gap: 12px
@@ -213,6 +217,7 @@ div.calendar
                         justify-content: center
                         color: black
                         text-decoration: none
+                        cursor: pointer
                         div.indicator-dot
                             position: absolute
                             bottom: 8px
@@ -236,7 +241,7 @@ div.calendar.loading
 
 @keyframes pulse-loading
     0%, 100%
-        opacity: 0.4
+        opacity: 0.2
     50%
-        opacity: 0.7
+        opacity: 0.4
 </style>

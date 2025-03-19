@@ -11,23 +11,26 @@
         header?: Snippet;
         children?: Snippet;
     } = $props();
+
+    let contentThis: HTMLDivElement;
 </script>
 
-<details bind:open class="ui-form-collapsible-block">
+<div class="ui-form-collapsible-block" class:open={open}>
     <summary>
         {@render header?.()}
-        <div class="control">
+        <button class="control" onclick={() => open = !open}>
             <ChevronDownIcon />
-        </div>
+        </button>
     </summary>
-
-    <div class="content">
-        {@render children?.()}
+    <div class="content-wrapper" style:--content-height={contentThis?.offsetHeight + 24 + 'px'}>
+        <div class="content" bind:this={contentThis}>
+            {@render children?.()}
+        </div>
     </div>
-</details>
+</div>
 
 <style lang="sass">
-details
+.ui-form-collapsible-block
     display: flex
     flex-direction: column
     background: var(--color-slate-100)
@@ -39,17 +42,29 @@ details
         align-items: center
         justify-content: space-between
         .control
+            background: none
+            border: none
             transition: transform 0.2s
             display: flex
 
-    &:open
+    &.open
         summary
             .control
                 transform: rotate(180deg)
+        .content-wrapper
+            height: var(--content-height)
+    &:not(.open)
+        .content-wrapper
+            opacity: 0
+            overflow: hidden
 
     div.content
         display: flex
         flex-direction: column
         gap: 16px
         padding-top: 24px
+    div.content-wrapper
+        transition: all 0.3s
+        height: 0px
+        overflow: hidden
 </style>

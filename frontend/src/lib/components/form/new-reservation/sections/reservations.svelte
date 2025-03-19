@@ -3,10 +3,11 @@
     import type { ReservationSingleResponse, Venue } from '$lib/interfaces/api';
     import type { HourString } from '$lib/interfaces/date';
     import { untrack } from 'svelte';
-    import CollapsibleBlock from '../../../collapsible-block.svelte';
-    import InputBox from '../../../input-box.svelte';
-    import SelectableList from '../../../selectable-list.svelte';
-    import ValidateMessage from '../../../validate-message.svelte';
+    import CollapsibleBlock from '$lib/components/ui/form/collapsible-block.svelte';
+    import InputBox from '$lib/components/ui/form/input-box.svelte';
+    import SelectableList from '$lib/components/ui/form/selectable-list.svelte';
+    import ValidateMessage from '$lib/components/ui/form/validate-message.svelte';
+    import Select from '$lib/components/ui/form/select.svelte';
     import { intoDateString } from '$lib/utils/date.ts';
     import {
         type FormData,
@@ -14,7 +15,6 @@
         type InternalStates,
         type Validations
     } from '../index.ts';
-    import Select from '../../../select.svelte';
     import { mergeReservationsIntoCalendar } from '$lib/utils/calendar.ts';
     import { type SelectableItem } from '$lib/interfaces/ui.ts';
     const {
@@ -98,10 +98,14 @@
     });
 
     $effect(() => {
-        mergeReservationsIntoCalendar(
-            internal_states.reservations.current_reservations_data,
-            internal_states.reservations.rendered_calendar
-        );
+        untrack(() => {
+            internal_states.reservations.rendered_calendar = mergeReservationsIntoCalendar(
+                internal_states.reservations.current_reservations_data,
+                internal_states.reservations.rendered_calendar
+            );
+        })
+
+        internal_states.reservations.current_reservations_data;
     });
 
     const calendar_status: 'available' | 'loading' | 'disabled' = $derived.by(() => {
@@ -131,7 +135,7 @@
                 {#snippet labelSnippet(item: SelectableItem<unknown>)}
                     {item.label}
                     
-                    {#if item.value?.approval_mode == 'manual'}
+                    {#if (item as SelectableItem<Venue>).value?.approval_mode == 'manual'}
                         (수동)
                     {/if}
                 {/snippet}
@@ -148,15 +152,17 @@
 
     <InputBox title="일자 선택" description={form_data.reservations.date}>
         {#snippet custom()}
-            <Calendar
-                items={internal_states.reservations.rendered_calendar}
-                selected={internal_states.reservations.calendar_selected}
-                status={calendar_status}
-                onDateClick={(date) => {
-                    if (date && calendar_status == 'available')
-                        internal_states.reservations.calendar_selected = [date];
-                }}
-            />
+            <div class="calendar-wrapper">
+                <Calendar
+                    items={internal_states.reservations.rendered_calendar}
+                    selected={internal_states.reservations.calendar_selected}
+                    status={calendar_status}
+                    onDateClick={(date) => {
+                        if (date && calendar_status == 'available')
+                            internal_states.reservations.calendar_selected = [date];
+                    }}
+                />
+            </div>
         {/snippet}
         <ValidateMessage
             isValid={validations.reservations.date.not_deadline}
@@ -221,8 +227,14 @@
     </InputBox>
 
     <InputBox
-        title="동행인 (선택)"
+        title="동행인 (선택사항)"
         placeholder="동행인이 있다면 작성해주세요."
         bind:value={form_data.reservations.companions}
     />
 </CollapsibleBlock>
+
+<style lang="sass">
+.calendar-wrapper
+    display: flex
+    justify-content: center
+</style>
