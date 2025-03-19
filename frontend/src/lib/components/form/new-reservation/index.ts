@@ -16,7 +16,7 @@ export interface FormData {
     requester_info: {
         name: string;
         school_id: string;
-        date_of_birth: DateString | '';
+        email: DateString | '';
     };
     reservations: {
         venue: string;
@@ -36,7 +36,7 @@ export const init_form_data = (): FormData => {
         requester_info: {
             name: '',
             school_id: '',
-            date_of_birth: ''
+            email: ''
         },
         reservations: {
             venue: '',
@@ -56,7 +56,7 @@ export interface Validations {
     requester_info: {
         name: boolean;
         school_id: boolean;
-        date_of_birth: boolean;
+        email: boolean;
     };
     reservations: {
         venue: boolean;
@@ -164,9 +164,15 @@ export const validate = (form_data: FormData, internal_states: InternalStates): 
 
         const name = data.name.length > 0 && data.name.length < 30;
         const school_id = !isNaN(parseInt(data.school_id));
-        const date_of_birth = data.date_of_birth.length > 0;
+        // validate email
+        let email = data.email.length > 0 && data.email.includes('@');
+        
+        if (email) {
+            const split = data.email.split('@');
+            email = split.length === 2 && split[1].includes('.');
+        }
 
-        return { name, school_id, date_of_birth };
+        return { name, school_id, email };
     })();
 
     const reservations = (() => {
@@ -237,7 +243,7 @@ export const requestNewReservationFromData = async (
         name: data.requester_info.name,
         //email: data.requester_info.email,
         studentID: data.requester_info.school_id,
-        birthday: data.requester_info.date_of_birth as string,
+        email: data.requester_info.email as string,
 
         date: data.reservations.date as DateString,
         venue: data.reservations.venue,

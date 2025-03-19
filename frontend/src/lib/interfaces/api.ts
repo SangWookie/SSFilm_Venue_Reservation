@@ -30,7 +30,7 @@ export interface ReservationRequest {
     //email: string;
     /// 학번
     studentID: string;
-    birthday: string;
+    email: string;
 
     /// 목적 1차 카테고리
     category: string;
