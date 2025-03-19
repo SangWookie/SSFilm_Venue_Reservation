@@ -84,13 +84,14 @@ export interface Validations {
 }
 
 export const isAllValidated = (validations: Validations): boolean => {
-    return Object.values(validations).every((i) => {
-        if (typeof i === 'object') {
-            return Object.values(i).every((j) => j);
-        }
-        return i;
-    });
+    console.log(validations)
+    return is_valid(validations);
 };
+
+const is_valid = (obj: object): boolean => Object.values(obj).every(i => {
+    if (typeof i === 'object') return is_valid(i);
+    return i;
+})
 
 /// props from form component.
 export interface FormProps {
