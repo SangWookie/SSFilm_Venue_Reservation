@@ -42,11 +42,7 @@
 
     let validation_state = $state(false);
     $effect(() => {
-        const interval = setInterval(() => {
-            validation_state = isAllValidated(validations);
-        }, 500);
-
-        return () => clearInterval(interval);
+        validation_state = isAllValidated(validations);
     });
     $effect(() => {
         if (validation_state && submissionState === 'unavailable') submissionState = 'available';
