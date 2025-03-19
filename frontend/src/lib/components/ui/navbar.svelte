@@ -69,7 +69,6 @@ nav
     position: sticky
     top: 0
     background: rgba(255, 255, 255, .8)
-    backdrop-filter: blur(12px)
     z-index: 99999
 
     ul.navbar-list
@@ -130,7 +129,6 @@ div.navbar-list-small-opened
     width: 100%
     min-height: 100%
     background: rgba(255, 255, 255, .9)
-    backdrop-filter: blur(12px)
     padding: 16px 24px
 
     display: none
@@ -142,15 +140,10 @@ div.navbar-list-small-opened
 
     button
         display: flex
-        background: var(--color-slate-50)
+        background: transparent
         border: none
         border-radius: 999px
         padding: 20px 24px
-        &:hover
-            background: var(--color-slate-100)
-        &:active
-            background: var(--color-slate-200)
-
     ul
         display: flex
         flex-direction: column
