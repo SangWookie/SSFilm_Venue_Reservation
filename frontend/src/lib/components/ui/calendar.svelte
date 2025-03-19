@@ -87,13 +87,14 @@
         class:past={data?.mark?.past}
         class:today={data?.mark?.today}
         class:selected={data && props.selected?.includes(data)}
+        class:blank={!number}
     >
+        {#if number}
         <a href={data?.href} onclick={(e) => props?.onDateClick?.(data, e)}>
-            {#if number}
                 {zeroPad(number)}
-            {/if}
-            <div class="indicator-dot"></div>
-        </a>
+                <div class="indicator-dot"></div>
+            </a>
+        {/if}
     </td>
 {/snippet}
 
@@ -153,6 +154,11 @@ div.calendar
     flex-direction: column
     max-width: 500px
     flex-grow: 1
+    &.disabled
+        opacity: .4
+        cursor: not-allowed
+        a
+            cursor: not-allowed !important
     div.header
         display: flex
         gap: 12px
@@ -230,6 +236,12 @@ div.calendar
                     &.sun
                         a
                             color: var(--color-bg)
+                    
+                    &.blank
+                        a
+                            display: none
+                        &:hover, &:active, &:focus
+                            background: none
 
                     &:hover
                         background: rgba(0, 0, 0, 0.1)
