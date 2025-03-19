@@ -67,6 +67,6 @@ def get_venue_info():
         venues.append({
             "venue": item.get("venue", ""),
             "venueKor": item.get("venueKor", ""),
-            "approval_mode": item.get("approval_mode", ""),
+            "approval_mode": item.get("allowPolicy", ""),
         })
     return venues
