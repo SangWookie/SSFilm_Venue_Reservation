@@ -24,20 +24,49 @@ def current_reservation_query(queryParams, current_reservation=None):
     
     items = result.get('Items', [])
     
-    response = {
-        "date": date,
-        "venue": venue,
-        "reservations": [],
-    }
+    response = []
     
     for item in items:
         converted_time = [int(x) for x in item.get("time", [])]
         
-        response["reservations"].append({
+        response.append({
             "name": item.get("name", ""),
             "time": converted_time,
-            "purpose": item.get("purpose", ""),
             "category": item.get("category", ""),
+            "purpose": item.get("purpose", ""),
         })
     
     return response
+
+def check_reservation(queryParams):
+    if("reservationId" not in queryParams):
+        raise ValueError("The 'reservationId' attribute is required in queryParams")
+    
+    reservation_id = queryParams['reservationId']
+    current_reservation = dynamodb.Table('current_reservation')
+    result = current_reservation.query(
+        KeyConditionExpression= "reservationId = :reservationId",
+        ExpressionAttributeValues= {":reservationId": reservation_id}
+    )
+    
+    Items = result.get('Items', [])
+    
+    if len(Items) == 0:
+        return None
+    else:
+        return Items[0]
+    
+
+venue_info = dynamodb.Table('venue_info')
+
+def get_venue_info():
+    venueResult = venue_info.scan()
+    items = venueResult.get('Items', [])
+    venues = []
+    for item in items:
+        venues.append({
+            "venue": item.get("venue", ""),
+            "venueKor": item.get("venueKor", ""),
+            "approval_mode": item.get("approval_mode", ""),
+        })
+    return venues

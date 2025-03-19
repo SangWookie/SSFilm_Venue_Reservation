@@ -81,7 +81,6 @@ def test_basic_query(dynamodb_setup):
     }
     response = current_reservation_query(requestParams, current_reservation=dynamodb_setup.Table('current_reservation'))
     
-    assert response['date'] == '2025-03-01'
-    assert response['venue'] == 'studio'
-    assert response['reservations'][0]['time'] == [10, 11, 12]
-    assert len(response['reservations']) == 2
+    assert response[0]['name'] == 'name1'
+    assert response[0]['time'] == [10, 11, 12]
+    assert len(response) == 2
