@@ -42,6 +42,7 @@
 
 <nav>
     <ul class="navbar-list">
+        <li class="title">예약시스템</li>
         {@render renderItems()}
     </ul>
     <ul class="navbar-list-small">
@@ -73,6 +74,11 @@ nav
 
     ul.navbar-list
         padding: 16px 24px
+        li.title
+            list-style-type: none
+            font-size: 28px
+            font-weight: 500
+            padding-right: 32px
         li.navbar-item
             // remove dot
             list-style-type: none
@@ -178,6 +184,7 @@ div.navbar-list-small-opened
     nav
         ul.navbar-list
             display: flex
+            align-items: center
         ul.navbar-list-small
             display: none
     div.navbar-list-small-opened

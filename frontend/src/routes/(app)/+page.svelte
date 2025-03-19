@@ -41,7 +41,7 @@
         <Calendar {...calendar_props} />
     </div>
     <!-- current it breaks some centering issue however will fixed afterwards.-->
-    <ul>
+    <ul class="reservations">
         {#each reservations as reservation (reservation)}
             <li id={`date-${reservation.date}`}>
                 <ul>
@@ -70,14 +70,18 @@ div.page
     flex-wrap: wrap
     justify-content: center
     gap: 12px
+    height: 100%
 
     div.calendar-wrapper
         display: flex
+        flex-direction: column
         justify-content: center
         flex-grow: 2
         min-width: 350px
     
-    ul
+    ul.reservations
+        overflow-y: scroll
+        height: 100%
         flex-grow: 1
 
 </style>
