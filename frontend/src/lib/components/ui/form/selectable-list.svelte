@@ -81,10 +81,12 @@ div.ui-form-selectable-list
                 background-color: var(--color-main-600)
 
         &.disabled
-            background-color: var(--color-slate-600)
-            color: var(--color-slate-50)
+            background: none !important
+            color: var(--color-slate-600)
             text-decoration: line-through
-            &:hover, &:active
-                background-color: var(--color-slate-50)
+            opacity: .4
+            cursor: not-allowed
+            &:hover, &:active, &:focus
+                background: none !important
 
 </style>
