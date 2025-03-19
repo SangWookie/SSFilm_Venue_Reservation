@@ -176,7 +176,7 @@
         />
     </InputBox>
 
-    <InputBox title="시간 선택" description={form_data.reservations.hours.join(", ")}>
+    <InputBox title="시간 선택" description={form_data.reservations.hours.map(i => `${i}시`).join(", ")}>
         {#snippet custom()}
             <SelectableList
                 bind:list={internal_states.reservations.selectable_hour}
