@@ -54,11 +54,7 @@ export interface RequestNewReservationResponse {
 }
 
 export interface AppState {
-    announcement?: string;
-
     venues: Venue[];
-    api_url: string;
-
     purposes: string[];
 }
 

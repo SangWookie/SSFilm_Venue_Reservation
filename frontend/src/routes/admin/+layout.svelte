@@ -1,7 +1,6 @@
 <script lang="ts">
     import './../../app.sass';
     import Navbar from '$lib/components/ui/navbar.svelte';
-    import Announcement from '$lib/components/ui/announcement.svelte';
     import { onNavigate } from '$app/navigation';
     import { globalAppState } from '$lib/store.svelte';
 
@@ -30,15 +29,8 @@
             });
         });
     });
-    let announcement = $state('');
-    globalAppState.subscribe((state) => {
-        if (state && state.announcement) {
-            announcement = state.announcement;
-        }
-    });
 </script>
 
-<Announcement text={announcement} />
 <Navbar {...navbar_props} />
 
 <div>
