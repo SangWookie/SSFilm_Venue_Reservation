@@ -61,6 +61,7 @@ export type ReservationRequestDraft = Partial<ReservationRequest>;
 
 export interface Venue {
     venue: string;
+    venueKor: string;
     requirement?: string;
     approval_mode: 'auto' | 'manual';
 }

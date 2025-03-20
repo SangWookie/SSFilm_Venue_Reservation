@@ -1,44 +1,39 @@
 <script lang="ts">
-    import type { SelectableItem } from '$lib/interfaces/ui';
+    import type { SelectableItem, createSelectableList } from './selectable-list.svelte.ts';
     import type { Snippet } from 'svelte';
 
-    const defaultClickHandler = (item: SelectableItem<unknown>) => {
+    const defaultClickHandler = (item: SelectableItem<T>) => {
         if (disabled || item.disabled) return;
         if (isRadio) {
-            if (selected.length > 0) selected = [];
-            selected = [item];
+            data.selected = [item];
         } else {
-            if (selected.includes(item)) {
-                selected = selected.filter((i) => i !== item);
-            } else {
-                selected = list.filter((i) => selected?.includes(i) || i == item);
-            }
+            data.toggle(item);
         }
     };
 
+    type T = $$Generic
+
     let {
-        list = $bindable([]),
-        selected = $bindable([]),
+        data = $bindable(),
         disabled = $bindable(false),
         isRadio = $bindable(false),
         clickHandler = defaultClickHandler,
         labelSnippet
     }: {
-        list: SelectableItem<unknown>[];
-        selected?: SelectableItem<unknown>[];
+        data: ReturnType<typeof createSelectableList<T>>;
         disabled?: boolean;
         isRadio?: boolean;
-        clickHandler?: (item: SelectableItem<unknown>) => void;
-        labelSnippet?: Snippet<[item: SelectableItem<unknown>]>;
+        clickHandler?: (item: SelectableItem<T>) => void;
+        labelSnippet?: Snippet<[item: SelectableItem<T>]>;
     } = $props();
 </script>
 
 <div class="ui-form-selectable-list" class:disabled>
-    {#each list as item (item.label)}
+    {#each data.list as item (item.key)}
         <button
             class="item"
             class:disabled={item.disabled}
-            class:toggle={selected?.includes(item)}
+            class:selected={data.isSelected(item)}
             onclick={() => clickHandler(item)}
         >
             {#if labelSnippet}
@@ -74,7 +69,7 @@ div.ui-form-selectable-list
         &:active
             background-color: var(--color-main-200)
 
-        &.toggle
+        &.selected
             background-color: var(--color-main-500)
             color: white
             &:hover

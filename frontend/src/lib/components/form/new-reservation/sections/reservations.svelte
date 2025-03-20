@@ -11,13 +11,16 @@
     import Select from '$lib/components/ui/form/select.svelte';
     import { intoDateString } from '$lib/utils/date.ts';
     import {
-        type FormData,
+    type FormData,
         type FormProps,
         type InternalStates,
         type Validations
     } from '../index.ts';
     import { mergeReservationsIntoCalendar } from '$lib/utils/calendar.ts';
     import { type SelectableItem } from '$lib/interfaces/ui.ts';
+    import { createSelectableList } from '$lib/components/ui/form/selectable-list.svelte.ts';
+    import { getUnavilableHours } from '$lib/utils/api.ts';
+    import { createReservationSectionForm } from '../state.svelte.ts';
     const {
         form_data = $bindable(),
         validations = $bindable(),
@@ -30,94 +33,10 @@
         internal_states: InternalStates;
     } = $props();
 
-    $effect(() => {
-        form_data.reservations.venue =
-            internal_states.reservations.selectable_venue_selected.at(0)?.value.venue || '';
-
-        const selected_date = internal_states.reservations.calendar_selected.at(0)?.date;
-
-        if (selected_date) form_data.reservations.date = intoDateString(selected_date);
-
-        form_data.reservations.hours = internal_states.reservations.selectable_hour_selected.map(
-            (i) => i.value
-        );
-    });
-
-    const unavailableHours = $derived(
-        internal_states.reservations.current_reservations_data
-            .filter((r) => r.date == form_data.reservations.date)
-            .flatMap((r2) =>
-                r2.reservations
-                    .flatMap((i) => i.time)
-                    .concat(r2.unavailable_periods.flatMap((i) => i.time))
-            )
-    );
-
-    // when unavailablehours, current_reservations_data, gets updated, update the selectable_hour state.
-    $effect(() => {
-        untrack(() => {
-            internal_states.reservations.selectable_hour.forEach((i) => {
-                i.disabled = unavailableHours.includes(i.value as HourString);
-            });
-        });
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        unavailableHours;
-    });
-
+    let data = createReservationSectionForm(form_data, validations, form_props, internal_states);
     $effect(() => {
         form_data.reservations.purpose =
             internal_states.reservations.selected_category?.value || '';
-    });
-
-    const cache: { [key: string]: ReservationSingleResponse[] | 'loading' } = {};
-    // loading new reservation logic.
-    $effect(() => {
-        if (!form_data.reservations.venue) return;
-        const venue = form_data.reservations.venue;
-        if (cache[venue] === 'loading') return;
-        if (cache[venue]) {
-            internal_states.reservations.current_reservations_data = cache[venue];
-            internal_states.reservations.selectable_hour_selected = [];
-            return;
-        }
-        cache[venue] = 'loading';
-        internal_states.reservations.current_reservations_data = [];
-        console.log('loading reservations for ', venue);
-        form_props
-            .getReservations(undefined, venue)
-            .then((reservations) => {
-                console.log('loaded reservation', reservations);
-                internal_states.reservations.current_reservations_data = reservations;
-                cache[venue] = reservations;
-            })
-            .catch((e) => {
-                delete cache[venue];
-                console.error(e);
-                throw e;
-            });
-    });
-
-    $effect(() => {
-        untrack(() => {
-            internal_states.reservations.rendered_calendar = mergeReservationsIntoCalendar(
-                internal_states.reservations.current_reservations_data,
-                internal_states.reservations.rendered_calendar
-            );
-        });
-
-        internal_states.reservations.current_reservations_data;
-    });
-
-    const calendar_status: 'available' | 'loading' | 'disabled' = $derived.by(() => {
-        if (!form_data.reservations.venue || form_data.reservations.venue.length === 0)
-            return 'disabled';
-        if (
-            internal_states.reservations.current_reservations_data.length === 0 &&
-            cache[form_data.reservations.venue] === 'loading'
-        )
-            return 'loading';
-        return 'available';
     });
 </script>
 
@@ -129,23 +48,22 @@
     <InputBox title="장소 선택" description={form_data.reservations.venue}>
         {#snippet custom()}
             <SelectableList
-                bind:list={internal_states.reservations.selectable_venue}
-                bind:selected={internal_states.reservations.selectable_venue_selected}
+                data={data.venue_selectable}
                 isRadio={true}
             >
-                {#snippet labelSnippet(item: SelectableItem<unknown>)}
+                {#snippet labelSnippet(item: SelectableItem<Venue>)}
                     {item.label}
 
-                    {#if (item as SelectableItem<Venue>).value?.approval_mode == 'manual'}
+                    {#if item.value?.approval_mode == 'manual'}
                         (수동)
                     {/if}
                 {/snippet}
             </SelectableList>
 
-            {#if form_data.reservations.venue}
+            {console.log(data.selected_venue?.value)}
+            {#if data.selected_venue?.value.requirement}
                 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-                {@html internal_states.reservations.selectable_venue_selected.at(0)?.value
-                    ?.requirement}
+                {@html data.selected_venue?.value.requirement}
             {/if}
         {/snippet}
         <ValidateMessage isValid={validations.reservations.venue} message="장소를 선택해 주세요." />
@@ -153,15 +71,13 @@
 
     <InputBox title="일자 선택" description={form_data.reservations.date}>
         {#snippet custom()}
-            <LoadingBox enabled={calendar_status === 'loading'} />
             <div class="calendar-wrapper">
                 <Calendar
-                    items={internal_states.reservations.rendered_calendar}
-                    selected={internal_states.reservations.calendar_selected}
-                    status={calendar_status}
+                    items={data.calendar}
+                    selected={data.calendar_selected.value}
+                    status='available'
                     onDateClick={(date) => {
-                        if (date && calendar_status == 'available')
-                            internal_states.reservations.calendar_selected = [date];
+                        if (date) data.calendar_selected.value = ([date]);
                     }}
                 />
             </div>
@@ -182,8 +98,7 @@
     >
         {#snippet custom()}
             <SelectableList
-                bind:list={internal_states.reservations.selectable_hour}
-                bind:selected={internal_states.reservations.selectable_hour_selected}
+                data={data.hour_selectable}
                 disabled={form_data.reservations.date.length === 0}
             />
         {/snippet}
@@ -211,7 +126,7 @@
                         label: i
                     };
                 })}
-                bind:value={internal_states.reservations.selected_category}
+                bind:value={data.selected_category.value}
             />
             <ValidateMessage
                 isValid={validations.reservations.purpose}

@@ -27,7 +27,6 @@
         <ValidateMessage
             isValid={validations.requester_info.name}
             message="이름을 작성해 주세요."
-            email
         />
     </InputBox>
 
@@ -41,6 +40,7 @@
     <InputBox
         title="이메일"
         bind:value={form_data.requester_info.email}
+        placeholder="이메일 주소"
         description="예약 완료 시 이메일로 알려드립니다."
     >
         <ValidateMessage
