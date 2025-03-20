@@ -53,8 +53,7 @@ export const requestNewReservation = async (
     // 3000ms delay
     await new Promise((resolve) => setTimeout(resolve, 3000));
     return {
-        success: true,
-        message: '예약 요청이 완료되었습니다.'
+        reservationId: 'reservationId'
     };
 };
 

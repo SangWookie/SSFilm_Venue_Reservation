@@ -1,5 +1,23 @@
 import type { DateString, HourString } from './date';
 
+export interface ReservationItem {
+    date: DateString;
+    venues: {
+        venue: string;
+        venueKor: string;
+        allowPolicy: 'auto' | 'manual';
+        reservations: {
+            time: HourString[];
+            name: string;
+            purpose: string;
+        }[];
+        unavailable_periods: {
+            time: HourString[];
+            message?: string;
+        }[];
+    }[]
+}
+
 export interface ReservationItemCompact {
     date: DateString;
     reservations: {
@@ -27,10 +45,9 @@ export interface ReservationRequest {
     time: HourString[];
 
     name: string;
-    //email: string;
+    email: string;
     /// 학번
     studentID: string;
-    email: string;
 
     /// 목적 1차 카테고리
     category: string;
@@ -49,8 +66,7 @@ export interface Venue {
 }
 
 export interface RequestNewReservationResponse {
-    success: boolean;
-    message: string;
+    reservationId: string;
 }
 
 export interface AppState {

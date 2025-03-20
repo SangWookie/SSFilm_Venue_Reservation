@@ -66,11 +66,7 @@
 
         requestNewReservationFromData(form_data)
             .then((response) => {
-                if (response.success) submissionState = 'done';
-                else {
-                    submissionState = 'available';
-                    errorMessage = response.message;
-                }
+                submissionState = 'done'
             })
             .catch((e) => {
                 console.error('Failed to request form', e);
