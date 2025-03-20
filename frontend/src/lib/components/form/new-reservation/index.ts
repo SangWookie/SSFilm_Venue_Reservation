@@ -12,7 +12,7 @@ import { getCalendarPlaceholder, getTwoWeekRange } from '$lib/utils/calendar';
 import { fromDateString, intoDateString } from '$lib/utils/date';
 import { zeroPad } from '$lib/utils/helper';
 import { DateTime } from 'luxon';
-import { createSelectableList, type SelectableItem } from '$lib/components/ui/form/selectable-list.svelte.ts';
+import { type SelectableItem } from '$lib/components/ui/form/selectable-list.svelte.ts';
 import { globalAppState } from '$lib/store.svelte';
 import { getUnavilableHours } from '$lib/utils/api';
 import { untrack } from 'svelte';

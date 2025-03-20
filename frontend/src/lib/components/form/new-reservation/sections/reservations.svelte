@@ -18,7 +18,6 @@
     } from '../index.ts';
     import { mergeReservationsIntoCalendar } from '$lib/utils/calendar.ts';
     import { type SelectableItem } from '$lib/interfaces/ui.ts';
-    import { createSelectableList } from '$lib/components/ui/form/selectable-list.svelte.ts';
     import { getUnavilableHours } from '$lib/utils/api.ts';
     import { ReservationSectionFormState } from '../state.svelte.ts';
     const {

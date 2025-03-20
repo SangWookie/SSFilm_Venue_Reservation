@@ -5,43 +5,35 @@ export interface SelectableItem<T> {
     disabled?: boolean;
 }
 
-export function createSelectableList<T>() {
-    let list: SelectableItem<T>[] = $state([]);
-    let selected: SelectableItem<T>[] = $state([]);
-    let isRadio = $state(false);
+export class SelectableListState<T> {
+    list: SelectableItem<T>[] = $state([])
+    selected: SelectableItem<T>[] = $state([])
 
-    const select = (item?: SelectableItem<T>) => {
-        if (!item) return;
-        selected = list.filter((i) => selected.includes(i) || i === item);
+    constructor(list?: SelectableItem<T>[]) {
+        if (list) this.list = list
     }
 
-    const unselect = (item?: SelectableItem<T>) => {
-        if (!item) return;
-        selected = selected.filter((i) => i !== item);
+    select(item: SelectableItem<T>) {
+        this.selected = this.list.filter(i => i == item || this.selected.includes(i))
     }
 
-    const toggle = (item?: SelectableItem<T>) => {
-        if (!item) return;
-        if (selected.includes(item)) {
-            unselect(item);
+    unselect(item: SelectableItem<T>) {
+        this.selected = this.selected.filter(i => i != item)
+    }
+
+    toggle(item: SelectableItem<T>) {
+        if (this.isSelected(item)) {
+            this.unselect(item)
         } else {
-            select(item);
+            this.select(item);
         }
     }
 
-    const getItemWithKey = (key: string) => list.find((i) => i.key === key);
+    getItemWithKey(key: string) {
+        return this.list.find(i => i.key === key);
+    }
 
-    return {
-        get list() { return list },
-        set list(value: SelectableItem<T>[]) { list = value },
-        get selected() { return selected },
-        set selected(value: SelectableItem<T>[]) { selected = value },
-        
-        select, unselect, toggle,
-
-        selectWithKey(key: string) { select(getItemWithKey(key)) },
-        unselectWithKey(key: string) { unselect(getItemWithKey(key)) },
-        toggleWithKey(key: string) { toggle(getItemWithKey(key)) },
-        isSelected(item: SelectableItem<T>) { return selected.includes(item) },
+    isSelected(item: SelectableItem<T>) {
+        return this.selected.includes(item)
     }
 }

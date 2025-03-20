@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { SelectableItem, createSelectableList } from './selectable-list.svelte.ts';
+    import type { SelectableItem, SelectableListState } from './selectable-list.svelte.ts';
     import type { Snippet } from 'svelte';
 
     const defaultClickHandler = (item: SelectableItem<T>) => {
@@ -20,7 +20,7 @@
         clickHandler = defaultClickHandler,
         labelSnippet
     }: {
-        data: ReturnType<typeof createSelectableList<T>>;
+        data: SelectableListState<T>;
         disabled?: boolean;
         isRadio?: boolean;
         clickHandler?: (item: SelectableItem<T>) => void;

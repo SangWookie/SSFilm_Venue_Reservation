@@ -1,4 +1,4 @@
-import { createSelectableList } from "$lib/components/ui/form/selectable-list.svelte.ts";
+import { SelectableListState } from "$lib/components/ui/form/selectable-list.svelte.ts";
 import type { ReservationItem, Venue } from "$lib/interfaces/api";
 import type { MinimalCalendarUIItemWithHref } from "$lib/interfaces/calendar";
 import type { HourString } from "$lib/interfaces/date";
@@ -16,6 +16,7 @@ const wrapped = <T>(value: T): Wrapped<T> => {
         value
     }
 }
+/*
 export const createReservationSectionForm = (
     form_data: FormData,
     validations: Validations,
@@ -101,6 +102,7 @@ export const createReservationSectionForm = (
         hour_selectable_disabled_state
     }
 }
+*/
 
 export class ReservationSectionFormState {
     reservation: ReservationItem | undefined = $state(undefined);
@@ -108,8 +110,8 @@ export class ReservationSectionFormState {
     venues: Venue[] = $state([]);
     purposes: string[] = $state([]);
 
-    venue_selectable = createSelectableList<Venue>();
-    hour_selectable = createSelectableList<HourString>();
+    venue_selectable = new SelectableListState<Venue>();
+    hour_selectable = new SelectableListState<HourString>();
 
     calendar = $state(getCalendarPlaceholder());
     calendar_selected: MinimalCalendarUIItemWithHref[] = $state([]);
