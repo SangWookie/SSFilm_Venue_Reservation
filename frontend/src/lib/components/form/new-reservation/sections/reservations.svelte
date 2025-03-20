@@ -20,7 +20,7 @@
     import { type SelectableItem } from '$lib/interfaces/ui.ts';
     import { createSelectableList } from '$lib/components/ui/form/selectable-list.svelte.ts';
     import { getUnavilableHours } from '$lib/utils/api.ts';
-    import { createReservationSectionForm } from '../state.svelte.ts';
+    import { ReservationSectionFormState } from '../state.svelte.ts';
     const {
         form_data = $bindable(),
         validations = $bindable(),
@@ -33,7 +33,7 @@
         internal_states: InternalStates;
     } = $props();
 
-    let data = createReservationSectionForm(form_data, validations, form_props, internal_states);
+    let data = new ReservationSectionFormState(form_data);
     $effect(() => {
         form_data.reservations.purpose =
             internal_states.reservations.selected_category?.value || '';
@@ -60,10 +60,10 @@
                 {/snippet}
             </SelectableList>
 
-            {console.log(data.selected_venue?.value)}
-            {#if data.selected_venue?.value.requirement}
+            {console.log(data.venue_selectable.selected)}
+            {#if data.current_venue?.value?.requirement}
                 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-                {@html data.selected_venue?.value.requirement}
+                {@html data.current_venue?.value?.requirement}
             {/if}
         {/snippet}
         <ValidateMessage isValid={validations.reservations.venue} message="장소를 선택해 주세요." />
@@ -74,10 +74,10 @@
             <div class="calendar-wrapper">
                 <Calendar
                     items={data.calendar}
-                    selected={data.calendar_selected.value}
+                    selected={data.calendar_selected}
                     status='available'
                     onDateClick={(date) => {
-                        if (date) data.calendar_selected.value = ([date]);
+                        if (date) data.calendar_selected = ([date]);
                     }}
                 />
             </div>
@@ -126,7 +126,7 @@
                         label: i
                     };
                 })}
-                bind:value={data.selected_category.value}
+                bind:value={data.category_selected}
             />
             <ValidateMessage
                 isValid={validations.reservations.purpose}
