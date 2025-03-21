@@ -73,6 +73,7 @@ export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined
 export const generateCalendarFromProps = <T extends DateTime, WrappedT extends { date: T }>(
     data: WrappedT[]
 ): (WrappedT | undefined)[][] => {
+    if (data.length == 0) return [];
     const generated = generateCalendar(data.map((i) => i.date));
 
     return generated.map((week) =>
@@ -84,7 +85,7 @@ export const generateCalendarFromProps = <T extends DateTime, WrappedT extends {
 };
 
 export const getTwoWeekRange = () =>
-    Interval.fromDateTimes(DateTime.local().minus({ days: 7 }), DateTime.local().plus({ days: 14 }))
+    Interval.after(DateTime.local().minus({ days: 7 }), { days: 7 + 14 })
         .splitBy({ day: 1 })
         .map((i) => i.start)
         .filter((i) => i != null);

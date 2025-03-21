@@ -11,7 +11,7 @@
     import Select from '$lib/components/ui/form/select.svelte';
     import { intoDateString } from '$lib/utils/date.ts';
     import {
-    type FormData,
+        type FormData,
         type FormProps,
         type InternalStates,
         type Validations
@@ -46,10 +46,7 @@
 
     <InputBox title="장소 선택" description={form_data.reservations.venue}>
         {#snippet custom()}
-            <SelectableList
-                data={data.venue_selectable}
-                isRadio={true}
-            >
+            <SelectableList data={data.venue_selectable} isRadio={true}>
                 {#snippet labelSnippet(item: SelectableItem<Venue>)}
                     {item.label}
 
@@ -74,16 +71,16 @@
                 <Calendar
                     items={data.calendar}
                     selected={data.calendar_selected}
-                    status='available'
+                    status="available"
                     onDateClick={(date) => {
-                        if (date) data.calendar_selected = ([date]);
+                        if (date) data.calendar_selected = [date];
                     }}
                 />
             </div>
         {/snippet}
         <ValidateMessage
             isValid={validations.reservations.date.not_deadline}
-            message="데드라인 (TODO 추가; 전날 12시까지)에 맞춰야 합니다."
+            message="데드라인 (TODO 추가; 전날 18시까지)에 맞춰야 합니다."
         />
         <ValidateMessage
             isValid={validations.reservations.date.not_past}

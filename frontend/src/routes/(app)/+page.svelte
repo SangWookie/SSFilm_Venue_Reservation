@@ -6,31 +6,22 @@
     import type { ReservationSingleResponse } from '$lib/interfaces/api';
     import type { MinimalCalendarUIItemWithHref } from '$lib/interfaces/calendar';
     import LoadingBox from '$lib/components/ui/loading_box.svelte';
+    import { onMount, untrack } from 'svelte';
     //import { getReservations } from '$lib/api/nonstate.mock';
 
     const calendar_props = $state({
-        items: getCalendarPlaceholder(),
-        status: 'loading' as 'available' | 'loading' | 'disabled',
+        items: [] as MinimalCalendarUIItemWithHref[],
+        status: 'available' as 'available' | 'loading' | 'disabled',
         onPositionChangeRequest: undefined
     });
 
     let loading_status = $state(false);
     let reservations: ReservationSingleResponse[] = $state([]);
 
-    $effect(() => {
-        loading_status = true;
-        getReservations().then((res) => {
-            reservations = res;
-            calendar_props.items = mergeReservationsIntoCalendar(
-                reservations,
-                calendar_props.items,
-                (date, item) => {
-                    (item as MinimalCalendarUIItemWithHref).href = `#date-${date}`;
-                }
-            );
-            calendar_props.status = 'available';
-            loading_status = false;
-        });
+    onMount(() => {
+        // Performance issue
+        // https://github.com/moment/luxon/issues/1130
+        calendar_props.items = getCalendarPlaceholder();
     });
 </script>
 
@@ -81,7 +72,7 @@ div.page
         justify-content: center
         flex-grow: 2
         min-width: 350px
-    
+
     ul.reservations
         overflow-y: scroll
         height: 100%

@@ -30,7 +30,7 @@
 
     const props: Props = $props();
 
-    let previous_data_items = props.items;
+    let previous_data_items: MinimalCalendarUIItemWithHref[] = [];
     let generated_calendars: (MinimalCalendarUIItemWithHref | undefined)[][] = $state([]);
 
     const generateDateText = (datetime?: DateTime) =>
@@ -44,9 +44,9 @@
         // If generated calendars are not exist, or data is new, create it.
         if (
             generated_calendars == null ||
-            generated_calendars.length === 0 ||
             previous_data_items != props.items
         ) {
+            previous_data_items = props.items;
             generated_calendars = generateCalendarFromProps(untrack(() => props.items));
         }
     });
