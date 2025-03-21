@@ -11,7 +11,7 @@
         }
     };
 
-    type T = $$Generic
+    type T = $$Generic;
 
     let {
         data = $bindable(),

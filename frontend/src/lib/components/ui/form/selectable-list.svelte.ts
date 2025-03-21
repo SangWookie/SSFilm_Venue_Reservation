@@ -6,34 +6,34 @@ export interface SelectableItem<T> {
 }
 
 export class SelectableListState<T> {
-    list: SelectableItem<T>[] = $state([])
-    selected: SelectableItem<T>[] = $state([])
+    list: SelectableItem<T>[] = $state([]);
+    selected: SelectableItem<T>[] = $state([]);
 
     constructor(list?: SelectableItem<T>[]) {
-        if (list) this.list = list
+        if (list) this.list = list;
     }
 
     select(item: SelectableItem<T>) {
-        this.selected = this.list.filter(i => i == item || this.selected.includes(i))
+        this.selected = this.list.filter((i) => i == item || this.selected.includes(i));
     }
 
     unselect(item: SelectableItem<T>) {
-        this.selected = this.selected.filter(i => i != item)
+        this.selected = this.selected.filter((i) => i != item);
     }
 
     toggle(item: SelectableItem<T>) {
         if (this.isSelected(item)) {
-            this.unselect(item)
+            this.unselect(item);
         } else {
             this.select(item);
         }
     }
 
     getItemWithKey(key: string) {
-        return this.list.find(i => i.key === key);
+        return this.list.find((i) => i.key === key);
     }
 
     isSelected(item: SelectableItem<T>) {
-        return this.selected.includes(item)
+        return this.selected.includes(item);
     }
 }

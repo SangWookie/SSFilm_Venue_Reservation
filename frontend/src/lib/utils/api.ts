@@ -21,7 +21,7 @@ export const getUnavilableHours = (reservation: ReservationItem, venue: Venue): 
     const data = reservation.venues.find((v) => v.venue === venue.venue);
     if (!data) return [];
     return [
-        ...data.reservations.flatMap(r => r.time),
-        ...data.unavailable_periods.flatMap(r => r.time)
+        ...data.reservations.flatMap((r) => r.time),
+        ...data.unavailable_periods.flatMap((r) => r.time)
     ];
-}
+};

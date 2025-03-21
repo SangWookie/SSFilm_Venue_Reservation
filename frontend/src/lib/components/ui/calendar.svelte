@@ -42,10 +42,7 @@
 
     $effect(() => {
         // If generated calendars are not exist, or data is new, create it.
-        if (
-            generated_calendars == null ||
-            previous_data_items != props.items
-        ) {
+        if (generated_calendars == null || previous_data_items != props.items) {
             previous_data_items = props.items;
             generated_calendars = generateCalendarFromProps(untrack(() => props.items));
         }

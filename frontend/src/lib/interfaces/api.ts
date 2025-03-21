@@ -15,7 +15,7 @@ export interface ReservationItem {
             time: HourString[];
             message?: string;
         }[];
-    }[]
+    }[];
 }
 
 export interface ReservationItemCompact {
