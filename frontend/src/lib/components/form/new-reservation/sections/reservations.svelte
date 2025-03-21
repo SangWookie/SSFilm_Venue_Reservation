@@ -1,45 +1,29 @@
 <script lang="ts">
     import Calendar from '$lib/components/ui/calendar.svelte';
-    import type { ReservationSingleResponse, Venue } from '$lib/interfaces/api';
-    import type { HourString } from '$lib/interfaces/date';
-    import { untrack } from 'svelte';
+    import type { Venue } from '$lib/interfaces/api';
     import CollapsibleBlock from '$lib/components/ui/form/collapsible-block.svelte';
     import LoadingBox from '$lib/components/ui/loading_box.svelte';
     import InputBox from '$lib/components/ui/form/input-box.svelte';
     import SelectableList from '$lib/components/ui/form/selectable-list.svelte';
     import ValidateMessage from '$lib/components/ui/form/validate-message.svelte';
     import Select from '$lib/components/ui/form/select.svelte';
-    import { intoDateString } from '$lib/utils/date.ts';
-    import {
-        type FormData,
-        type FormProps,
-        type InternalStates,
-        type Validations
-    } from '../index.ts';
-    import { mergeReservationsIntoCalendar } from '$lib/utils/calendar.ts';
-    import { type SelectableItem } from '$lib/interfaces/ui.ts';
-    import { getUnavilableHours } from '$lib/utils/api.ts';
+    import { type FormData, type Validations } from '../index.ts';
+    import { type SelectableItem } from '$lib/components/ui/form/selectable-list.svelte.ts';
     import { ReservationSectionFormState } from '../state.svelte.ts';
     const {
         form_data = $bindable(),
         validations = $bindable(),
-        form_props = $bindable(),
-        internal_states = $bindable()
+        collapsible_open = $bindable(true)
     }: {
         form_data: FormData;
         validations: Validations;
-        form_props: FormProps;
-        internal_states: InternalStates;
+        collapsible_open: boolean;
     } = $props();
 
     let data = new ReservationSectionFormState(form_data);
-    $effect(() => {
-        form_data.reservations.purpose =
-            internal_states.reservations.selected_category?.value || '';
-    });
 </script>
 
-<CollapsibleBlock open={internal_states.collapsed.reservations}>
+<CollapsibleBlock open={collapsible_open}>
     {#snippet header()}
         예약 선택
     {/snippet}
@@ -88,6 +72,7 @@
         />
     </InputBox>
 
+    <LoadingBox enabled={data.loading_reservation} />
     <InputBox
         title="시간 선택"
         description={form_data.reservations.hours.map((i) => `${i}시`).join(', ')}
@@ -106,16 +91,18 @@
             isValid={validations.reservations.hours.less_than_6hours}
             message="6시간 초과 예약이 불가능합니다."
         />
+        <!--
         <ValidateMessage
             isValid={validations.reservations.is_free}
             message="비어있는 시간만 예약이 가능합니다."
         />
+        --->
     </InputBox>
 
     <InputBox title="예약 목적" inputType="select" description={form_data.reservations.purpose}>
         {#snippet custom()}
             <Select
-                options={form_props.purposes.map((i) => {
+                options={data.purposes.map((i) => {
                     return {
                         value: i,
                         key: i,

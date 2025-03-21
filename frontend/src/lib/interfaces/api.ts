@@ -1,6 +1,7 @@
 import type { DateString, HourString } from './date';
 
-export interface ReservationItem {
+/// The return data for `GET /reservation`. only intended for filtering dates.
+export interface ReservationList {
     date: DateString;
     venues: {
         venue: string;
@@ -18,27 +19,7 @@ export interface ReservationItem {
     }[];
 }
 
-export interface ReservationItemCompact {
-    date: DateString;
-    reservations: {
-        time: HourString[];
-        //name: string;
-        purpose?: string;
-    }[];
-    unavailable_periods: {
-        time: HourString[];
-        message?: string;
-    }[];
-}
-
-/// 한 방의 예약 정보를 나타내는 인터페이스.
-/// FIXME: 여러개 필요.
-export interface ReservationSingleResponse extends ReservationItemCompact {
-    venue: string;
-    approval_mode: 'auto' | 'manual';
-}
-
-export interface ReservationRequest {
+export interface RequestNewReservationData {
     date: DateString;
     /// 장소
     venue: string;
@@ -57,7 +38,7 @@ export interface ReservationRequest {
     companions?: string;
 }
 
-export type ReservationRequestDraft = Partial<ReservationRequest>;
+export type RequestNewReservationDataDraft = Partial<RequestNewReservationData>;
 
 export interface Venue {
     venue: string;
@@ -67,6 +48,7 @@ export interface Venue {
 }
 
 export interface RequestNewReservationResponse {
+    // 요청은 되었지만 확정인지는 모름
     reservationId: string;
 }
 

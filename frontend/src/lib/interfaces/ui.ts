@@ -6,14 +6,6 @@ export interface NavbarItem {
     checkEnabled: (url: string) => boolean;
 }
 
-export interface SelectableItem<T> {
-    value: T;
-    label: string;
-    // toggle: boolean;
-    // use selected props on selectable-list instead.
-    disabled?: boolean;
-}
-
 export interface FormSelectItem<T> {
     value: T;
 

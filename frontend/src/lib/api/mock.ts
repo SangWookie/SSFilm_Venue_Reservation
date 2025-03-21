@@ -1,67 +1,42 @@
-import type { DateString, HourString } from '$lib/interfaces/date';
 import type {
-    AppState,
+    ReservationList,
+    RequestNewReservationData,
     RequestNewReservationResponse,
-    ReservationRequest,
-    ReservationSingleResponse,
-    Venue
+    AppState
 } from '$lib/interfaces/api';
+import type { DateString } from '$lib/interfaces/date';
+import * as MockConst from '$lib/mock.const.ts';
 
-import Data from '../../mock_data.json';
-
-export const getReservations = async (
-    date?: DateString,
-    venue?: string
-): Promise<ReservationSingleResponse[]> => {
-    // 500ms delay
+export async function getReservationByDate(date: DateString): Promise<ReservationList> {
+    console.log('mock: getReservationByDate', date);
     await new Promise((resolve) => setTimeout(resolve, 500));
-    const reservations = Object.groupBy(
-        Data.reservations.filter((i) => {
-            if (date && i.date !== date) return false;
-            if (venue && i.venue !== venue) return false;
-            return true;
-        }),
-        ({ date, venue }) => `${date}-${venue}`
-    );
-    return (
-        Object.entries(reservations)
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            .map(([_key, items]) => {
-                if (items === undefined || items.length === 0) return;
-                return {
-                    date: items.at(0)!.date as unknown as DateString,
-                    reservations: items.map((i) => {
-                        return {
-                            time: i.time as unknown as HourString[]
-                        };
-                    }),
-                    unavailable_periods: [],
-                    venue: items.at(0)!.venue,
-                    approval_mode: 'auto'
-                } as ReservationSingleResponse;
-            })
-            .filter((i) => i !== undefined)
-    );
-};
+    return {
+        date,
+        venues: []
+    };
+}
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const requestNewReservation = async (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    reservation: ReservationRequest
-): Promise<RequestNewReservationResponse> => {
-    console.log('requestNewReservation', reservation);
-    // 3000ms delay
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+export async function postNewReservation(
+    body: RequestNewReservationData
+): Promise<RequestNewReservationResponse> {
+    console.log('mock: postNewReservation', body);
+    await new Promise((resolve) => setTimeout(resolve, 500));
     return {
         reservationId: 'reservationId'
     };
-};
+}
 
-export const getAppState = async (): Promise<AppState> => {
-    // 500ms delay
+/// Returns by 200 or 404.
+export async function getReservationStatus(reservationId: string): Promise<boolean> {
+    console.log('mock: getReservationStatus', reservationId);
+    return true;
+}
+
+export async function getAppState(): Promise<AppState> {
+    console.log('mock: getAppState');
     await new Promise((resolve) => setTimeout(resolve, 500));
     return {
-        venues: Data.venue as Venue[],
-        purposes: ['목적 A', '목적 B', '목적 C', '기타']
+        venues: MockConst.venues,
+        purposes: MockConst.purposes
     };
-};
+}

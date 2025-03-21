@@ -1,9 +1,4 @@
 import type { DateTime } from 'luxon';
-import type { DateString } from './date';
-export interface CalendarItem<T> {
-    date: DateString;
-    data: T;
-}
 
 export interface MinimalCalendarUIItemMark {
     reserved?: boolean;

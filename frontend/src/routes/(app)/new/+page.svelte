@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CalendarClock, X } from '@lucide/svelte';
+    import { CalendarClock } from '@lucide/svelte';
     import NewReservationForm from '$lib/components/form/new-reservation/form.svelte';
 </script>
 

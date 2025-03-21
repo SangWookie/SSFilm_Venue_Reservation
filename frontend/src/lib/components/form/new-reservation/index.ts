@@ -1,21 +1,9 @@
-import { requestNewReservation } from '$lib/api/mock';
-import type {
-    RequestNewReservationResponse,
-    ReservationItem,
-    ReservationSingleResponse,
-    Venue
-} from '$lib/interfaces/api';
-import type { MinimalCalendarUIItemWithHref } from '$lib/interfaces/calendar';
+import type { RequestNewReservationResponse } from '$lib/interfaces/api';
 import type { DateString, HourString } from '$lib/interfaces/date';
-import type { FormSelectItem } from '$lib/interfaces/ui';
-import { getCalendarPlaceholder, getTwoWeekRange } from '$lib/utils/calendar';
-import { fromDateString, intoDateString } from '$lib/utils/date';
+import { fromDateString } from '$lib/utils/date';
 import { zeroPad } from '$lib/utils/helper';
-import { DateTime } from 'luxon';
 import { type SelectableItem } from '$lib/components/ui/form/selectable-list.svelte.ts';
-import { globalAppState } from '$lib/store.svelte';
-import { getUnavilableHours } from '$lib/utils/api';
-import { untrack } from 'svelte';
+import { postNewReservation } from '$lib/api/mock';
 
 export interface FormData {
     requester_info: {
@@ -78,9 +66,6 @@ export interface Validations {
 
         purpose: boolean;
         purpose_detail: boolean;
-
-        // 해당 예약은 비어있는가?
-        is_free: boolean;
     };
     agreement: {
         // 유의사항에 동의하였는가?
@@ -99,72 +84,8 @@ const is_valid = (obj: object): boolean =>
         return i;
     });
 
-/// props from form component.
-export interface FormProps {
-    /// Default calendar for usage.
-    calendar: MinimalCalendarUIItemWithHref[];
-    purposes: string[];
-    getReservations: (date?: DateString, venue?: string) => Promise<ReservationSingleResponse[]>;
-    // submitForm: (data: FormData) => Promise<FormSubmissionResult>;
-}
-
-export interface InternalStates {
-    reservations: {
-        selectable_venue: SelectableItem<Venue>[];
-        selectable_venue_selected: SelectableItem<Venue>[];
-
-        selectable_hour: SelectableItem<HourString>[];
-        selectable_hour_selected: SelectableItem<HourString>[];
-
-        // The reservations data from venue for entire month.
-        // FIXME: maybe a single day?
-        current_reservations_data?: ReservationItem;
-        rendered_calendar: MinimalCalendarUIItemWithHref[];
-        calendar_selected: MinimalCalendarUIItemWithHref[];
-
-        selected_category?: FormSelectItem<string>;
-    };
-    collapsed: {
-        requester_info: boolean;
-        reservations: boolean;
-        agreement: boolean;
-    };
-}
-
-export const init_internal_states = (): InternalStates => {
-    return {
-        reservations: {
-            selectable_venue: [],
-            selectable_venue_selected: [],
-            selectable_hour: generateSelectableHours(),
-            selectable_hour_selected: [],
-            current_reservations_data: undefined,
-            rendered_calendar: getCalendarPlaceholder(),
-            calendar_selected: [],
-
-            selected_category: undefined
-        },
-        collapsed: {
-            requester_info: true,
-            reservations: true,
-            agreement: true
-        }
-    };
-};
-
-export const feedVenueData = (venues: Venue[], internal_states: InternalStates) => {
-    internal_states.reservations.selectable_venue = venues.map((venue) => {
-        return {
-            value: venue,
-            key: venue.venue,
-            label: venue.venue,
-            disabled: false
-        };
-    });
-};
-
 /// Validates the form data, mustve not use heavy tasks.
-export const validate = (form_data: FormData, internal_states: InternalStates): Validations => {
+export const validate = (form_data: FormData): Validations => {
     const requester_info = (() => {
         const data = form_data.requester_info;
 
@@ -208,15 +129,7 @@ export const validate = (form_data: FormData, internal_states: InternalStates): 
         const purpose = form_data.reservations.purpose.length > 0;
         const purpose_detail = form_data.reservations.purpose_detail.length > 0;
 
-        const is_free = (() => {
-            const hour_check = internal_states.reservations.selectable_hour
-                .filter((i) => i.disabled)
-                .every((i) => !form_data.reservations.hours.includes(i.value));
-
-            return hour_check;
-        })();
-
-        return { venue, date, hours, purpose, purpose_detail, is_free };
+        return { venue, date, hours, purpose, purpose_detail };
     })();
 
     const agreement = (() => {
@@ -245,7 +158,7 @@ export const generateSelectableHours = (): SelectableItem<HourString>[] =>
 export const requestNewReservationFromData = async (
     data: FormData
 ): Promise<RequestNewReservationResponse> =>
-    requestNewReservation({
+    postNewReservation({
         name: data.requester_info.name,
         studentID: data.requester_info.school_id,
         email: data.requester_info.email,

@@ -1,12 +1,10 @@
 <script lang="ts">
     import Calendar from '$lib/components/ui/calendar.svelte';
-    import NavbarEmbed from '$lib/components/ui/navbar-embed.svelte';
-    import { getCalendarPlaceholder, mergeReservationsIntoCalendar } from '$lib/utils/calendar';
-    import { getReservations } from '$lib/api/mock';
-    import type { ReservationSingleResponse } from '$lib/interfaces/api';
+    import { getCalendarPlaceholder } from '$lib/utils/calendar';
+    import type { ReservationList } from '$lib/interfaces/api';
     import type { MinimalCalendarUIItemWithHref } from '$lib/interfaces/calendar';
     import LoadingBox from '$lib/components/ui/loading_box.svelte';
-    import { onMount, untrack } from 'svelte';
+    import { onMount } from 'svelte';
     //import { getReservations } from '$lib/api/nonstate.mock';
 
     const calendar_props = $state({
@@ -16,12 +14,12 @@
     });
 
     let loading_status = $state(false);
-    let reservations: ReservationSingleResponse[] = $state([]);
+    let reservations: ReservationList[] = $state([]);
 
     onMount(() => {
         // Performance issue
         // https://github.com/moment/luxon/issues/1130
-        calendar_props.items = getCalendarPlaceholder();
+        (async () => (calendar_props.items = getCalendarPlaceholder()))();
     });
 </script>
 
@@ -40,17 +38,6 @@
             <li id={`date-${reservation.date}`}>
                 <ul>
                     <li>기간: {reservation.date}</li>
-                    <li>장소: {reservation.venue}</li>
-                    <li>
-                        예약:
-                        <ul>
-                            {#each reservation.reservations as r (r)}
-                                <li>
-                                    {r.time.map((i) => `${i}시`).join(', ')}
-                                </li>
-                            {/each}
-                        </ul>
-                    </li>
                 </ul>
             </li>
         {/each}

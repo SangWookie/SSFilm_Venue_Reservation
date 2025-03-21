@@ -2,7 +2,6 @@
     import './../../app.sass';
     import Navbar from '$lib/components/ui/navbar.svelte';
     import { onNavigate } from '$app/navigation';
-    import { globalAppState } from '$lib/store.svelte';
 
     let { children } = $props();
     const navbar_props = {

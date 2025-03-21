@@ -1,41 +1,15 @@
 <script lang="ts">
-    import { untrack } from 'svelte';
-    import {
-        feedVenueData,
-        type FormData,
-        type FormProps,
-        init_form_data,
-        init_internal_states,
-        type InternalStates,
-        isAllValidated,
-        validate,
-        type Validations
-    } from '.';
+    import { type FormData, init_form_data, isAllValidated, validate, type Validations } from '.';
 
     import RequesterInfoSection from './sections/requester-info.svelte';
     import ReservationsSection from './sections/reservations.svelte';
-    import Button from '$lib/components/ui/button.svelte';
-    import { globalAppState } from '$lib/store.svelte.ts';
-    //import AgreementSection from './sections/agreement.svelte'
+    import Button from '$lib/components/ui/button.svelte'; //import AgreementSection from './sections/agreement.svelte'
 
-    import { getReservations } from '$lib/api/mock';
     import { requestNewReservationFromData } from '.';
     import { CheckIcon } from '@lucide/svelte';
 
     let form_data: FormData = $state(init_form_data());
-    let internal_states: InternalStates = $state(init_internal_states());
-    let form_props: FormProps = $state({
-        calendar: [],
-        purposes: [],
-        getReservations
-    });
-    let validations: Validations = $derived(validate(form_data, internal_states));
-
-    globalAppState.subscribe((app) => {
-        if (!app) return;
-        if (app.venues) feedVenueData(app.venues, internal_states);
-        if (app.purposes) form_props.purposes = app.purposes;
-    });
+    let validations: Validations = $derived(validate(form_data));
 
     let submissionState: 'unavailable' | 'available' | 'waiting' | 'done' = $state('unavailable');
     let errorMessage: string | undefined = $state(undefined);
@@ -60,11 +34,11 @@
         if (submissionState !== 'available') return;
         submissionState = 'waiting';
 
-        internal_states.collapsed.requester_info = false;
-        internal_states.collapsed.reservations = false;
-        internal_states.collapsed.agreement = false;
+        requester_info_collapsible_open = false;
+        reservations_collapsible_open = false;
 
         requestNewReservationFromData(form_data)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .then((response) => {
                 submissionState = 'done';
             })
@@ -75,10 +49,22 @@
                 submissionState = 'available';
             });
     };
+
+    let requester_info_collapsible_open = $state(true);
+    let reservations_collapsible_open = $state(true);
+    //let agreement_collapsible_open = $state(true);
 </script>
 
-<RequesterInfoSection bind:form_data {validations} bind:internal_states />
-<ReservationsSection bind:form_data {validations} bind:internal_states bind:form_props />
+<RequesterInfoSection
+    bind:form_data
+    {validations}
+    bind:collapsible_open={requester_info_collapsible_open}
+/>
+<ReservationsSection
+    bind:form_data
+    {validations}
+    bind:collapsible_open={reservations_collapsible_open}
+/>
 
 {errorMessage ?? ''}
 <Button state={button_state} onClick={button_click_handler}>

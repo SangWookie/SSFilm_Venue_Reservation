@@ -1,11 +1,5 @@
-import type { ReservationSingleResponse } from '$lib/interfaces/api';
-import type {
-    MinimalCalendarUIItem,
-    MinimalCalendarUIItemWithHref
-} from '$lib/interfaces/calendar';
+import type { MinimalCalendarUIItemWithHref } from '$lib/interfaces/calendar';
 import { DateTime, Interval, Settings } from 'luxon';
-import { intoDateString } from './date';
-import type { DateString } from '$lib/interfaces/date';
 
 Settings.defaultZone = 'Asia/Seoul';
 Settings.defaultWeekSettings = {
@@ -89,38 +83,6 @@ export const getTwoWeekRange = () =>
         .splitBy({ day: 1 })
         .map((i) => i.start)
         .filter((i) => i != null);
-
-export const mergeReservationsIntoCalendar = (
-    reservations: ReservationSingleResponse[],
-    calendar: MinimalCalendarUIItem[],
-    forEachCallBack?: (dateString: DateString, item: MinimalCalendarUIItem) => void
-): MinimalCalendarUIItem[] => {
-    const reservedDays = reservations.filter((r) => r.reservations.length > 0).map((r) => r.date);
-    const unavilableDays = reservations
-        .filter((r) => r.unavailable_periods.length > 0)
-        .map((r) => r.date);
-    calendar.forEach((item) => {
-        const dateString = intoDateString(item.date);
-
-        item.mark = {
-            ...item.mark,
-            reserved: reservedDays.includes(dateString),
-            unavailable: unavilableDays.includes(dateString)
-        };
-
-        forEachCallBack?.(dateString, item);
-    });
-    console.log(
-        'reservedDays',
-        reservedDays,
-        'unavilableDays',
-        unavilableDays,
-        'calendar',
-        calendar
-    );
-
-    return calendar;
-};
 
 export const getCalendarPlaceholder = (): MinimalCalendarUIItemWithHref[] =>
     getTwoWeekRange().map((date) => {

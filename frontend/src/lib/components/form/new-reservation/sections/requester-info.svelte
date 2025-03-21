@@ -2,19 +2,19 @@
     import CollapsibleBlock from '$lib/components/ui/form/collapsible-block.svelte';
     import InputBox from '$lib/components/ui/form/input-box.svelte';
     import ValidateMessage from '$lib/components/ui/form/validate-message.svelte';
-    import type { FormData, InternalStates, Validations } from '../index.ts';
+    import type { FormData, Validations } from '../index.ts';
     const {
         form_data = $bindable(),
         validations = $bindable(),
-        internal_states = $bindable()
+        collapsible_open = $bindable(true)
     }: {
         form_data: FormData;
         validations: Validations;
-        internal_states: InternalStates;
+        collapsible_open: boolean;
     } = $props();
 </script>
 
-<CollapsibleBlock open={internal_states.collapsed.requester_info}>
+<CollapsibleBlock open={collapsible_open}>
     {#snippet header()}
         신청자 정보
     {/snippet}
