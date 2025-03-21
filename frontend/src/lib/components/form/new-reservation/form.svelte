@@ -3,7 +3,8 @@
 
     import RequesterInfoSection from './sections/requester-info.svelte';
     import ReservationsSection from './sections/reservations.svelte';
-    import Button from '$lib/components/ui/button.svelte'; //import AgreementSection from './sections/agreement.svelte'
+    import Button from '$lib/components/ui/button.svelte'; 
+    import AgreementSection from './sections/agreement.svelte'
 
     import { requestNewReservationFromData } from '.';
     import { CheckIcon } from '@lucide/svelte';
@@ -36,6 +37,7 @@
 
         requester_info_collapsible_open = false;
         reservations_collapsible_open = false;
+        agreement_collapsible_open = false;
 
         requestNewReservationFromData(form_data)
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -52,7 +54,7 @@
 
     let requester_info_collapsible_open = $state(true);
     let reservations_collapsible_open = $state(true);
-    //let agreement_collapsible_open = $state(true);
+    let agreement_collapsible_open = $state(true);
 </script>
 
 <RequesterInfoSection
@@ -64,6 +66,12 @@
     bind:form_data
     {validations}
     bind:collapsible_open={reservations_collapsible_open}
+/>
+
+<AgreementSection
+    bind:form_data
+    {validations}
+    bind:collapsible_open={agreement_collapsible_open}
 />
 
 {errorMessage ?? ''}

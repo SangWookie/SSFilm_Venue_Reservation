@@ -74,7 +74,6 @@ export interface Validations {
 }
 
 export const isAllValidated = (validations: Validations): boolean => {
-    console.log(validations);
     return is_valid(validations);
 };
 

@@ -56,7 +56,6 @@
     &:not(.open)
         .content-wrapper
             opacity: 0
-            overflow: hidden
 
     div.content
         display: flex
@@ -67,4 +66,5 @@
         transition: all 0.3s
         height: 0px
         overflow: hidden
+        padding: 2px
 </style>

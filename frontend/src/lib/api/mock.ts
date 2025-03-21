@@ -20,7 +20,7 @@ export async function postNewReservation(
     body: RequestNewReservationData
 ): Promise<RequestNewReservationResponse> {
     console.log('mock: postNewReservation', body);
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     return {
         reservationId: 'reservationId'
     };

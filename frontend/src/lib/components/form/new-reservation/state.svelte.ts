@@ -1,14 +1,18 @@
-import { SelectableListState } from '$lib/components/ui/form/selectable-list.svelte.ts';
+import {
+    SelectableListState,
+    type SelectableItem
+} from '$lib/components/ui/form/selectable-list.svelte.ts';
 import type { ReservationList, Venue } from '$lib/interfaces/api';
 import type { MinimalCalendarUIItemWithHref } from '$lib/interfaces/calendar';
 import type { HourString } from '$lib/interfaces/date';
 import { globalAppState } from '$lib/store.svelte';
-import { getCalendarPlaceholder } from '$lib/utils/calendar';
+import { getCalendarPlaceholderCustom, getNextTwoWeeks } from '$lib/utils/calendar';
 import { intoDateString } from '$lib/utils/date';
 import type { FormData } from '.';
 import { untrack } from 'svelte';
 import { generateSelectableHours } from '.';
 import type { FormSelectItem } from '$lib/interfaces/ui';
+import { getReservationByDate } from '$lib/api/mock';
 
 export class ReservationSectionFormState {
     reservation: ReservationList | undefined = $state(undefined);
@@ -19,7 +23,7 @@ export class ReservationSectionFormState {
     venue_selectable = new SelectableListState<Venue>();
     hour_selectable = new SelectableListState<HourString>();
 
-    calendar = $state(getCalendarPlaceholder());
+    calendar = $state(getCalendarPlaceholderCustom(getNextTwoWeeks()));
     calendar_selected: MinimalCalendarUIItemWithHref[] = $state([]);
 
     category_selected: FormSelectItem<string> | undefined = $state(undefined);
@@ -48,6 +52,7 @@ export class ReservationSectionFormState {
         this.effectFeedVenueList();
         this.effectWriteUnableHoursToSelectable();
         this.effectWriteFormData();
+        this.effectResetHourSelectedWhenVenueChanged();
     }
 
     effectFeedVenueList() {
@@ -56,7 +61,7 @@ export class ReservationSectionFormState {
                 return {
                     value: venue,
                     key: venue.venue,
-                    label: venue.venue,
+                    label: venue.venueKor,
                     disabled: false
                 };
             });
@@ -67,8 +72,11 @@ export class ReservationSectionFormState {
         $effect(() => {
             this.hour_selectable.list = untrack(() =>
                 this.hour_selectable.list.map((i) => {
+                    const disabled = this.unavailableHours.includes(i.value);
+                    // Unselect the hour selectable data.
+                    if (disabled) this.hour_selectable.unselect(i);
                     return {
-                        disabled: this.unavailableHours.includes(i.value),
+                        disabled,
                         ...i
                     };
                 })
@@ -91,4 +99,73 @@ export class ReservationSectionFormState {
             }
         });
     }
+    
+    effectResetHourSelectedWhenVenueChanged() {
+        $effect(() => {
+            // Let's just clear the selected date just for now.
+            this.hour_selectable.selected = [];
+            
+            // tried current_reservation, but the data might be same
+            // thus just use current_venue for now.
+            this.current_date;
+            this.current_venue;
+        })
+    }
+
+    fetchReservation() {
+        if (this.loading_reservation || !this.current_date) return;
+
+        this.loading_reservation = true;
+        getReservationByDate(intoDateString(this.current_date.date)).then((reservation) => {
+            // Clear hour selectable
+            this.hour_selectable.selected = [];
+            this.#form_data.reservations.hours = [];
+
+            this.reservation = reservation;
+            this.loading_reservation = false;
+        });
+    }
+
+    hourSelectableClickCallback = (item: SelectableItem<HourString>) => {
+        // Prevent click event if date is not selected.
+        if (this.#form_data.reservations.date.length === 0) return;
+        // Prevent click event if item is disabled.
+        if (item.disabled) return;
+        
+        if (this.loading_reservation) return;
+
+        const is_selected = this.hour_selectable.isSelected(item);
+        const selected_len = this.hour_selectable.selected.length;
+
+        // 만약 선택된 아이템이 1개라면, 그 아이템을 따라오는 아이템들을 선택한다.
+        if (!is_selected && selected_len == 1) {
+            const this_index = this.hour_selectable.list.findIndex((i) => i == item);
+            const target_index = this.hour_selectable.list.findIndex(
+                (i) => i == this.hour_selectable.selected.at(0)!
+            );
+
+            if (this_index == -1 || target_index == -1) {
+                throw `hourSelectableClickCallback failed; ${this_index} vs ${target_index}`;
+            }
+
+            const selected: SelectableItem<HourString>[] = [];
+            const plusminus = this_index < target_index ? -1 : 1;
+            for (let i = target_index; i != this_index + plusminus; i += plusminus) {
+                const item = this.hour_selectable.list[i];
+                // 중간에 disabled 되어 있다면 중단한다.
+                // 6시간 초과여도 중단한다.
+                if (item.disabled || selected.length >= 6) {
+                    break;
+                }
+                selected.push(item);
+            }
+
+            this.hour_selectable.selected = this.hour_selectable.list.filter((i) =>
+                selected.includes(i)
+            );
+            return;
+        }
+
+        this.hour_selectable.selected = [item];
+    };
 }

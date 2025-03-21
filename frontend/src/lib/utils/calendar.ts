@@ -78,14 +78,20 @@ export const generateCalendarFromProps = <T extends DateTime, WrappedT extends {
     );
 };
 
-export const getTwoWeekRange = () =>
-    Interval.after(DateTime.local().minus({ days: 7 }), { days: 7 + 14 })
+export const getWeeksRangeWithPast = () =>
+    Interval.after(DateTime.local().set({hour:23, minute:59}).minus({ days: 7 }), { days: 7 + 14 })
         .splitBy({ day: 1 })
         .map((i) => i.start)
         .filter((i) => i != null);
 
-export const getCalendarPlaceholder = (): MinimalCalendarUIItemWithHref[] =>
-    getTwoWeekRange().map((date) => {
+export const getNextTwoWeeks = () => 
+    Interval.after(DateTime.local().set({hour:23, minute:59}), {days: 14})
+        .splitBy({ day: 1 })
+        .map((i) => i.start)
+        .filter((i) => i != null);
+
+export const getCalendarPlaceholderCustom = (custom: DateTime[]): MinimalCalendarUIItemWithHref[] =>
+    custom.map((date) => {
         return {
             date,
             mark: {
@@ -94,3 +100,6 @@ export const getCalendarPlaceholder = (): MinimalCalendarUIItemWithHref[] =>
             }
         };
     });
+
+export const getCalendarPlaceholder = (): MinimalCalendarUIItemWithHref[] =>
+    getCalendarPlaceholderCustom(getWeeksRangeWithPast());

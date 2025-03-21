@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { SelectableItem, SelectableListState } from './selectable-list.svelte.ts';
     import type { Snippet } from 'svelte';
+    import { Check } from '@lucide/svelte';
 
     const defaultClickHandler = (item: SelectableItem<T>) => {
         if (disabled || item.disabled) return;
@@ -36,9 +37,12 @@
             class:selected={data.isSelected(item)}
             onclick={() => clickHandler(item)}
         >
+            <div class="check">
+                <Check size={20}/>
+            </div>
             {#if labelSnippet}
                 {@render labelSnippet(item)}
-            {:else}
+            {:else} 
                 {item.label}
             {/if}
         </button>
@@ -53,8 +57,15 @@ div.ui-form-selectable-list
 
     &.disabled
         opacity: .6
+        filter: grayscale(1)
+        button.item
+            &:hover, &:active, &:focus
+                background-color: var(--color-main-100) !important
 
     button.item
+        display: flex
+        align-items: center
+        flex-direction: row
         flex-shrink: 0
         border: 0
         border-radius: 99999px
@@ -63,6 +74,14 @@ div.ui-form-selectable-list
         font-weight: 500
         background-color: var(--color-main-100)
         color: var(--color-main-500)
+        transition: background-color 0.2s, color 0.2s
+        
+        div.check
+            display: flex
+            align-items: center
+            width: 0
+            opacity: 0
+            transition: all 0.3s
 
         &:hover
             background-color: var(--color-main-50)
@@ -76,12 +95,15 @@ div.ui-form-selectable-list
                 background-color: var(--color-main-400)
             &:active
                 background-color: var(--color-main-600)
+            div.check
+                width: 24px
+                opacity: 1
 
         &.disabled
             background: none !important
             color: var(--color-slate-600)
             text-decoration: line-through
-            opacity: .4
+            opacity: .1
             cursor: not-allowed
             &:hover, &:active, &:focus
                 background: none !important

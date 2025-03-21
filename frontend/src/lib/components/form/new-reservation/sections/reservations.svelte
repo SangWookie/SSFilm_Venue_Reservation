@@ -28,36 +28,18 @@
         예약 선택
     {/snippet}
 
-    <InputBox title="장소 선택" description={form_data.reservations.venue}>
-        {#snippet custom()}
-            <SelectableList data={data.venue_selectable} isRadio={true}>
-                {#snippet labelSnippet(item: SelectableItem<Venue>)}
-                    {item.label}
-
-                    {#if item.value?.approval_mode == 'manual'}
-                        (수동)
-                    {/if}
-                {/snippet}
-            </SelectableList>
-
-            {console.log(data.venue_selectable.selected)}
-            {#if data.current_venue?.value?.requirement}
-                <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-                {@html data.current_venue?.value?.requirement}
-            {/if}
-        {/snippet}
-        <ValidateMessage isValid={validations.reservations.venue} message="장소를 선택해 주세요." />
-    </InputBox>
-
     <InputBox title="일자 선택" description={form_data.reservations.date}>
         {#snippet custom()}
             <div class="calendar-wrapper">
                 <Calendar
                     items={data.calendar}
                     selected={data.calendar_selected}
-                    status="available"
+                    status={data.loading_reservation ? 'loading' : 'available'}
                     onDateClick={(date) => {
-                        if (date) data.calendar_selected = [date];
+                        if (date && !date.mark?.past && !data.loading_reservation) {
+                            data.calendar_selected = [date];
+                            data.fetchReservation();
+                        }
                     }}
                 />
             </div>
@@ -71,8 +53,28 @@
             message="과거에 대해 예약할 수 없습니다."
         />
     </InputBox>
-
     <LoadingBox enabled={data.loading_reservation} />
+
+    <InputBox title="장소 선택" description={form_data.reservations.venue}>
+        {#snippet custom()}
+            <SelectableList data={data.venue_selectable} isRadio={true} disabled={data.loading_reservation || !(form_data.reservations.date.length > 0)}>
+                {#snippet labelSnippet(item: SelectableItem<Venue>)}
+                    {item.label}
+
+                    {#if item.value?.approval_mode == 'manual'}
+                        (수동)
+                    {/if}
+                {/snippet}
+            </SelectableList>
+
+            {#if data.current_venue?.value?.requirement}
+                <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                {@html data.current_venue?.value?.requirement}
+            {/if}
+        {/snippet}
+
+    </InputBox>
+
     <InputBox
         title="시간 선택"
         description={form_data.reservations.hours.map((i) => `${i}시`).join(', ')}
@@ -80,7 +82,8 @@
         {#snippet custom()}
             <SelectableList
                 data={data.hour_selectable}
-                disabled={form_data.reservations.date.length === 0}
+                disabled={data.loading_reservation || form_data.reservations.date.length === 0 || form_data.reservations.venue.length === 0}
+                clickHandler={data.hourSelectableClickCallback}
             />
         {/snippet}
         <ValidateMessage
