@@ -47,7 +47,7 @@
                 {item.message}
             </div>
             <div class="hours">
-                {item.time.map((i) => zeroPad(i.toString())).join(' ')}
+                {item.time.map((i) => zeroPad(i.toString())).join(' ')} <div class="extra">시</div>
             </div>
         </div>
     {/each}
@@ -62,7 +62,7 @@
                 {item.purpose}
             </div>
             <div class="hours" title="예약한 시간">
-                {item.time.map((i) => zeroPad(i.toString())).join(' ')}
+                {item.time.map((i) => zeroPad(i.toString())).join(' ')} <div class="extra">시</div>
             </div>
         </div>
     {/each}
@@ -92,7 +92,7 @@ div.venue-item
             flex-shrink: 0
             gap: 8px
             div.hour-single
-                font-family: "Space Mono", monospace
+                font-family: "Space Mono", monospace, "Pretendard"
                 display: flex
                 align-items: center
                 justify-content: center
@@ -104,13 +104,30 @@ div.venue-item
                     opacity: 1
 
     div.unavailable-period
+        font-size: 20px
+        display: flex
+        flex-wrap: wrap
+        align-items: center
+        gap: 4px 12px
+        div.label
+            font-size: 16px
+            font-weight: 600
+            color: var(--color-bg)
+            flex-shrink: 0 
+        div.message
+            font-size: 16px
         div.hours
-            font-family: "Space Mono", monospace
-
+            font-family: "Space Mono", monospace, "Pretendard"
+            display: flex
+            align-items: center
+            gap: 8px
             font-size: 20px
             color: var(--color-bg)
             font-weight: 600
-        div.message
+            .extra
+                font-size: 16px
+                font-weight: 500
+                opacity: .4
 
     div.reservation
         font-size: 20px
@@ -128,10 +145,17 @@ div.venue-item
         div.purpose
             font-size: 16px
         div.hours
+            display: flex
+            align-items: center
+            gap: 8px
             font-size: 16px
-            font-family: "Space Mono", monospace
+            font-family: "Space Mono", monospace, "Pretendard"
             color: var(--color-bg)
             font-weight: 600
+            .extra
+                font-size: 16px
+                font-weight: 500
+                opacity: .4
 
 
 </style>

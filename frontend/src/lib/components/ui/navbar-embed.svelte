@@ -12,7 +12,9 @@
         <CalendarClock /> 예약 현황
     </div>
     <div class="right">
-        <a {href}>예약하기 <SquareArrowOutUpRight size="12px" strokeWidth="3px" /></a>
+        <a {href} target="_blank"
+            >예약하기 <SquareArrowOutUpRight size="12px" strokeWidth="3px" /></a
+        >
     </div>
 </div>
 
@@ -24,7 +26,7 @@ div.header
 
     align-items: center
     justify-content: space-between
-    
+
     div.left
         display: flex
         gap: 12px

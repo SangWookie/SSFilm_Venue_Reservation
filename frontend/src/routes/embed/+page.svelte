@@ -1,4 +1,5 @@
 <script lang="ts">
+    import './../../app.sass';
     import Calendar from '$lib/components/ui/calendar.svelte';
     import { getCalendarPlaceholder } from '$lib/utils/calendar';
     import type { ReservationList } from '$lib/interfaces/api';
@@ -8,6 +9,8 @@
     import { getReservationByDate } from '$lib/api/api';
     import { intoDateString } from '$lib/utils/date';
     //import { getReservations } from '$lib/api/nonstate.mock';
+    
+    import NavbarEmbed from '$lib/components/ui/navbar-embed.svelte'
     
     import VenueHeaderInformationComponent from '$lib/components/ui/information/venue-header.svelte';
     import VenueInformationComponent from '$lib/components/ui/information/venue.svelte';
@@ -48,9 +51,9 @@
     });
 </script>
 
-<!--
-<NavbarEmbed />
--->
+
+<NavbarEmbed href="https://ssfilm-demo-ilsubyeega.pages.dev/new"/>
+
 <div class="page">
     <div class="calendar-wrapper">
         <Calendar {...calendar_props} />

@@ -1,5 +1,7 @@
 <script lang="ts">
     import { type FormData, init_form_data, isAllValidated, validate, type Validations } from '.';
+    
+    import { goto } from '$app/navigation';
 
     import RequesterInfoSection from './sections/requester-info.svelte';
     import ReservationsSection from './sections/reservations.svelte';
@@ -43,6 +45,7 @@
             .then((response) => {
                 submissionState = 'done';
                 console.log(response);
+                goto(`/form_done?venue_name=${form_data.reservations.venue}`);
             })
             .catch((e) => {
                 console.error('Failed to request form', e);
