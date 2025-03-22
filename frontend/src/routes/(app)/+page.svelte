@@ -19,7 +19,9 @@
     onMount(() => {
         // Performance issue
         // https://github.com/moment/luxon/issues/1130
-        (async () => (calendar_props.items = getCalendarPlaceholder()))();
+        (async () => {
+            calendar_props.items = getCalendarPlaceholder();
+        })();
     });
 </script>
 

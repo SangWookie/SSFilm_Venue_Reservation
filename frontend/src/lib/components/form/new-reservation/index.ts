@@ -141,8 +141,7 @@ export const validate = (form_data: FormData): Validations => {
 };
 
 export const generateSelectableHours = (): SelectableItem<HourString>[] =>
-    Array(24)
-        .keys()
+    Array.from(Array(24).keys())
         .map((i) => zeroPad(i.toString()))
         .map((i) => {
             return {
@@ -152,7 +151,6 @@ export const generateSelectableHours = (): SelectableItem<HourString>[] =>
                 toggle: false
             };
         })
-        .toArray();
 
 export const requestNewReservationFromData = async (
     data: FormData

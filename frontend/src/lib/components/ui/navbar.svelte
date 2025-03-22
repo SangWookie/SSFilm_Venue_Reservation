@@ -68,7 +68,7 @@ nav
     display: flex
     position: sticky
     top: 0
-    background: rgba(255, 255, 255, .8)
+    background: rgba(255, 255, 255, .9)
     z-index: 99999
 
     ul.navbar-list
