@@ -54,7 +54,7 @@ resource "aws_lambda_function" "request_manager" {
   role          = aws_iam_role.sqs_lambda_role.arn
   handler       = "bootstrap"
   runtime       = "provided.al2023"
-
+  timeout       = 5
   # comment this line to upload source code only once(untrack changes)
   # source_code_hash = data.archive_file.request_manager_zip.output_base64sha256
 }
