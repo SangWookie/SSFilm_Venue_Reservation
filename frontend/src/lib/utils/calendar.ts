@@ -50,10 +50,9 @@ export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined
         // Sun(7) -> Not in this case due to `date.weekday !== 7`
         if (date.weekday !== 7 && temp_week.length === 0) {
             temp_week = temp_week.concat(
-                Array(date.weekday)
-                    .keys()
+                Array.from(Array(date.weekday)
+                    .keys())
                     .map(() => undefined)
-                    .toArray()
             );
         }
 
@@ -79,13 +78,13 @@ export const generateCalendarFromProps = <T extends DateTime, WrappedT extends {
 };
 
 export const getWeeksRangeWithPast = () =>
-    Interval.after(DateTime.local().set({hour:23, minute:59}).minus({ days: 7 }), { days: 7 + 14 })
+    Interval.after(DateTime.local().set({ hour: 23, minute: 59 }).minus({ days: 7 }), { days: 7 + 14 })
         .splitBy({ day: 1 })
         .map((i) => i.start)
         .filter((i) => i != null);
 
-export const getNextTwoWeeks = () => 
-    Interval.after(DateTime.local().set({hour:23, minute:59}), {days: 14})
+export const getNextTwoWeeks = () =>
+    Interval.after(DateTime.local().set({ hour: 23, minute: 59 }), { days: 14 })
         .splitBy({ day: 1 })
         .map((i) => i.start)
         .filter((i) => i != null);
