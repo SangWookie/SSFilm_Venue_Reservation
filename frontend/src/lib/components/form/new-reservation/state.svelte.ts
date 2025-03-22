@@ -12,7 +12,8 @@ import type { FormData } from '.';
 import { untrack } from 'svelte';
 import { generateSelectableHours } from '.';
 import type { FormSelectItem } from '$lib/interfaces/ui';
-import { getReservationByDate } from '$lib/api/mock';
+import { getReservationByDate } from '$lib/api/api';
+import { zeroPad } from '$lib/utils/helper';
 
 export class ReservationSectionFormState {
     reservation: ReservationList | undefined = $state(undefined);
@@ -35,16 +36,18 @@ export class ReservationSectionFormState {
         return this.reservation?.venues.find((i) => i.venue == this.current_venue?.value.venue);
     });
 
-    unavailableHours = $derived([
-        ...(this.current_reservation?.reservations?.flatMap((r) => r.time) || []),
-        ...(this.current_reservation?.unavailable_periods?.flatMap((r) => r.time) || [])
-    ]);
+    unavailableHours = $derived(
+        [
+            ...(this.current_reservation?.reservations?.flatMap((r) => r.time) || []),
+            ...(this.current_reservation?.unavailable_periods?.flatMap((r) => r.time) || [])
+        ].map((r) => zeroPad(r.toString()) as HourString)
+    );
 
     #form_data: FormData;
     constructor(form_data: FormData) {
         this.#form_data = form_data;
         globalAppState.subscribe((state) => {
-            if (state?.venues) this.venues = state.venues;
+            if (state?.venues && this.venues.length == 0) this.venues = state.venues;
             if (state?.purposes) this.purposes = state.purposes;
         });
         this.hour_selectable.list = generateSelectableHours();
@@ -70,18 +73,14 @@ export class ReservationSectionFormState {
 
     effectWriteUnableHoursToSelectable() {
         $effect(() => {
-            this.hour_selectable.list = untrack(() =>
-                this.hour_selectable.list.map((i) => {
+            console.log(this.unavailableHours);
+            untrack(() => {
+                this.hour_selectable.list.forEach((i) => {
                     const disabled = this.unavailableHours.includes(i.value);
-                    // Unselect the hour selectable data.
                     if (disabled) this.hour_selectable.unselect(i);
-                    return {
-                        disabled,
-                        ...i
-                    };
-                })
-            );
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                    i.disabled = disabled;
+                });
+            });
             this.unavailableHours;
         });
     }
@@ -99,17 +98,17 @@ export class ReservationSectionFormState {
             }
         });
     }
-    
+
     effectResetHourSelectedWhenVenueChanged() {
         $effect(() => {
             // Let's just clear the selected date just for now.
             this.hour_selectable.selected = [];
-            
+
             // tried current_reservation, but the data might be same
             // thus just use current_venue for now.
             this.current_date;
             this.current_venue;
-        })
+        });
     }
 
     fetchReservation() {
@@ -123,6 +122,11 @@ export class ReservationSectionFormState {
 
             this.reservation = reservation;
             this.loading_reservation = false;
+
+            reservation.venues.forEach((v) => {
+                const venue = this.venues.find((i) => i.venue == v.venue);
+                if (venue) venue.approval_mode = v.approval_mode;
+            });
         });
     }
 
@@ -131,7 +135,7 @@ export class ReservationSectionFormState {
         if (this.#form_data.reservations.date.length === 0) return;
         // Prevent click event if item is disabled.
         if (item.disabled) return;
-        
+
         if (this.loading_reservation) return;
 
         const is_selected = this.hour_selectable.isSelected(item);
@@ -158,6 +162,11 @@ export class ReservationSectionFormState {
                     break;
                 }
                 selected.push(item);
+            }
+
+            if (selected.length <= 1) {
+                this.hour_selectable.selected = [item];
+                return;
             }
 
             this.hour_selectable.selected = this.hour_selectable.list.filter((i) =>

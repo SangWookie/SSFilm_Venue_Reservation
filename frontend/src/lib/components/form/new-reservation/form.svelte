@@ -40,9 +40,9 @@
         agreement_collapsible_open = false;
 
         requestNewReservationFromData(form_data)
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .then((response) => {
                 submissionState = 'done';
+                console.log(response);
             })
             .catch((e) => {
                 console.error('Failed to request form', e);

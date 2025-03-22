@@ -13,7 +13,7 @@ export const venues: Venue[] = [
         approval_mode: 'auto'
     },
     {
-        venue: 'mastering-room-1',
+        venue: 'mastering1',
         venueKor: '마스터링룸 1',
         requirement: [
             '물품 보관 금지(제작 비품 및 미술 소품 일체 포함)',
@@ -24,7 +24,7 @@ export const venues: Venue[] = [
         approval_mode: 'auto'
     },
     {
-        venue: 'mastering-room-2',
+        venue: 'mastering2',
         venueKor: '마스터링룸 2',
         requirement: [
             '물품 보관 금지(제작 비품 및 미술 소품 일체 포함)',
@@ -35,7 +35,7 @@ export const venues: Venue[] = [
         approval_mode: 'auto'
     },
     {
-        venue: 'meeting-room',
+        venue: 'meeting',
         venueKor: '회의실',
         requirement: [
             '물품 보관시 이름표 부착 & 카페 게시판글 작성 필수',
@@ -46,7 +46,7 @@ export const venues: Venue[] = [
         approval_mode: 'auto'
     },
     {
-        venue: 'mixing-adr-room',
+        venue: 'mixing',
         venueKor: '믹싱룸/ADR룸',
         requirement: [
             '물품 보관 절대 금지(제작 비품 및 미술 소품 일체 포함)',
@@ -57,7 +57,7 @@ export const venues: Venue[] = [
         approval_mode: 'auto'
     },
     {
-        venue: 'editing-room',
+        venue: 'editing',
         venueKor: '편집실',
         requirement: [
             '개인 물품 보관 금지(외장하드, 스크립북 포함)',

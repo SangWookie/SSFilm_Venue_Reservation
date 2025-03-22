@@ -1,5 +1,6 @@
 <script lang="ts">
     import CollapsibleBlock from '$lib/components/ui/form/collapsible-block.svelte';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     import InputBox from '$lib/components/ui/form/input-box.svelte';
     import ValidateMessage from '$lib/components/ui/form/validate-message.svelte';
     import type { FormData, Validations } from '../index.ts';

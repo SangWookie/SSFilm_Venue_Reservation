@@ -12,7 +12,15 @@ export async function getReservationByDate(date: DateString): Promise<Reservatio
     await new Promise((resolve) => setTimeout(resolve, 500));
     return {
         date,
-        venues: []
+        venues: MockConst.venues.map(v => {
+            return {
+                venue: v.venue,
+                venueKor: v.venueKor,
+                approval_mode: v.approval_mode,
+                reservations: [],
+                unavailable_periods: []
+            }
+        })
     };
 }
 

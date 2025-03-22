@@ -3,7 +3,7 @@ import type { DateString, HourString } from '$lib/interfaces/date';
 import { fromDateString } from '$lib/utils/date';
 import { zeroPad } from '$lib/utils/helper';
 import { type SelectableItem } from '$lib/components/ui/form/selectable-list.svelte.ts';
-import { postNewReservation } from '$lib/api/mock';
+import { postNewReservation } from '$lib/api/api';
 
 export interface FormData {
     requester_info: {
@@ -108,9 +108,9 @@ export const validate = (form_data: FormData): Validations => {
             if (!date) return { not_deadline: false, not_past: false };
             const parsed = fromDateString(date);
             const not_past = parsed.diffNow().milliseconds > 0;
-            // deadline: 전날 18시 전
+            // deadline: 전날 17시 전
             const not_deadline =
-                parsed.minus({ day: 1 }).set({ hour: 18 }).diffNow().milliseconds > 0;
+                parsed.minus({ day: 1 }).set({ hour: 17 }).diffNow().milliseconds > 0;
             return { not_deadline, not_past };
         })();
 
@@ -150,21 +150,21 @@ export const generateSelectableHours = (): SelectableItem<HourString>[] =>
                 label: `${i}시`,
                 toggle: false
             };
-        })
+        });
 
 export const requestNewReservationFromData = async (
     data: FormData
 ): Promise<RequestNewReservationResponse> =>
     postNewReservation({
         name: data.requester_info.name,
-        studentID: data.requester_info.school_id,
+        studentId: data.requester_info.school_id,
         email: data.requester_info.email,
 
         date: data.reservations.date as DateString,
         venue: data.reservations.venue,
-        time: data.reservations.hours,
+        time: data.reservations.hours.map((i) => parseInt(i)),
 
         category: data.reservations.purpose,
         purpose: data.reservations.purpose_detail,
-        companions: data.reservations.companions
+        companion: data.reservations.companions
     });
