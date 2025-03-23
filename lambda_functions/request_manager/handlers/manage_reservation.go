@@ -15,7 +15,7 @@ import (
 )
 
 type ChangeValuesType struct {
-	ChangeTime string `json:"changeTime"`
+	ChangeTime []int  `json:"changeTime"`
 	Venue      string `json:"venue"`
 	Date       string `json:"date"`
 }
