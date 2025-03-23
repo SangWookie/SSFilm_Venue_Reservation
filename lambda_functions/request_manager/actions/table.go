@@ -183,7 +183,9 @@ func ChangeReservationValues(ctx context.Context, ddbClient DDBClientiface, key 
 
 	date := values["Date"].(*types.AttributeValueMemberS).Value
 	venue := values["Venue"].(*types.AttributeValueMemberS).Value
-	time := values["ChangeTime"].(*types.AttributeValueMemberL).Value
+	time := values["ChangeTime"].(*types.AttributeValueMemberL)
+
+	log.Info(time, venue)
 	venueDate := fmt.Sprintf("%s#%s", date, venue)
 	// 업데이트할 속성 정의
 	update := expression.

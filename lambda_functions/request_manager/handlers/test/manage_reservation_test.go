@@ -52,7 +52,7 @@ func TestManageReservation_Cancel(t *testing.T) {
 	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
 	// Create request body
-	requestBody := handlers.RequestChangeTimeRequest{
+	requestBody := handlers.RequestChangeRequest{
 		Key:    reservationID,
 		Code:   "CANCEL",
 		Reason: "취소 사유",
@@ -126,7 +126,7 @@ func TestManageReservation_Modify(t *testing.T) {
 	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
 	// Create request body
-	requestBody := handlers.RequestChangeTimeRequest{
+	requestBody := handlers.RequestChangeRequest{
 		Key:  reservationID,
 		Code: "MODIFY",
 		ChangeValues: handlers.ChangeValuesType{
@@ -202,7 +202,7 @@ func TestManageReservation_CancelEmailError(t *testing.T) {
 	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(assert.AnError)
 
 	// Create request body
-	requestBody := handlers.RequestChangeTimeRequest{
+	requestBody := handlers.RequestChangeRequest{
 		Key:    reservationID,
 		Code:   "CANCEL",
 		Reason: "취소 사유",
@@ -277,7 +277,7 @@ func TestManageReservation_ModifyEmailError(t *testing.T) {
 	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(assert.AnError)
 
 	// Create request body
-	requestBody := handlers.RequestChangeTimeRequest{
+	requestBody := handlers.RequestChangeRequest{
 		Key:  reservationID,
 		Code: "MODIFY",
 		ChangeValues: handlers.ChangeValuesType{
