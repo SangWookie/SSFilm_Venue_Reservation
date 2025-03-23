@@ -180,9 +180,10 @@ func AcceptReservation(ctx context.Context, ddbClient DDBClientiface, reservatio
 
 func ChangeReservationValues(ctx context.Context, ddbClient DDBClientiface, key map[string]types.AttributeValue, values map[string]types.AttributeValue) error {
 	tableName := "current_reservation"
-	date := values["date"].(*types.AttributeValueMemberS).Value
-	venue := values["venue"].(*types.AttributeValueMemberS).Value
-	time := values["changeTime"].(*types.AttributeValueMemberS).Value
+
+	date := values["Date"].(*types.AttributeValueMemberS).Value
+	venue := values["Venue"].(*types.AttributeValueMemberS).Value
+	time := values["ChangeTime"].(*types.AttributeValueMemberL).Value
 	venueDate := fmt.Sprintf("%s#%s", date, venue)
 	// 업데이트할 속성 정의
 	update := expression.

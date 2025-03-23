@@ -127,10 +127,14 @@ func TestManageReservation_Modify(t *testing.T) {
 
 	// Create request body
 	requestBody := handlers.RequestChangeTimeRequest{
-		Key:        reservationID,
-		Code:       "MODIFY",
-		ChangeTime: timeValues,
-		Reason:     "변경 사유",
+		Key:  reservationID,
+		Code: "MODIFY",
+		ChangeValues: handlers.ChangeValuesType{
+			ChangeTime: timeValues,
+			Venue:      "studio",
+			Date:       "2025-03-03",
+		},
+		Reason: "변경 사유",
 	}
 	bodyBytes, _ := json.Marshal(requestBody)
 
@@ -274,10 +278,14 @@ func TestManageReservation_ModifyEmailError(t *testing.T) {
 
 	// Create request body
 	requestBody := handlers.RequestChangeTimeRequest{
-		Key:        reservationID,
-		Code:       "MODIFY",
-		ChangeTime: timeValues,
-		Reason:     "변경 사유",
+		Key:  reservationID,
+		Code: "MODIFY",
+		ChangeValues: handlers.ChangeValuesType{
+			ChangeTime: timeValues,
+			Venue:      "studio",
+			Date:       "2025-03-03",
+		},
+		Reason: "변경 사유",
 	}
 	bodyBytes, _ := json.Marshal(requestBody)
 
