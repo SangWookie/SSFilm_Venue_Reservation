@@ -10,6 +10,12 @@ import (
 	"request_manager/response"
 )
 
+type VenueInfoTYpe struct {
+	Venue       string `dynamodbav:"venue" json:"venue"`
+	AllowPolicy string `dynamodbav:"allowPolicy" json:"allowPolicy"`
+	VenueKor    string `dynamodbav:"venueKor" json:"venueKor"`
+}
+
 func GetVenueInfo(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error) {
 	ctx := context.Background()
 	ddbClient := params.DdbClient
@@ -21,9 +27,9 @@ func GetVenueInfo(params RouterHandlerParameters) (events.APIGatewayV2HTTPRespon
 		return response.APIGatewayResponseError("Internal Server Error", 500), err
 	}
 
-	var reservations []ReservationType
+	var reservations []VenueInfoTYpe
 	for _, scanResult := range scanResults.Items {
-		var tmp ReservationType
+		var tmp VenueInfoTYpe
 		err = attributevalue.UnmarshalMap(scanResult, &tmp)
 		if err != nil {
 			log.Errorln("Parser Error", err)
