@@ -178,11 +178,16 @@ func AcceptReservation(ctx context.Context, ddbClient DDBClientiface, reservatio
 	return err
 }
 
-func ChangeReservationTime(ctx context.Context, ddbClient DDBClientiface, key map[string]types.AttributeValue, time types.AttributeValue) error {
+func ChangeReservationValues(ctx context.Context, ddbClient DDBClientiface, key map[string]types.AttributeValue, values map[string]types.AttributeValue) error {
 	tableName := "current_reservation"
-
+	date := values["date"].(*types.AttributeValueMemberS).Value
+	venue := values["venue"].(*types.AttributeValueMemberS).Value
+	time := values["changeTime"].(*types.AttributeValueMemberS).Value
+	venueDate := fmt.Sprintf("%s#%s", date, venue)
 	// 업데이트할 속성 정의
-	update := expression.Set(expression.Name("time"), expression.Value(time))
+	update := expression.
+		Set(expression.Name("time"), expression.Value(time)).
+		Set(expression.Name("venueDate"), expression.Value(venueDate))
 
 	// 업데이트 표현식 생성
 	expr, err := expression.NewBuilder().WithUpdate(update).Build()

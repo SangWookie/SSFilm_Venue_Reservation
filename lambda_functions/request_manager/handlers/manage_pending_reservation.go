@@ -12,8 +12,9 @@ import (
 )
 
 type RequestDeleteType struct {
-	Key  string `json:"requestID"`
-	Code string `json:"code"`
+	Key    string `json:"requestID"`
+	Code   string `json:"code"`
+	Reason string `json:"reason"`
 }
 
 func ManagePendingReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error) {
@@ -60,9 +61,9 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 					Location: room,
 					Time:     date,
 					Category: isExist["category"].(*types.AttributeValueMemberS).Value,
-					Details:  "",
+					Details:  reqBody.Reason,
 				})
-				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 취소 확인", emailContent)
+				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 확인", emailContent)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}
