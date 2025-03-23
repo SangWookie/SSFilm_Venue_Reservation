@@ -82,6 +82,13 @@ func ManageReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPR
 		if err != nil {
 			return response.APIGatewayResponseError("Failed to marshal change values", http.StatusInternalServerError), nil
 		}
+		// 수동으로 ChangeTime 값을 숫자 리스트로 변환
+		var changeTimeList []types.AttributeValue
+		for _, t := range reqBody.ChangeValues.ChangeTime {
+			changeTimeList = append(changeTimeList, &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", t)})
+		}
+		changeValuesMap["ChangeTime"] = &types.AttributeValueMemberL{Value: changeTimeList}
+
 		err = actions.ChangeReservationValues(ctx, ddbClient, key, changeValuesMap)
 		if err != nil {
 			return response.APIGatewayResponseError("Failed to modify reservation time", http.StatusInternalServerError), nil
