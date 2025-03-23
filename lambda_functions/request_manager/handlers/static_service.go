@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"net/http"
@@ -14,9 +13,7 @@ import (
 )
 
 type StaticRequest struct {
-	StudentID string `json:"studentID,omitempty"`
-	Venue     string `json:"venue,omitempty"`
-	Month     string `json:"month"`
+	Month string `json:"month"`
 }
 
 func GetStatic(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error) {
@@ -33,26 +30,10 @@ func GetStatic(params RouterHandlerParameters) (events.APIGatewayV2HTTPResponse,
 	var executionResults *dynamodb.ExecuteStatementOutput
 	var result []ReservationType
 
-	if reqBody.Venue != "" {
-		// TODO 방 통계
-		fmt.Printf("Venue: %s\n", reqBody.Venue)
+	executionResults, err = actions.GetHistory(ctx, ddbClient, "current_reservation", reqBody.Month)
 
-		executionResults, err = actions.GetReservationsWithVenue(ctx, ddbClient, "current_reservation", reqBody.Venue, reqBody.Month)
-
-		if err != nil {
-			return response.APIGatewayResponseError(err.Error(), http.StatusBadRequest), nil
-		}
-
-	} else {
-		// TODO 학생 통계
-		fmt.Printf("StudentID: %s\n", reqBody.StudentID)
-
-		executionResults, err = actions.GetReservationsWithStudentID(ctx, ddbClient, "current_reservation", reqBody.StudentID, reqBody.Month)
-
-		if err != nil {
-			return response.APIGatewayResponseError(err.Error(), http.StatusBadRequest), nil
-		}
-
+	if err != nil {
+		return response.APIGatewayResponseError(err.Error(), http.StatusBadRequest), nil
 	}
 
 	for _, executionResult := range executionResults.Items {

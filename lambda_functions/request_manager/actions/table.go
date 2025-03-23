@@ -53,11 +53,10 @@ type TableScanResult struct {
 	Err       error
 }
 
-func GetReservationsWithVenue(ctx context.Context, ddbClient DDBClientiface, tableName, venue, date string) (*dynamodb.ExecuteStatementOutput, error) {
-	query := fmt.Sprintf("select * from \"%s\" where begins_with(venueDate, ?) and contains(venueDate,  ?)", tableName)
+func GetHistory(ctx context.Context, ddbClient DDBClientiface, tableName, date string) (*dynamodb.ExecuteStatementOutput, error) {
+	query := fmt.Sprintf("select * from \"%s\" where begins_with(venueDate, ?)", tableName)
 	params := []types.AttributeValue{
 		&types.AttributeValueMemberS{Value: date},
-		&types.AttributeValueMemberS{Value: venue},
 	}
 	result, err := ddbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement:  aws.String(query),
@@ -69,24 +68,6 @@ func GetReservationsWithVenue(ctx context.Context, ddbClient DDBClientiface, tab
 	}
 	return result, nil
 
-}
-func GetReservationsWithStudentID(ctx context.Context, ddbClient DDBClientiface, tableName, studentId, date string) (*dynamodb.ExecuteStatementOutput, error) {
-	query := fmt.Sprintf("select * from \"%s\" where studentId = ? and begins_with(venueDate, ?)", tableName)
-	params := []types.AttributeValue{
-		&types.AttributeValueMemberN{Value: studentId},
-		&types.AttributeValueMemberS{Value: date},
-	}
-
-	result, err := ddbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
-		Statement:  aws.String(query),
-		Parameters: params,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
 }
 
 func ScanTable(ctx context.Context, ddbClient DDBClientiface, tableName string) (*dynamodb.ScanOutput, error) {
