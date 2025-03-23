@@ -36,6 +36,7 @@ var routes = map[string]RouteHandler{
 	"manageReservation":        handlers.ManageReservation,
 	"managePendingReservation": handlers.ManagePendingReservation,
 	"statistic":                handlers.GetStatic,
+	"getVenueInfo":             handlers.GetVenueInfo,
 }
 
 func handleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
