@@ -8,10 +8,10 @@
     import { getReservationByDate } from '$lib/api/api';
     import { intoDateString } from '$lib/utils/date';
     //import { getReservations } from '$lib/api/nonstate.mock';
-    
+
     import VenueHeaderInformationComponent from '$lib/components/ui/information/venue-header.svelte';
     import VenueInformationComponent from '$lib/components/ui/information/venue.svelte';
-    
+
     let response: ReservationList | undefined = $state(undefined);
 
     const calendar_props = $state({
@@ -22,19 +22,21 @@
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onDateClick: (date?: MinimalCalendarUIItemWithHref) => {}
     });
-    
+
+    const load_date = (date: MinimalCalendarUIItemWithHref) => {
+        loading_status = true;
+        calendar_props.selected = [date];
+        getReservationByDate(intoDateString(date.date)).then((res) => {
+            calendar_props.selected = [date];
+            loading_status = false;
+            response = res;
+        });
+    };
     calendar_props.onDateClick = (date?: MinimalCalendarUIItemWithHref) => {
         if (!date || loading_status) return;
         console.log('date clicked', date);
-        loading_status = true;
-        calendar_props.selected = [date];
-        getReservationByDate(intoDateString(date.date))
-            .then(res => {
-                calendar_props.selected = [date];
-                loading_status = false;
-                response = res;
-            })
-    }
+        load_date(date);
+    };
 
     let loading_status = $state(false);
 
@@ -43,6 +45,8 @@
         // https://github.com/moment/luxon/issues/1130
         async function load() {
             calendar_props.items = getCalendarPlaceholder();
+            const today = calendar_props.items.find(d => d.mark?.today);
+            if (today) load_date(today);
         }
         load();
     });
@@ -62,14 +66,13 @@
             <div class="date-header">
                 {response.date}
             </div>
-            <VenueHeaderInformationComponent/>
+            <VenueHeaderInformationComponent />
             <div class="venues">
                 {#each response.venues as venue (venue)}
                     <VenueInformationComponent data={venue} />
                 {/each}
             </div>
         {/if}
-
     </ul>
 </div>
 
@@ -101,12 +104,12 @@ div.page
         flex-grow: 1
         max-width: 850px
         width: 100%
-        
+
         div.date-header
             font-size: 48px
             font-weight: 300
             text-align: center
-        
+
         div.venues
             display: flex
             flex-direction: column
