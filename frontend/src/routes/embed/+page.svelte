@@ -52,7 +52,7 @@
 </script>
 
 
-<NavbarEmbed href="https://ssfilm-demo-ilsubyeega.pages.dev/new"/>
+<NavbarEmbed href="https://ssfilm-v0-extra.19721121.xyz/new"/>
 
 <div class="page">
     <div class="calendar-wrapper">
