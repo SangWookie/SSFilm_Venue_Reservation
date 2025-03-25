@@ -46,7 +46,7 @@
         {/snippet}
         <ValidateMessage
             isValid={validations.reservations.date.not_deadline}
-            message="데드라인 (전날 17시까지)에 맞춰야 합니다."
+            message="사용일 기준, 전 날 17시까지만 예약 가능합니다."
         />
         <ValidateMessage
             isValid={validations.reservations.date.not_past}
