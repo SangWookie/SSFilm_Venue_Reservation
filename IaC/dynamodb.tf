@@ -62,6 +62,7 @@ variable "venues" {
     venue       = string
     venueKor    = string
     allowPolicy = string
+    sortOrder   = number
   }))
   default = [
     { venue = "editing", venueKor = "편집실", allowPolicy = "manual", sortOrder = 7 },
@@ -83,5 +84,6 @@ resource "aws_dynamodb_table_item" "venue_init" {
     "venue"       = { "S" = each.value.venue }
     "venueKor"    = { "S" = each.value.venueKor }
     "allowPolicy" = { "S" = each.value.allowPolicy }
+    "sortOrder"   = { "N" = tostring(each.value.sortOrder) }
   })
 }
