@@ -71,7 +71,6 @@ export const venues: Venue[] = [
         venue: 'lounge',
         venueKor: '과방',
         requirement: [
-            '물품 보관시 이름표 부착 & 카페 게시판글 작성 필수',
             '음식/ 음료 반입 가능',
             '허락없는 기자재 이동 금지 (책상, 의자 포함)',
             '24시간 상시개방(단, 사전 사용 신청팀에게 우선권)'
