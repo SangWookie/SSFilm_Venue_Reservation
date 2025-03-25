@@ -7,8 +7,12 @@
 
     const hours = generateHours();
     const unavailableHours = $derived(getUnavilableHoursByVenue(data));
-    
+
     const has_item = $derived(unavailableHours.length > 0);
+
+    const sort = <T extends { time: number[] }>(items: T[]) => {
+        return [...items].sort((a, b) => (a.time.at(0) || 99) - (b.time.at(0) || 99));
+    };
 </script>
 
 <div class="venue-item" class:no_item={!has_item}>
@@ -41,21 +45,20 @@
         예약이 비어있습니다.
     {/if}
 
-    {#each data.unavailable_periods as item (item)}
+    {#each sort(data.unavailable_periods) as item (item)}
         <div class="unavailable-period">
-            <div class="label">
-                예약 불가
-            </div>
+            <div class="label">예약 불가</div>
             <div class="message">
                 {item.message}
             </div>
             <div class="hours">
-                {getHourRangeString(item.time)} <div class="extra">시</div>
+                {getHourRangeString(item.time)}
+                <div class="extra">시</div>
             </div>
         </div>
     {/each}
 
-    {#each data.reservations as item (item)}
+    {#each sort(data.reservations) as item (item)}
         <div class="reservation">
             <div class="label">예약</div>
             <div class="requester" title="예약자">
@@ -65,7 +68,8 @@
                 {item.purpose}
             </div>
             <div class="hours" title="예약한 시간">
-                {getHourRangeString(item.time)} <div class="extra">시</div>
+                {getHourRangeString(item.time)}
+                <div class="extra">시</div>
             </div>
         </div>
     {/each}
