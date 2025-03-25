@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { ReservationByVenue } from '$lib/interfaces/api';
     import { getUnavilableHoursByVenue } from '$lib/utils/api';
-    import { generateHours, splitArray, zeroPad } from '$lib/utils/helper';
+    import { generateHours, getHourRangeString, splitArray, zeroPad } from '$lib/utils/helper';
 
     const { data }: { data: ReservationByVenue } = $props();
 
@@ -17,6 +17,8 @@
         {data.approval_mode == 'manual' ? '(수동)' : ''}
     </div>
     {#if has_item}
+        <!--
+        * client request: remove this;
         <div class="hours-list">
             {#each splitArray(hours, 6) as hours_spllited (hours_spllited)}
                 <div class="hours-inner">
@@ -34,6 +36,7 @@
                 </div>
             {/each}
         </div>
+        -->
     {:else}
         예약이 비어있습니다.
     {/if}
@@ -47,7 +50,7 @@
                 {item.message}
             </div>
             <div class="hours">
-                {item.time.map((i) => zeroPad(i.toString())).join(' ')} <div class="extra">시</div>
+                {getHourRangeString(item.time)} <div class="extra">시</div>
             </div>
         </div>
     {/each}
@@ -62,7 +65,7 @@
                 {item.purpose}
             </div>
             <div class="hours" title="예약한 시간">
-                {item.time.map((i) => zeroPad(i.toString())).join(' ')} <div class="extra">시</div>
+                {getHourRangeString(item.time)} <div class="extra">시</div>
             </div>
         </div>
     {/each}

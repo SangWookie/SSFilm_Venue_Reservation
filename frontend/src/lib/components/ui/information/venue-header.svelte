@@ -1,3 +1,4 @@
+<!--
 <div class="hours-info">
     <div class="item">
         <div class="active">00</div>
@@ -8,6 +9,8 @@
         <div class="label">예약 가능</div>
     </div>
 </div>
+
+-->
 
 <style lang="sass">
 .hours-info
