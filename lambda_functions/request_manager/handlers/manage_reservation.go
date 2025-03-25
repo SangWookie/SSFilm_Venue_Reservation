@@ -64,24 +64,15 @@ func ManageReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPR
 				room := strings.Split(venueDate, "#")[1]
 
 				// SQS에 이메일 요청 전송
-				emailReq := actions.EmailRequest{
-					Type: "CANCEL",
-					Data: actions.ReservationEmailData{
-						Name:     reservationItem["name"].(*types.AttributeValueMemberS).Value,
-						Location: room,
-						Time:     date,
-						Category: reservationItem["category"].(*types.AttributeValueMemberS).Value,
-						Details:  reqBody.Reason,
-					},
-					Email: emailValue.Value,
+				emailReq := actions.ReservationEmailData{
+					Name:     reservationItem["name"].(*types.AttributeValueMemberS).Value,
+					Location: room,
+					Time:     date,
+					Category: reservationItem["category"].(*types.AttributeValueMemberS).Value,
+					Details:  reqBody.Reason,
 				}
 
-				emailReqJSON, err := json.Marshal(emailReq)
-				if err != nil {
-					return response.APIGatewayResponseError("Failed to marshal email request", http.StatusInternalServerError), nil
-				}
-
-				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, string(emailReqJSON), reqBody.Code)
+				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, reqBody.Code, emailReq)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}
@@ -106,24 +97,15 @@ func ManageReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPR
 				time := fmt.Sprintf("%s [%d - %d]", date, reqBody.ChangeValues.ChangeTime[0], reqBody.ChangeValues.ChangeTime[len(reqBody.ChangeValues.ChangeTime)-1])
 
 				// SQS에 이메일 요청 전송
-				emailReq := actions.EmailRequest{
-					Type: "MODIFY",
-					Data: actions.ReservationEmailData{
-						Name:     reservationItem["name"].(*types.AttributeValueMemberS).Value,
-						Location: room,
-						Time:     time,
-						Category: reservationItem["category"].(*types.AttributeValueMemberS).Value,
-						Details:  reqBody.Reason,
-					},
-					Email: emailValue.Value,
+				emailReq := actions.ReservationEmailData{
+					Name:     reservationItem["name"].(*types.AttributeValueMemberS).Value,
+					Location: room,
+					Time:     time,
+					Category: reservationItem["category"].(*types.AttributeValueMemberS).Value,
+					Details:  reqBody.Reason,
 				}
 
-				emailReqJSON, err := json.Marshal(emailReq)
-				if err != nil {
-					return response.APIGatewayResponseError("Failed to marshal email request", http.StatusInternalServerError), nil
-				}
-
-				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, string(emailReqJSON), reqBody.Code)
+				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, reqBody.Code, emailReq)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}

@@ -65,14 +65,8 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 					Details:  reqBody.Reason,
 				}
 
-				// Marshal email data
-				dataJSON, err := json.Marshal(emailData)
-				if err != nil {
-					return response.APIGatewayResponseError("Failed to marshal email data", http.StatusInternalServerError), nil
-				}
-
 				// Send email via SQS
-				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, string(dataJSON), reqBody.Code)
+				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, reqBody.Code, emailData)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}
@@ -95,14 +89,8 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 					Details:  reqBody.Reason,
 				}
 
-				// Marshal email data
-				dataJSON, err := json.Marshal(emailData)
-				if err != nil {
-					return response.APIGatewayResponseError("Failed to marshal email data", http.StatusInternalServerError), nil
-				}
-
 				// Send email via SQS
-				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, string(dataJSON), reqBody.Code)
+				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, reqBody.Code, emailData)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}

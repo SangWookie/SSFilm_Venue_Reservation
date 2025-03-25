@@ -22,8 +22,8 @@ func (r *SQSClient) SendMessage(ctx context.Context, params *sqs.SendMessageInpu
 	return r.Client.SendMessage(ctx, params, optFns...)
 }
 
-func SendEmail(ctx context.Context, sqsClient SQSClientiface, email, data, emailType string) error {
-	message := map[string]string{
+func SendEmail(ctx context.Context, sqsClient SQSClientiface, email, emailType string, data ReservationEmailData) error {
+	message := map[string]interface{}{
 		"data":  data,
 		"type":  emailType,
 		"email": email,
