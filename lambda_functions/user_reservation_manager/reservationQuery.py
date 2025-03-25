@@ -62,8 +62,9 @@ venue_info = dynamodb.Table('venue_info')
 def get_venue_info():
     venueResult = venue_info.scan()
     items = venueResult.get('Items', [])
+    sorted_items = sorted(items, key=lambda x: x.get("sortOrder", 999))
     venues = []
-    for item in items:
+    for item in sorted_items:
         venues.append({
             "venue": item.get("venue", ""),
             "venueKor": item.get("venueKor", ""),
