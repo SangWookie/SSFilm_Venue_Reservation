@@ -67,6 +67,9 @@
                 {/snippet}
             </SelectableList>
 
+            {#if data.current_venue?.value.approval_mode == 'manual'}
+                <p style="color: red; font-weight: 600;">해당 공간의 예약은 관리자의 승인 후 확정됩니다. 승인 여부는 이메일로 알려드립니다.</p>
+            {/if}
             {#if data.current_venue?.value?.requirement}
                 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                 {@html data.current_venue?.value?.requirement}
