@@ -30,6 +30,13 @@ type SMTPManager struct{}
 
 func (r *SMTPManager) SendEmailWithGoogle(to, subject, body string) error {
 	auth := smtp.PlainAuth("", username, password, smtpServer)
+	log.Infof("SMTP Auth created with username: %s, server: %s", username, smtpServer)
+
+	log.Infof("Preparing to send email")
+	log.Infof("To: %s", to)
+	log.Infof("Subject: %s", subject)
+	log.Infof("Body: %s", body)
+
 	// 이메일 포맷
 	msg := []byte(fmt.Sprintf(
 		"To: %s\r\n"+
@@ -39,6 +46,8 @@ func (r *SMTPManager) SendEmailWithGoogle(to, subject, body string) error {
 			"\r\n"+
 			"%s\r\n", to, subject, body,
 	))
+
+	log.Infof("Full SMTP message:\n%s", msg)
 
 	// SMTP 서버에 연결하여 이메일 전송
 	err := smtp.SendMail(smtpServer+":"+smtpPort, auth, username, []string{to}, msg)
