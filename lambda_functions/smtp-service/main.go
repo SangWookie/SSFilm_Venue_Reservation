@@ -13,7 +13,7 @@ var (
 	smtpClient = &SMTPManager{}
 )
 
-type STMPRequestBodyType struct {
+type SMTPRequestBodyType struct {
 	Type  string               `json:"type"`
 	Data  ReservationEmailData `json:"data"`
 	Email string               `json:"email"`
@@ -22,7 +22,7 @@ type STMPRequestBodyType struct {
 func processMessage(record events.SQSMessage) error {
 	log.Info("Processed message: %s\n", record.Body)
 
-	var reqBody STMPRequestBodyType
+	var reqBody SMTPRequestBodyType
 	err := json.Unmarshal([]byte(record.Body), &reqBody)
 	if err != nil {
 		return err

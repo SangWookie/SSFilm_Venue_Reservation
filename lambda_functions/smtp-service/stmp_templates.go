@@ -200,11 +200,11 @@ const reservationCanceledTemplate = `
 `
 
 type ReservationEmailData struct {
-	Name     string
-	Location string
-	Time     string
-	Category string
-	Details  string
+	Name     string `json:"name"`
+	Location string `json:"location"`
+	Time     string `json:"time"`
+	Category string `json:"category"`
+	Details  string `json:"details"`
 }
 
 func getReservationEmail(name, location, time, category, details string, style string) (string, error) {
