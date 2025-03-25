@@ -25,3 +25,15 @@ variable "admin_passwd" {
   type        = string
   sensitive   = true
 }
+
+variable "gmail_username" {
+  description = "value for gmail username"
+  type        = string
+  sensitive   = true
+}
+
+variable "gmail_password" {
+  description = "value for gmail password"
+  type        = string
+  sensitive   = true
+}

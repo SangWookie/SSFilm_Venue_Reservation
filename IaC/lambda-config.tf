@@ -30,6 +30,7 @@ resource "aws_lambda_function" "login_manager" {
   role          = aws_iam_role.role.arn
   handler       = "lambda.lambda_handler"
   runtime       = "python3.12"
+  timeout       = 5
   environment {
     variables = {
       token_key = var.token_key
@@ -57,6 +58,12 @@ resource "aws_lambda_function" "request_manager" {
   timeout       = 5
   # comment this line to upload source code only once(untrack changes)
   # source_code_hash = data.archive_file.request_manager_zip.output_base64sha256
+  environment {
+    variables = {
+      GMAIL_USERNAME = var.gmail_username
+      GMAIL_PASSWORD = var.gmail_password
+    }
+  }
 }
 
 data "archive_file" "mode_manager_zip" {
