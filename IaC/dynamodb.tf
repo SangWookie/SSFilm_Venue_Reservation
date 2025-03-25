@@ -64,13 +64,13 @@ variable "venues" {
     allowPolicy = string
   }))
   default = [
-    { venue = "studio", venueKor = "스튜디오", allowPolicy = "auto" },
-    { venue = "mastering1", venueKor = "마스터링룸 1", allowPolicy = "auto" },
-    { venue = "mastering2", venueKor = "마스터링룸 2", allowPolicy = "auto" },
-    { venue = "meeting", venueKor = "회의실", allowPolicy = "auto" },
-    { venue = "mixing", venueKor = "믹싱룸/ADR룸", allowPolicy = "auto" },
     { venue = "editing", venueKor = "편집실", allowPolicy = "manual" },
     { venue = "lounge", venueKor = "과방", allowPolicy = "manual" },
+    { venue = "mixing", venueKor = "믹싱룸/ADR룸", allowPolicy = "auto" },
+    { venue = "meeting", venueKor = "회의실", allowPolicy = "auto" },
+    { venue = "studio", venueKor = "스튜디오", allowPolicy = "auto" },
+    { venue = "mastering2", venueKor = "마스터링룸 2", allowPolicy = "auto" },
+    { venue = "mastering1", venueKor = "마스터링룸 1", allowPolicy = "auto" },
   ]
 }
 
