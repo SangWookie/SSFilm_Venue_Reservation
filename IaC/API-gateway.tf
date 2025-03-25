@@ -25,6 +25,20 @@ resource "aws_apigatewayv2_stage" "dev" {
   description = "stage for development environment"
   name        = "dev"
   auto_deploy = true
+  access_log_settings {
+    destination_arn = "arn:aws:logs:ap-northeast-2:796973485724:log-group:/api-gateway/venue-reservation-http/dev"
+    format = jsonencode({
+      httpMethod : "$context.httpMethod"
+      ip : "$context.identity.sourceIp"
+      protocol : "$context.protocol"
+      requestId : "$context.requestId"
+      requestTime : "$context.requestTime"
+      responseLatency : "$context.responseLatency"
+      responseLength : "$context.responseLength"
+      routeKey : "$context.routeKey"
+      status : "$context.status"
+    })
+  }
 }
 
 # IAM
