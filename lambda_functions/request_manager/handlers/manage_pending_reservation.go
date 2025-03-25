@@ -3,12 +3,13 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"net/http"
 	"request_manager/actions"
 	"request_manager/response"
 	"strings"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 type RequestDeleteType struct {
@@ -21,12 +22,12 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 	request := params.Request
 	ctx := context.Background()
 	ddbClient := params.DdbClient
-	smtpClient := params.SmtpClient
+	sqsClient := params.SQSClient
 
 	var reqBody RequestDeleteType
 	err := json.Unmarshal([]byte(request.Body), &reqBody)
 	if err != nil {
-		log.Errorln(err)
+		return response.APIGatewayResponseError("Failed to parse request body", http.StatusBadRequest), nil
 	}
 
 	key := map[string]types.AttributeValue{
@@ -55,15 +56,23 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 				date := strings.Split(venueDate, "#")[0]
 				room := strings.Split(venueDate, "#")[1]
 
-				// TODO 시간 변경을 어떻게 보여주지?
-				emailContent, err := actions.GetReservationCompleteTemplate(actions.ReservationEmailData{
+				// Prepare email data
+				emailData := actions.ReservationEmailData{
 					Name:     isExist["name"].(*types.AttributeValueMemberS).Value,
 					Location: room,
 					Time:     date,
 					Category: isExist["category"].(*types.AttributeValueMemberS).Value,
 					Details:  reqBody.Reason,
-				})
-				err = actions.SendEmail(smtpClient, emailValue.Value, "예약 확인", emailContent)
+				}
+
+				// Marshal email data
+				dataJSON, err := json.Marshal(emailData)
+				if err != nil {
+					return response.APIGatewayResponseError("Failed to marshal email data", http.StatusInternalServerError), nil
+				}
+
+				// Send email via SQS
+				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, string(dataJSON), reqBody.Code)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}
@@ -77,15 +86,23 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 				date := strings.Split(venueDate, "#")[0]
 				room := strings.Split(venueDate, "#")[1]
 
-				// TODO 시간 변경을 어떻게 보여주지?
-				emailContent, err := actions.GetReservationCanceledTemplate(actions.ReservationEmailData{
+				// Prepare email data
+				emailData := actions.ReservationEmailData{
 					Name:     isExist["name"].(*types.AttributeValueMemberS).Value,
 					Location: room,
 					Time:     date,
 					Category: isExist["category"].(*types.AttributeValueMemberS).Value,
-					Details:  "",
-				})
-				err = actions.SendEmail(smtpClient, emailValue.Value, "관리자 예약 반려", emailContent)
+					Details:  reqBody.Reason,
+				}
+
+				// Marshal email data
+				dataJSON, err := json.Marshal(emailData)
+				if err != nil {
+					return response.APIGatewayResponseError("Failed to marshal email data", http.StatusInternalServerError), nil
+				}
+
+				// Send email via SQS
+				err = actions.SendEmail(ctx, sqsClient, emailValue.Value, string(dataJSON), reqBody.Code)
 				if err != nil {
 					return response.APIGatewayResponseError("Failed to send email", http.StatusInternalServerError), nil
 				}

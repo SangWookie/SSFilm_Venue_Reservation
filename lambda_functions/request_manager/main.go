@@ -2,14 +2,16 @@ package main
 
 import (
 	"context"
+	"request_manager/actions"
+	"request_manager/handlers"
+	"request_manager/response"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/sirupsen/logrus"
-	"request_manager/actions"
-	"request_manager/handlers"
-	"request_manager/response"
 )
 
 var log = logrus.New()
@@ -24,8 +26,9 @@ var (
 	ddbClient = &actions.DDBClient{
 		DynamoDbClient: dynamodb.NewFromConfig(sdkConfig),
 	}
-
-	smtpClient = &actions.SMTPManager{}
+	sqsClient = &actions.SQSClient{
+		Client: sqs.NewFromConfig(sdkConfig),
+	}
 )
 
 type RouteHandler func(params handlers.RouterHandlerParameters) (events.APIGatewayV2HTTPResponse, error)
@@ -51,10 +54,10 @@ func handleRequest(ctx context.Context, request events.APIGatewayV2HTTPRequest) 
 	log.Info("Client IP: ", request.RequestContext.HTTP.SourceIP)
 
 	routerHandlerParameters := handlers.RouterHandlerParameters{
-		Ctx:        ctx,
-		Request:    request,
-		DdbClient:  ddbClient,
-		SmtpClient: smtpClient,
+		Ctx:       ctx,
+		Request:   request,
+		DdbClient: ddbClient,
+		SQSClient: sqsClient,
 	}
 
 	if handler, exist := routes[path]; exist {

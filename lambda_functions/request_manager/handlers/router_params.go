@@ -7,8 +7,8 @@ import (
 )
 
 type RouterHandlerParameters struct {
-	Ctx        context.Context
-	Request    events.APIGatewayV2HTTPRequest
-	DdbClient  actions.DDBClientiface
-	SmtpClient actions.SMTPManagerIFace
+	Ctx       context.Context
+	Request   events.APIGatewayV2HTTPRequest
+	DdbClient actions.DDBClientiface
+	SQSClient actions.SQSClientiface
 }

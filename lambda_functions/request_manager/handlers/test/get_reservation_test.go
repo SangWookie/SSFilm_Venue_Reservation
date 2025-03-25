@@ -16,7 +16,7 @@ import (
 func TestGetReservations(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
-	mockSMTP := &mocks.MockSendEmail{}
+	mockSQS := &mocks.MockSQSClient{}
 
 	// Mock Scan response
 	mockDDB.On("Scan", mock.Anything, mock.MatchedBy(func(input *dynamodb.ScanInput) bool {
@@ -36,10 +36,10 @@ func TestGetReservations(t *testing.T) {
 
 	// Create handler parameters
 	params := handlers.RouterHandlerParameters{
-		Ctx:        ctx,
-		Request:    request,
-		DdbClient:  mockDDB,
-		SmtpClient: mockSMTP,
+		Ctx:       ctx,
+		Request:   request,
+		DdbClient: mockDDB,
+		SQSClient: mockSQS,
 	}
 
 	// Call the handler
@@ -51,5 +51,5 @@ func TestGetReservations(t *testing.T) {
 
 	// Verify mock was called
 	mockDDB.AssertExpectations(t)
-	mockSMTP.AssertExpectations(t)
+	mockSQS.AssertExpectations(t)
 }

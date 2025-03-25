@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -44,6 +45,15 @@ func (m *MockDDBClient) Query(ctx context.Context, params *dynamodb.QueryInput, 
 func (m *MockDDBClient) ExecuteStatement(ctx context.Context, params *dynamodb.ExecuteStatementInput, optFns ...func(*dynamodb.Options)) (*dynamodb.ExecuteStatementOutput, error) {
 	args := m.Called(ctx, params)
 	return args.Get(0).(*dynamodb.ExecuteStatementOutput), args.Error(1)
+}
+
+type MockSQSClient struct {
+	mock.Mock
+}
+
+func (m *MockSQSClient) SendMessage(ctx context.Context, params *sqs.SendMessageInput, optFns ...func(*sqs.Options)) (*sqs.SendMessageOutput, error) {
+	args := m.Called(ctx, params)
+	return args.Get(0).(*sqs.SendMessageOutput), args.Error(1)
 }
 
 type MockSendEmail struct {

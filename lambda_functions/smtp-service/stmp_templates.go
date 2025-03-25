@@ -1,4 +1,4 @@
-package actions
+package main
 
 import (
 	"bytes"
@@ -237,5 +237,8 @@ func GetReservationModifiedTemplate(data ReservationEmailData) (string, error) {
 	return getReservationEmail(data.Name, data.Location, data.Time, data.Category, data.Details, reservationModifiedTemplate)
 }
 func GetReservationCanceledTemplate(data ReservationEmailData) (string, error) {
+	return getReservationEmail(data.Name, data.Location, data.Time, data.Category, data.Details, reservationCanceledTemplate)
+}
+func GetRequestDenyTemplate(data ReservationEmailData) (string, error) {
 	return getReservationEmail(data.Name, data.Location, data.Time, data.Category, data.Details, reservationCanceledTemplate)
 }

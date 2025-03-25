@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -17,7 +18,7 @@ import (
 func TestManagePendingReservation_Accept(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
-	mockSMTP := &mocks.MockSendEmail{}
+	mockSQS := &mocks.MockSQSClient{}
 
 	// Mock reservation data
 	requestId := "test-reservation-id"
@@ -58,7 +59,10 @@ func TestManagePendingReservation_Accept(t *testing.T) {
 			input.Key["requestId"].(*types.AttributeValueMemberS).Value == requestId
 	})).Return(&dynamodb.DeleteItemOutput{}, nil)
 
-	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+	// Mock SQS SendMessage
+	mockSQS.On("SendMessage", mock.Anything, mock.MatchedBy(func(input *sqs.SendMessageInput) bool {
+		return true
+	})).Return(&sqs.SendMessageOutput{}, nil)
 
 	// Create request body
 	reqBody := handlers.RequestDeleteType{
@@ -75,10 +79,10 @@ func TestManagePendingReservation_Accept(t *testing.T) {
 
 	// Create handler parameters
 	params := handlers.RouterHandlerParameters{
-		Ctx:        ctx,
-		Request:    request,
-		DdbClient:  mockDDB,
-		SmtpClient: mockSMTP,
+		Ctx:       ctx,
+		Request:   request,
+		DdbClient: mockDDB,
+		SQSClient: mockSQS,
 	}
 
 	// Call the handler
@@ -90,13 +94,13 @@ func TestManagePendingReservation_Accept(t *testing.T) {
 
 	// Verify all mocks were called
 	mockDDB.AssertExpectations(t)
-	mockSMTP.AssertExpectations(t)
+	mockSQS.AssertExpectations(t)
 }
 
 func TestManagePendingReservation_Deny(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
-	mockSMTP := &mocks.MockSendEmail{}
+	mockSQS := &mocks.MockSQSClient{}
 
 	// Mock reservation data
 	requestId := "test-reservation-id"
@@ -132,7 +136,10 @@ func TestManagePendingReservation_Deny(t *testing.T) {
 			input.Key["requestId"].(*types.AttributeValueMemberS).Value == requestId
 	})).Return(&dynamodb.DeleteItemOutput{}, nil)
 
-	mockSMTP.On("SendEmailWithGoogle", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+	// Mock SQS SendMessage
+	mockSQS.On("SendMessage", mock.Anything, mock.MatchedBy(func(input *sqs.SendMessageInput) bool {
+		return true
+	})).Return(&sqs.SendMessageOutput{}, nil)
 
 	// Create request body
 	requestBody := handlers.RequestDeleteType{
@@ -149,10 +156,10 @@ func TestManagePendingReservation_Deny(t *testing.T) {
 
 	// Create handler parameters
 	params := handlers.RouterHandlerParameters{
-		Ctx:        ctx,
-		Request:    request,
-		DdbClient:  mockDDB,
-		SmtpClient: mockSMTP,
+		Ctx:       ctx,
+		Request:   request,
+		DdbClient: mockDDB,
+		SQSClient: mockSQS,
 	}
 
 	// Call the handler
@@ -164,13 +171,13 @@ func TestManagePendingReservation_Deny(t *testing.T) {
 
 	// Verify all mocks were called
 	mockDDB.AssertExpectations(t)
-	mockSMTP.AssertExpectations(t)
+	mockSQS.AssertExpectations(t)
 }
 
 func TestManagePendingReservation_InvalidCode(t *testing.T) {
 	// Setup mock DynamoDB client
 	mockDDB := &mocks.MockDDBClient{}
-	mockSMTP := &mocks.MockSendEmail{}
+	mockSQS := &mocks.MockSQSClient{}
 
 	// Mock reservation data
 	requestId := "test-reservation-id"
@@ -201,10 +208,10 @@ func TestManagePendingReservation_InvalidCode(t *testing.T) {
 
 	// Create handler parameters
 	params := handlers.RouterHandlerParameters{
-		Ctx:        ctx,
-		Request:    request,
-		DdbClient:  mockDDB,
-		SmtpClient: mockSMTP,
+		Ctx:       ctx,
+		Request:   request,
+		DdbClient: mockDDB,
+		SQSClient: mockSQS,
 	}
 
 	// Call the handler
@@ -214,7 +221,7 @@ func TestManagePendingReservation_InvalidCode(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 404, response.StatusCode)
 
-	// Verify mocks were called
+	// Verify all mocks were called
 	mockDDB.AssertExpectations(t)
-	mockSMTP.AssertExpectations(t)
+	mockSQS.AssertExpectations(t)
 }

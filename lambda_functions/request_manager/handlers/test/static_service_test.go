@@ -16,8 +16,8 @@ import (
 
 func TestGetStatic(t *testing.T) {
 	// Setup mock DynamoDB client
-	mockDDB := new(mocks.MockDDBClient)
-	mockSMTP := new(mocks.MockSendEmail)
+	mockDDB := &mocks.MockDDBClient{}
+	mockSQS := &mocks.MockSQSClient{}
 
 	// Mock ExecuteStatement response for venue statistics
 	mockDDB.On("ExecuteStatement", mock.Anything, mock.MatchedBy(func(input *dynamodb.ExecuteStatementInput) bool {
@@ -44,10 +44,10 @@ func TestGetStatic(t *testing.T) {
 
 	// Create handler parameters
 	params := handlers.RouterHandlerParameters{
-		Ctx:        context.Background(),
-		Request:    request,
-		DdbClient:  mockDDB,
-		SmtpClient: mockSMTP,
+		Ctx:       context.Background(),
+		Request:   request,
+		DdbClient: mockDDB,
+		SQSClient: mockSQS,
 	}
 
 	// Call the handler
