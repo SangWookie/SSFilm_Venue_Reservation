@@ -41,7 +41,7 @@ def issue_access_token(username):
     payload = {
         "username": username
     }
-    payload["exp"] = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=10)
+    payload["exp"] = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
     
     token = jwt.encode(payload, TOKEN_SECRET, algorithm="HS256")
     
