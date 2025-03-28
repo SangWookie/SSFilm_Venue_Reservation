@@ -30,6 +30,7 @@
 
     <InputBox title="일자 선택" description={form_data.reservations.date}>
         {#snippet custom()}
+            <span>최대 2주 이내의 일정까지 예약 가능합니다.</span>
             <div class="calendar-wrapper">
                 <Calendar
                     items={data.calendar}
@@ -46,7 +47,7 @@
         {/snippet}
         <ValidateMessage
             isValid={validations.reservations.date.not_deadline}
-            message="사용일 기준, 전 날 17시까지만 예약 가능합니다."
+            message="예약은 사용일 하루 전 17시까지 신청해야 합니다."
         />
         <ValidateMessage
             isValid={validations.reservations.date.not_past}
