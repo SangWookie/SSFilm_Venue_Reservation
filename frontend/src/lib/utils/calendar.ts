@@ -20,8 +20,7 @@ export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined
         /// Pushs the current week into final data and then clear it.
         const pushCurrentWeek = () => {
             temp_week = temp_week.concat(
-                Array.from(Array(7 - temp_week.length).keys())
-                    .map(() => undefined)
+                Array.from(Array(7 - temp_week.length).keys()).map(() => undefined)
             );
             temp_total.push(temp_week);
             temp_week = [];
@@ -48,8 +47,7 @@ export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined
         // Sun(7) -> Not in this case due to `date.weekday !== 7`
         if (date.weekday !== 7 && temp_week.length === 0) {
             temp_week = temp_week.concat(
-                Array.from(Array(date.weekday).keys())
-                    .map(() => undefined)
+                Array.from(Array(date.weekday).keys()).map(() => undefined)
             );
         }
 
@@ -75,7 +73,9 @@ export const generateCalendarFromProps = <T extends DateTime, WrappedT extends {
 };
 
 export const getWeeksRangeWithPast = () =>
-    Interval.after(DateTime.local().set({ hour: 23, minute: 59 }).minus({ days: 7 }), { days: 7 + 14 })
+    Interval.after(DateTime.local().set({ hour: 23, minute: 59 }).minus({ days: 7 }), {
+        days: 7 + 14
+    })
         .splitBy({ day: 1 })
         .map((i) => i.start)
         .filter((i) => i != null);

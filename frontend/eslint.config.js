@@ -40,6 +40,5 @@ export default ts.config(
         rules: {
             '@typescript-eslint/no-unused-expressions': 'off'
         }
-        
     }
 );

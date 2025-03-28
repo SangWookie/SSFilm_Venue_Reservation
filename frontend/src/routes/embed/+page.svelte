@@ -9,12 +9,12 @@
     import { getReservationByDate } from '$lib/api/api';
     import { intoDateString } from '$lib/utils/date';
     //import { getReservations } from '$lib/api/nonstate.mock';
-    
-    import NavbarEmbed from '$lib/components/ui/navbar-embed.svelte'
-    
+
+    import NavbarEmbed from '$lib/components/ui/navbar-embed.svelte';
+
     import VenueHeaderInformationComponent from '$lib/components/ui/information/venue-header.svelte';
     import VenueInformationComponent from '$lib/components/ui/information/venue.svelte';
-    
+
     let response: ReservationList | undefined = $state(undefined);
 
     const calendar_props = $state({
@@ -25,19 +25,18 @@
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onDateClick: (date?: MinimalCalendarUIItemWithHref) => {}
     });
-    
+
     calendar_props.onDateClick = (date?: MinimalCalendarUIItemWithHref) => {
         if (!date || loading_status) return;
         console.log('date clicked', date);
         loading_status = true;
         calendar_props.selected = [date];
-        getReservationByDate(intoDateString(date.date))
-            .then(res => {
-                calendar_props.selected = [date];
-                loading_status = false;
-                response = res;
-            })
-    }
+        getReservationByDate(intoDateString(date.date)).then((res) => {
+            calendar_props.selected = [date];
+            loading_status = false;
+            response = res;
+        });
+    };
 
     let loading_status = $state(false);
 
@@ -51,8 +50,7 @@
     });
 </script>
 
-
-<NavbarEmbed href="https://ssfilm-v0-extra.19721121.xyz/new"/>
+<NavbarEmbed href="https://ssfilm-v0-extra.19721121.xyz/new" />
 
 <div class="page">
     <div class="calendar-wrapper">
@@ -65,14 +63,13 @@
             <div class="date-header">
                 {response.date}
             </div>
-            <VenueHeaderInformationComponent/>
+            <VenueHeaderInformationComponent />
             <div class="venues">
                 {#each response.venues as venue (venue)}
                     <VenueInformationComponent data={venue} />
                 {/each}
             </div>
         {/if}
-
     </ul>
 </div>
 

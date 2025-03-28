@@ -16,9 +16,9 @@ export const getHourRangeString = (hours: number[]) => {
     const is_sequence = [...hours] // clone
         .sort((a, b) => a - b)
         .every((value, index, array) => index == 0 || array[index - 1] + 1 == value);
-    
-    if (is_sequence && hours.length > 1) 
-        return `${zeroPad(hours.at(0)!.toString())}~${zeroPad(hours.at(-1)!.toString())}`
 
-    return hours.map(i => zeroPad(i.toString())).join(',');
-}
+    if (is_sequence && hours.length > 1)
+        return `${zeroPad(hours.at(0)!.toString())}~${zeroPad(hours.at(-1)!.toString())}`;
+
+    return hours.map((i) => zeroPad(i.toString())).join(',');
+};

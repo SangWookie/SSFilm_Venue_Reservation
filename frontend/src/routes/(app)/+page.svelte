@@ -45,7 +45,7 @@
         // https://github.com/moment/luxon/issues/1130
         async function load() {
             calendar_props.items = getCalendarPlaceholder();
-            const today = calendar_props.items.find(d => d.mark?.today);
+            const today = calendar_props.items.find((d) => d.mark?.today);
             if (today) load_date(today);
         }
         load();

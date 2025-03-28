@@ -8,9 +8,9 @@ export const getUnavilableHours = (reservation: ReservationList, venue: Venue): 
 
 export const getUnavilableHoursByVenue = (venue_data: ReservationByVenue): number[] => {
     if (!venue_data) return [];
-    
+
     return [
         ...venue_data.reservations.flatMap((r) => r.time),
         ...venue_data.unavailable_periods.flatMap((r) => r.time)
     ].sort((a, b) => a - b);
-}
+};

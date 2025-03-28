@@ -1,5 +1,5 @@
 <script lang="ts">
-    import FormDonePage from '$lib/components/ui/form-done-page.svelte'
+    import FormDonePage from '$lib/components/ui/form-done-page.svelte';
 </script>
 
-<FormDonePage/>
+<FormDonePage />

@@ -1,12 +1,12 @@
 <script lang="ts">
     import { type FormData, init_form_data, isAllValidated, validate, type Validations } from '.';
-    
+
     import { goto } from '$app/navigation';
 
     import RequesterInfoSection from './sections/requester-info.svelte';
     import ReservationsSection from './sections/reservations.svelte';
-    import Button from '$lib/components/ui/button.svelte'; 
-    import AgreementSection from './sections/agreement.svelte'
+    import Button from '$lib/components/ui/button.svelte';
+    import AgreementSection from './sections/agreement.svelte';
 
     import { requestNewReservationFromData } from '.';
     import { CheckIcon } from '@lucide/svelte';
@@ -71,11 +71,7 @@
     bind:collapsible_open={reservations_collapsible_open}
 />
 
-<AgreementSection
-    bind:form_data
-    {validations}
-    bind:collapsible_open={agreement_collapsible_open}
-/>
+<AgreementSection bind:form_data {validations} bind:collapsible_open={agreement_collapsible_open} />
 
 {errorMessage ?? ''}
 <Button state={button_state} onClick={button_click_handler}>

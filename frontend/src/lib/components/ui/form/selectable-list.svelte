@@ -38,11 +38,11 @@
             onclick={() => clickHandler(item)}
         >
             <div class="check">
-                <Check size={20}/>
+                <Check size={20} />
             </div>
             {#if labelSnippet}
                 {@render labelSnippet(item)}
-            {:else} 
+            {:else}
                 {item.label}
             {/if}
         </button>

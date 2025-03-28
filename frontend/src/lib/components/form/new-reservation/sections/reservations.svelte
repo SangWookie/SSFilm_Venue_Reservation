@@ -58,7 +58,11 @@
 
     <InputBox title="장소 선택" description={form_data.reservations.venue}>
         {#snippet custom()}
-            <SelectableList data={data.venue_selectable} isRadio={true} disabled={data.loading_reservation || !(form_data.reservations.date.length > 0)}>
+            <SelectableList
+                data={data.venue_selectable}
+                isRadio={true}
+                disabled={data.loading_reservation || !(form_data.reservations.date.length > 0)}
+            >
                 {#snippet labelSnippet(item: SelectableItem<Venue>)}
                     {item.label}
 
@@ -69,14 +73,16 @@
             </SelectableList>
 
             {#if data.current_venue?.value.approval_mode == 'manual'}
-                <p style="color: red; font-weight: 600;">해당 공간의 예약은 관리자의 승인 후 확정됩니다. 승인 여부는 이메일로 알려드립니다.</p>
+                <p style="color: red; font-weight: 600;">
+                    해당 공간의 예약은 관리자의 승인 후 확정됩니다. 승인 여부는 이메일로
+                    알려드립니다.
+                </p>
             {/if}
             {#if data.current_venue?.value?.requirement}
                 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                 {@html data.current_venue?.value?.requirement}
             {/if}
         {/snippet}
-
     </InputBox>
 
     <InputBox
@@ -86,7 +92,9 @@
         {#snippet custom()}
             <SelectableList
                 data={data.hour_selectable}
-                disabled={data.loading_reservation || form_data.reservations.date.length === 0 || form_data.reservations.venue.length === 0}
+                disabled={data.loading_reservation ||
+                    form_data.reservations.date.length === 0 ||
+                    form_data.reservations.venue.length === 0}
                 clickHandler={data.hourSelectableClickCallback}
             />
         {/snippet}

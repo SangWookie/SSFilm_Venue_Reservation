@@ -10,7 +10,8 @@
     onMount(() => {
         if (page.url.searchParams.has('venue_name')) {
             extra_information_html =
-                venues.find((i) => i.venue == page.url.searchParams.get('venue_name'))?.requirement || '';
+                venues.find((i) => i.venue == page.url.searchParams.get('venue_name'))
+                    ?.requirement || '';
         }
     });
 </script>

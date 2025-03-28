@@ -9,14 +9,13 @@ import * as MockConst from '$lib/mock.const.ts';
 
 const api_route = 'https://oxu8i5hf5h.execute-api.ap-northeast-2.amazonaws.com/dev';
 export async function getReservationByDate(date: DateString): Promise<ReservationList> {
-    return fetch(`${api_route}/reservations?date=${date}`)
-        .then((res) => res.json());
+    return fetch(`${api_route}/reservations?date=${date}`).then((res) => res.json());
 }
 
 export async function postNewReservation(
     body: RequestNewReservationData
 ): Promise<RequestNewReservationResponse> {
-    console.log(body)
+    console.log(body);
     return fetch(`${api_route}/reservations`, {
         method: 'POST',
         body: JSON.stringify(body),
@@ -28,8 +27,9 @@ export async function postNewReservation(
 
 /// Returns by 200 or 404.
 export async function getReservationStatus(reservationId: string): Promise<boolean> {
-    return fetch(`${api_route}/reservations/check?reservationId=${reservationId}`)
-        .then((res) => res.status === 200);
+    return fetch(`${api_route}/reservations/check?reservationId=${reservationId}`).then(
+        (res) => res.status === 200
+    );
 }
 
 export async function getAppState(): Promise<AppState> {
