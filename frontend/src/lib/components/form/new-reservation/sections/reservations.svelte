@@ -10,17 +10,23 @@
     import { type FormData, type Validations } from '../index.ts';
     import { type SelectableItem } from '$lib/components/ui/form/selectable-list.svelte.ts';
     import { ReservationSectionFormState } from '../state.svelte.ts';
-    const {
+    let {
         form_data = $bindable(),
         validations = $bindable(),
-        collapsible_open = $bindable(true)
+        collapsible_open = $bindable(true),
+        temp_prop_venue = $bindable(false)
     }: {
         form_data: FormData;
         validations: Validations;
         collapsible_open: boolean;
+        temp_prop_venue: boolean;
     } = $props();
 
     let data = new ReservationSectionFormState(form_data);
+
+    $effect(() => {
+        temp_prop_venue = data.current_venue?.value.approval_mode == 'manual';
+    })
 </script>
 
 <CollapsibleBlock open={collapsible_open}>

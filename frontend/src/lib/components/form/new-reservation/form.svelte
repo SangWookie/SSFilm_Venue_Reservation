@@ -17,6 +17,8 @@
     let submissionState: 'unavailable' | 'available' | 'waiting' | 'done' = $state('unavailable');
     let errorMessage: string | undefined = $state(undefined);
 
+    let temp_prop_venue = $state(false);
+
     let validation_state = $state(false);
     $effect(() => {
         validation_state = isAllValidated(validations);
@@ -45,7 +47,7 @@
             .then((response) => {
                 submissionState = 'done';
                 console.log(response);
-                goto(`/form_done?venue_name=${form_data.reservations.venue}`);
+                goto(`/form_done?venue_name=${form_data.reservations.venue}&manual=${temp_prop_venue}`);
             })
             .catch((e) => {
                 console.error('Failed to request form', e);
@@ -64,11 +66,12 @@
     bind:form_data
     {validations}
     bind:collapsible_open={requester_info_collapsible_open}
-/>
-<ReservationsSection
+    />
+    <ReservationsSection
     bind:form_data
     {validations}
     bind:collapsible_open={reservations_collapsible_open}
+    bind:temp_prop_venue
 />
 
 <AgreementSection bind:form_data {validations} bind:collapsible_open={agreement_collapsible_open} />
