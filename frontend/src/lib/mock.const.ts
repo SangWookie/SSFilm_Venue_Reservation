@@ -85,4 +85,4 @@ export const venues: Venue[] = [
     };
 });
 
-export const purposes = ['수업', '워크샵', '과제', '소모임', '개인 작업', '기타'];
+export const purposes = ['수업', '공식행사', '워크샵', '장비반출', '학생회/배급/기술/유튜브', '과제', '소모임', '개인작업', '기타'];
