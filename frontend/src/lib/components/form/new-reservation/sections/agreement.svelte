@@ -20,9 +20,9 @@
         유의사항
     {/snippet}
 
-    <p class="note">정확한 정보를 입력해 주시기 바랍니다.</p>
-    <p class="note">균등한 공간 사용을 위해, 사용할 만큼만 예약 바랍니다.</p>
-    <p class="note">타인 명의 도용 발각 시 불이익이 있습니다.</p>
+    <p class="note">정확한 정보를 입력해 주시기 바랍니다.
+    <br/>균등한 공간 사용을 위해, 사용할 만큼만 예약 바랍니다.
+    <br/>타인 명의 도용 발각 시 불이익이 있습니다.</p>
 </CollapsibleBlock>
 
 <style lang="sass">
