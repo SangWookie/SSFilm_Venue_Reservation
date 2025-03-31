@@ -63,11 +63,17 @@ func ManageReservation(params RouterHandlerParameters) (events.APIGatewayV2HTTPR
 				date := strings.Split(venueDate, "#")[0]
 				room := strings.Split(venueDate, "#")[1]
 
+				// Get time from time list
+				timeList := reservationItem["time"].(*types.AttributeValueMemberL).Value
+				startTime := timeList[0].(*types.AttributeValueMemberN).Value
+				endTime := timeList[len(timeList)-1].(*types.AttributeValueMemberN).Value
+				time := fmt.Sprintf("%s [%s - %s]", date, startTime, endTime)
+
 				// SQS에 이메일 요청 전송
 				emailReq := actions.ReservationEmailData{
 					Name:     reservationItem["name"].(*types.AttributeValueMemberS).Value,
 					Location: room,
-					Time:     date,
+					Time:     time,
 					Category: reservationItem["category"].(*types.AttributeValueMemberS).Value,
 					Details:  reqBody.Reason,
 				}

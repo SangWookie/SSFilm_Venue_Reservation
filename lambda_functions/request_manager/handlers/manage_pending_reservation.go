@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"request_manager/actions"
 	"request_manager/response"
@@ -56,11 +57,17 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 				date := strings.Split(venueDate, "#")[0]
 				room := strings.Split(venueDate, "#")[1]
 
+				// Get time from time list
+				timeList := isExist["time"].(*types.AttributeValueMemberL).Value
+				startTime := timeList[0].(*types.AttributeValueMemberN).Value
+				endTime := timeList[len(timeList)-1].(*types.AttributeValueMemberN).Value
+				time := fmt.Sprintf("%s [%s - %s]", date, startTime, endTime)
+
 				// Prepare email data
 				emailData := actions.ReservationEmailData{
 					Name:     isExist["name"].(*types.AttributeValueMemberS).Value,
 					Location: room,
-					Time:     date,
+					Time:     time,
 					Category: isExist["category"].(*types.AttributeValueMemberS).Value,
 					Details:  reqBody.Reason,
 				}
@@ -80,11 +87,17 @@ func ManagePendingReservation(params RouterHandlerParameters) (events.APIGateway
 				date := strings.Split(venueDate, "#")[0]
 				room := strings.Split(venueDate, "#")[1]
 
+				// Get time from time list
+				timeList := isExist["time"].(*types.AttributeValueMemberL).Value
+				startTime := timeList[0].(*types.AttributeValueMemberN).Value
+				endTime := timeList[len(timeList)-1].(*types.AttributeValueMemberN).Value
+				time := fmt.Sprintf("%s [%s - %s]", date, startTime, endTime)
+
 				// Prepare email data
 				emailData := actions.ReservationEmailData{
 					Name:     isExist["name"].(*types.AttributeValueMemberS).Value,
 					Location: room,
-					Time:     date,
+					Time:     time,
 					Category: isExist["category"].(*types.AttributeValueMemberS).Value,
 					Details:  reqBody.Reason,
 				}
