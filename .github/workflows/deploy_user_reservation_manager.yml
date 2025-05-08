@@ -14,11 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: |
-          cd lambda_functions/user_reservation_manager
-          pip install -r requirements.txt -t .
-
       - name: Install zip tool
         uses: montudor/action-zip@v1
 
