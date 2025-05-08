@@ -1,7 +1,7 @@
 import json
 from requestReservation import request_reservation
 import reservationQuery as r
-from unavailablePeriods import get_unavailable_periods
+import asyncio
 
 def lambda_handler(event, context):
     method = event['requestContext']['http']['method']
@@ -13,16 +13,7 @@ def lambda_handler(event, context):
     try:
         if path_without_stage == "/reservations":
             if method == "GET":
-                venueResult = r.get_venue_info()
-                result = {
-                    'date': queryParams.get('date', ''),
-                    'venues': venueResult
-                }
-                for v in result['venues']:
-                    venue = v['venue']
-                    queryParams['venue'] = venue
-                    v['reservations'] = r.current_reservation_query(queryParams)
-                    v['unavailable_periods'] = get_unavailable_periods(queryParams)
+                result = asyncio.run(r.getResrv(queryParams))
                 return {
                     'statusCode': 200,
                     'body': json.dumps(result)

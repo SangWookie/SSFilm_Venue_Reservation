@@ -1,8 +1,10 @@
 import boto3
+import asyncio
+from unavailablePeriods import get_unavailable_periods
 
 dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
 
-def current_reservation_query(queryParams, current_reservation=None):
+async def current_reservation_query(queryParams, current_reservation=None):
     if current_reservation is None:
         current_reservation = dynamodb.Table('current_reservation')
         
@@ -71,3 +73,28 @@ def get_venue_info():
             "approval_mode": item.get("allowPolicy", ""),
         })
     return venues
+
+async def getResrv(queryParams):
+    venueResult = get_venue_info()  # 여기는 동기 호출이라고 가정
+    result = {
+        'date': queryParams.get('date', ''),
+        'venues': venueResult
+    }
+
+    # venue 목록을 비동기적으로 처리
+    tasks = [enrich_venue(v, queryParams) for v in result['venues']]
+    result['venues'] = await asyncio.gather(*tasks)
+
+    return result
+
+async def enrich_venue(v, base_query):
+    venue = v['venue']
+    query = base_query.copy()
+    query['venue'] = venue
+
+    # 두 개의 I/O 작업을 병렬적으로 실행
+    res_task = asyncio.create_task(current_reservation_query(query))
+    unavail_task = asyncio.create_task(get_unavailable_periods(query))
+
+    v['reservations'], v['unavailable_periods'] = await asyncio.gather(res_task, unavail_task)
+    return v

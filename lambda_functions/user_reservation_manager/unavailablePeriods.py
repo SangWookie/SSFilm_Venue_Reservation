@@ -2,7 +2,7 @@ import boto3
 
 dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
 
-def get_unavailable_periods(queryParams, unavailable_periods=None):
+async def get_unavailable_periods(queryParams, unavailable_periods=None):
     if unavailable_periods is None:
         unavailable_periods = dynamodb.Table('reservation_limit')
         
