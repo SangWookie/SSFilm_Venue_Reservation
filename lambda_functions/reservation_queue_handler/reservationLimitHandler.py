@@ -31,10 +31,12 @@ def reservationLimitHandler(message, requestId):
 current_reservation = dynamodb.Table('current_reservation')
 
 def putCurrentReservation(message, requestId):
+    full_date = message['date']
+    year_month = full_date[:7]
     try:
         data = {
             "reservationId": requestId,
-            "venueDate": message['date'] + '#' + message['venue'],
+            "venueDate": full_date + '#' + message['venue'],
             "time": message['time'],
             "studentId": message['studentId'],
             "name": message['name'],
@@ -42,6 +44,7 @@ def putCurrentReservation(message, requestId):
             "category": message['category'],
             "purpose": message['purpose'],
             "companion": message['companion']
+            "date": year_month
         }
         current_reservation.put_item(Item=data)
         

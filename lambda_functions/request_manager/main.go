@@ -36,6 +36,7 @@ type RouteHandler func(params handlers.RouterHandlerParameters) (events.APIGatew
 var routes = map[string]RouteHandler{
 	"getPendingReservations":   handlers.GetPendingReservations,
 	"getReservations":          handlers.GetReservations,
+	"getReservations_v2":       handlers.GetReservationV2,
 	"manageReservation":        handlers.ManageReservation,
 	"managePendingReservation": handlers.ManagePendingReservation,
 	"statistic":                handlers.GetStatic,
