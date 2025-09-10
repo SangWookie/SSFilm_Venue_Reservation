@@ -70,6 +70,7 @@ func GetReservationV2(params RouterHandlerParameters) (events.APIGatewayV2HTTPRe
 		TableName:                 aws.String("current_reservation"),
 		IndexName:                 aws.String("date-venueDate-index"),
 		KeyConditionExpression:    expr.KeyCondition(),
+		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 	})
 	if err != nil {
