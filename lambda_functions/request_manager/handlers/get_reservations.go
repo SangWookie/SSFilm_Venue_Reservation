@@ -68,7 +68,7 @@ func GetReservationV2(params RouterHandlerParameters) (events.APIGatewayV2HTTPRe
 
 	out, err := params.DdbClient.Query(params.Ctx, &dynamodb.QueryInput{
 		TableName:                 aws.String("current_reservation"),
-		IndexName:                 aws.String("venueDate-index"),
+		IndexName:                 aws.String("date-venueDate-index"),
 		KeyConditionExpression:    expr.KeyCondition(),
 		ExpressionAttributeValues: expr.Values(),
 	})
