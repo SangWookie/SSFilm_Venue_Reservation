@@ -43,12 +43,13 @@ def putCurrentReservation(message, requestId):
             "email": message['email'],
             "category": message['category'],
             "purpose": message['purpose'],
-            "companion": message['companion']
+            "companion": message['companion'],
             "date": year_month
         }
         current_reservation.put_item(Item=data)
         
     except Exception as e:
+        print(e)
         return {
             "statusCode": 500,
             "body": json.dumps({"error": str(e)}),
@@ -72,6 +73,7 @@ def putPendingReservation(message, requestId):
         pending_reservation.put_item(Item=data)
         
     except Exception as e:
+        print(e)
         return {
             "statusCode": 500,
             "body": json.dumps({"error": str(e)}),
