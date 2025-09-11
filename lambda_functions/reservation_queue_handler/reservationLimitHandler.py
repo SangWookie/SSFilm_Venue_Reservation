@@ -97,6 +97,7 @@ def checkDailyReservationLimit(message):
         timeCnt += len(item['time'])
     
     if(timeCnt > 6):
+        print("Daily reservation limit exceeded")
         return False
     else:
         return True
