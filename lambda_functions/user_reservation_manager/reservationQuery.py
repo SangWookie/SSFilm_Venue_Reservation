@@ -91,8 +91,5 @@ async def enrich_venue(v, base_query):
     query = base_query.copy()
     query['venue'] = venue
 
-    # 두 개의 I/O 작업을 병렬적으로 실행
-    res_task = asyncio.create_task(current_reservation_query(query))
-
-    v['reservations'] = await asyncio.gather(res_task)
+    v['reservations'] = await current_reservation_query(query)
     return v
