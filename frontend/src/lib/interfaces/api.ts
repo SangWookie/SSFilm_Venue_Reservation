@@ -15,7 +15,8 @@ export interface ReservationByVenue {
         name: string;
         purpose: string;
     }[];
-    unavailable_periods: {
+    // FIXME: remove this; it's not used anywhere
+    unavailable_periods?: {
         time: number[];
         message?: string;
     }[];

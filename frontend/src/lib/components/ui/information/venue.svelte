@@ -45,6 +45,11 @@
         예약이 비어있습니다.
     {/if}
 
+
+    <!--
+
+    FIXME: This is not used now.
+
     {#each sort(data.unavailable_periods) as item (item)}
         <div class="unavailable-period">
             <div class="label">예약 불가</div>
@@ -57,6 +62,8 @@
             </div>
         </div>
     {/each}
+
+    -->
 
     {#each sort(data.reservations) as item (item)}
         <div class="reservation">
