@@ -146,6 +146,9 @@ func GetPendingItem(ctx context.Context, ddbClient DDBClientiface, key map[strin
 func AcceptReservation(ctx context.Context, ddbClient DDBClientiface, reservationInfo map[string]types.AttributeValue) error {
 	tableName := "current_reservation"
 
+	venueDate := reservationInfo["venueDate"].(*types.AttributeValueMemberS).Value
+	date := venueDate[:10] // Extract yyyy-mm-dd from yyyy-mm-dd#venue
+
 	_, err := ddbClient.PutItem(ctx, &dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
 		Item: map[string]types.AttributeValue{
@@ -158,6 +161,7 @@ func AcceptReservation(ctx context.Context, ddbClient DDBClientiface, reservatio
 			"studentId":     reservationInfo["studentId"],
 			"time":          reservationInfo["time"],
 			"venueDate":     reservationInfo["venueDate"],
+			"date":          &types.AttributeValueMemberS{Value: date},
 		},
 	})
 	if err != nil {
