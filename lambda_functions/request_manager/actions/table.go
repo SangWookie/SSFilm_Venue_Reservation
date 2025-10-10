@@ -147,7 +147,7 @@ func AcceptReservation(ctx context.Context, ddbClient DDBClientiface, reservatio
 	tableName := "current_reservation"
 
 	venueDate := reservationInfo["venueDate"].(*types.AttributeValueMemberS).Value
-	date := venueDate[:10] // Extract yyyy-mm-dd from yyyy-mm-dd#venue
+	date := venueDate[:7] // Extract yyyy-mm-dd from yyyy-mm-dd#venue
 
 	_, err := ddbClient.PutItem(ctx, &dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
