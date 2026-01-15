@@ -1,7 +1,5 @@
-import type { ReservationSingleResponse } from '$lib/interfaces/api';
-import type { MinimalCalendarUIItem } from '$lib/interfaces/calendar';
+import type { MinimalCalendarUIItemWithHref } from '$lib/interfaces/calendar';
 import { DateTime, Interval, Settings } from 'luxon';
-import { intoDateString } from './date';
 
 Settings.defaultZone = 'Asia/Seoul';
 Settings.defaultWeekSettings = {
@@ -15,10 +13,6 @@ Settings.defaultWeekSettings = {
  * @returns 달력 Array. 해당 주에 없는 데이트가 존재할 경우 undefined로 저장됨.
  */
 export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined)[][] => {
-    console.log(
-        'generateCalendar',
-        dates.map((date) => date.toISO())
-    );
     const temp_total: (undefined | T)[][] = []; // total week.
     let temp_week: (undefined | T)[] = []; // single week
     let previous_date: undefined | T = undefined;
@@ -26,10 +20,7 @@ export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined
         /// Pushs the current week into final data and then clear it.
         const pushCurrentWeek = () => {
             temp_week = temp_week.concat(
-                Array(7 - temp_week.length)
-                    .keys()
-                    .map(() => undefined)
-                    .toArray()
+                Array.from(Array(7 - temp_week.length).keys()).map(() => undefined)
             );
             temp_total.push(temp_week);
             temp_week = [];
@@ -46,7 +37,6 @@ export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined
             if (!date.hasSame(previous_date, 'week', { useLocaleWeeks: true })) {
                 // pushes previous week.
                 pushCurrentWeek();
-                console.log('pushCurrentWeek', date.weekdayShort);
                 // the generation work will be continued on below.
             }
         }
@@ -57,10 +47,7 @@ export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined
         // Sun(7) -> Not in this case due to `date.weekday !== 7`
         if (date.weekday !== 7 && temp_week.length === 0) {
             temp_week = temp_week.concat(
-                Array(date.weekday)
-                    .keys()
-                    .map(() => undefined)
-                    .toArray()
+                Array.from(Array(date.weekday).keys()).map(() => undefined)
             );
         }
 
@@ -74,6 +61,7 @@ export const generateCalendar = <T extends DateTime>(dates: T[]): (T | undefined
 export const generateCalendarFromProps = <T extends DateTime, WrappedT extends { date: T }>(
     data: WrappedT[]
 ): (WrappedT | undefined)[][] => {
+    if (data.length == 0) return [];
     const generated = generateCalendar(data.map((i) => i.date));
 
     return generated.map((week) =>
@@ -84,33 +72,30 @@ export const generateCalendarFromProps = <T extends DateTime, WrappedT extends {
     );
 };
 
-export const getTwoWeekRange = () =>
-    Interval.fromDateTimes(DateTime.local().minus({ days: 7 }), DateTime.local().plus({ days: 14 }))
+export const getWeeksRangeWithPast = () =>
+    Interval.after(DateTime.local().set({ hour: 23, minute: 59 }).minus({ days: 7 }), {
+        days: 7 + 14
+    })
         .splitBy({ day: 1 })
         .map((i) => i.start)
         .filter((i) => i != null);
 
-export const mergeReservationsIntoCalendar = (
-    reservations: ReservationSingleResponse[],
-    calendar: MinimalCalendarUIItem[]
-): MinimalCalendarUIItem[] => {
-    console.log('mergeReservationsIntoCalendar', reservations, calendar);
-    const reservedDays = reservations.filter((r) => r.reservations.length > 0).map((r) => r.date);
-    const unavilableDays = reservations
-        .filter((r) => r.unavailable_periods.length > 0)
-        .map((r) => r.date);
-    calendar.forEach((item) => {
-        const dateString = intoDateString(item.date);
+export const getNextTwoWeeks = () =>
+    Interval.after(DateTime.local().set({ hour: 23, minute: 59 }), { days: 14 })
+        .splitBy({ day: 1 })
+        .map((i) => i.start)
+        .filter((i) => i != null);
 
-        if (item.mark == null) item.mark = {};
-        
-        item.mark.reserved = reservedDays.includes(dateString);
-        item.mark.unavailable = unavilableDays.includes(dateString);
-        if (item.mark.unavailable) console.log(item.mark.unavailable);
-        
-        
+export const getCalendarPlaceholderCustom = (custom: DateTime[]): MinimalCalendarUIItemWithHref[] =>
+    custom.map((date) => {
+        return {
+            date,
+            mark: {
+                today: date.hasSame(DateTime.local(), 'day'),
+                past: date.diff(DateTime.local(), 'hours').hours < -1
+            }
+        };
     });
-    console.log('reservedDays', reservedDays, 'unavilableDays', unavilableDays, 'calendar', calendar);
 
-    return calendar;
-};
+export const getCalendarPlaceholder = (): MinimalCalendarUIItemWithHref[] =>
+    getCalendarPlaceholderCustom(getWeeksRangeWithPast());

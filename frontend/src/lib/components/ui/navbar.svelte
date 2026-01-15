@@ -42,6 +42,7 @@
 
 <nav>
     <ul class="navbar-list">
+        <li class="title">예약시스템</li>
         {@render renderItems()}
     </ul>
     <ul class="navbar-list-small">
@@ -63,15 +64,20 @@
 
 <style lang="sass">
 nav
+    view-transition-name: header
     display: flex
     position: sticky
     top: 0
-    background: rgba(255, 255, 255, .8)
-    backdrop-filter: blur(12px)
+    background: rgba(255, 255, 255, .9)
     z-index: 99999
 
     ul.navbar-list
         padding: 16px 24px
+        li.title
+            list-style-type: none
+            font-size: 28px
+            font-weight: 500
+            padding-right: 32px
         li.navbar-item
             // remove dot
             list-style-type: none
@@ -123,7 +129,6 @@ div.navbar-list-small-opened
     width: 100%
     min-height: 100%
     background: rgba(255, 255, 255, .9)
-    backdrop-filter: blur(12px)
     padding: 16px 24px
 
     display: none
@@ -135,15 +140,10 @@ div.navbar-list-small-opened
 
     button
         display: flex
-        background: var(--color-slate-50)
+        background: transparent
         border: none
         border-radius: 999px
         padding: 20px 24px
-        &:hover
-            background: var(--color-slate-100)
-        &:active
-            background: var(--color-slate-200)
-
     ul
         display: flex
         flex-direction: column
@@ -177,6 +177,7 @@ div.navbar-list-small-opened
     nav
         ul.navbar-list
             display: flex
+            align-items: center
         ul.navbar-list-small
             display: none
     div.navbar-list-small-opened

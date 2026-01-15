@@ -1,37 +1,50 @@
-import type { DateString, HourString } from '$lib/interfaces/date';
-import type { ReservationSingleResponse, Venue } from '$lib/interfaces/api';
+import type {
+    ReservationList,
+    RequestNewReservationData,
+    RequestNewReservationResponse,
+    AppState
+} from '$lib/interfaces/api';
+import type { DateString } from '$lib/interfaces/date';
+import * as MockConst from '$lib/mock.const.ts';
 
-import Data from '../../mock_data.json';
-
-export const getReservations = async (
-    date?: DateString,
-    venue?: string
-): Promise<ReservationSingleResponse[]> => {
-    const reservations = Object.groupBy(
-        Data.reservations.filter((i) => {
-            if (date && i.date !== date) return false;
-            if (venue && i.venue !== venue) return false;
-            return true;
-        }),
-        ({ date, venue }) => `${date}-${venue}`
-    );
-    return Object.entries(reservations)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .map(([_key, items]) => {
-            if (items === undefined || items.length === 0) return;
+export async function getReservationByDate(date: DateString): Promise<ReservationList> {
+    console.log('mock: getReservationByDate', date);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return {
+        date,
+        venues: MockConst.venues.map((v) => {
             return {
-                date: items.at(0)!.date as unknown as DateString,
-                reservations: items.map((i) => {
-                    return {
-                        time: i.time as unknown as HourString[]
-                    };
-                }),
-                unavailable_periods: [],
-                venue: items.at(0)!.venue,
-                approval_mode: 'auto'
-            } as ReservationSingleResponse;
+                venue: v.venue,
+                venueKor: v.venueKor,
+                approval_mode: v.approval_mode,
+                reservations: [],
+                unavailable_periods: []
+            };
         })
-        .filter((i) => i !== undefined);
-};
+    };
+}
 
-export const getVenueList = async () => Data.venue as Venue[];
+export async function postNewReservation(
+    body: RequestNewReservationData
+): Promise<RequestNewReservationResponse> {
+    console.log('mock: postNewReservation', body);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    return {
+        reservationId: 'reservationId'
+    };
+}
+
+/// Returns by 200 or 404.
+export async function getReservationStatus(reservationId: string): Promise<boolean> {
+    console.log('mock: getReservationStatus', reservationId);
+    return true;
+}
+
+export async function getAppState(): Promise<AppState> {
+    console.log('mock: getAppState');
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return {
+        venues: MockConst.venues,
+        purposes: MockConst.purposes
+    };
+}

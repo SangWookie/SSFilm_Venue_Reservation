@@ -1,7 +1,6 @@
 <script module lang="ts">
     import { defineMeta } from '@storybook/addon-svelte-csf';
     import CollapsibleBlock from './collapsible-block.svelte';
-    import type { ComponentProps } from 'svelte';
 
     const { Story } = defineMeta({
         title: 'UI/Form/Collapsible Block',
@@ -17,14 +16,14 @@
     });
 </script>
 
+<!-- FIXME: This results nested component building -->
 <Story name="default" args={{ open: true }}>
-    {#snippet children(args)}
-        <!-- this is dumb idea to converting the types... -->
-        <CollapsibleBlock {...args as ComponentProps<typeof CollapsibleBlock>}>
-            {#snippet header()}
-                Hello
-            {/snippet}
-            Content
-        </CollapsibleBlock>
-    {/snippet}
+    <div style="padding: 16px;">
+        <CollapsibleBlock open={true}>
+        {#snippet header()}
+            Hello
+        {/snippet}
+        Content
+    </CollapsibleBlock>
+    </div>
 </Story>

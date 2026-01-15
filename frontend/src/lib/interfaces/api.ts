@@ -1,49 +1,63 @@
-import type { DateString, HourString } from './date';
+import type { DateString } from './date';
 
-export interface ReservationItemCompact {
+/// The return data for `GET /reservation`. only intended for filtering dates.
+export interface ReservationList {
     date: DateString;
+    venues: ReservationByVenue[];
+}
+
+export interface ReservationByVenue {
+    venue: string;
+    venueKor: string;
+    approval_mode: 'auto' | 'manual';
     reservations: {
-        time: HourString[];
-        //name: string;
-        purpose?: string;
+        time: number[];
+        name: string;
+        purpose: string;
     }[];
-    unavailable_periods: {
-        time: HourString[];
+    // FIXME: remove this; it's not used anywhere
+    unavailable_periods?: {
+        time: number[];
         message?: string;
     }[];
 }
 
-/// 한 방의 예약 정보를 나타내는 인터페이스.
-/// FIXME: 여러개 필요.
-export interface ReservationSingleResponse extends ReservationItemCompact {
-    venue: string;
-    approval_mode: 'auto' | 'manual';
-}
-
-export interface ReservationRequest {
+export interface RequestNewReservationData {
     date: DateString;
     /// 장소
     venue: string;
-    time: HourString[];
+    time: number[];
 
     name: string;
     email: string;
     /// 학번
-    studentID: string;
-    birthday: string;
+    studentId: string;
 
     /// 목적 1차 카테고리
     category: string;
     /// 목적 2차 카테고리
     purpose?: string;
     /// 동료
-    companions?: string;
+    companion?: string;
 }
 
-export type ReservationRequestDraft = Partial<ReservationRequest>;
+export type RequestNewReservationDataDraft = Partial<RequestNewReservationData>;
 
 export interface Venue {
     venue: string;
+    venueKor: string;
     requirement?: string;
     approval_mode: 'auto' | 'manual';
 }
+
+export interface RequestNewReservationResponse {
+    // 요청은 되었지만 확정인지는 모름
+    reservationId: string;
+}
+
+export interface AppState {
+    venues: Venue[];
+    purposes: string[];
+}
+
+export type LazyAppState = Partial<AppState>;

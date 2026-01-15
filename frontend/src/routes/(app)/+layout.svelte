@@ -1,12 +1,9 @@
 <script lang="ts">
-    import './../app.sass';
+    import './../../app.sass';
     import Navbar from '$lib/components/ui/navbar.svelte';
-    import Announcement from '$lib/components/ui/announcement.svelte';
+    import { onNavigate } from '$app/navigation';
 
     let { children } = $props();
-    const announcement_props = {
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    };
     const navbar_props = {
         items: [
             { label: '예약 현황', href: '/' },
@@ -19,9 +16,19 @@
             };
         })
     };
+
+    onNavigate((navigation) => {
+        if (!document.startViewTransition) return;
+
+        return new Promise((resolve) => {
+            document.startViewTransition(async () => {
+                resolve();
+                await navigation.complete;
+            });
+        });
+    });
 </script>
 
-<Announcement {...announcement_props} hidden={true} />
 <Navbar {...navbar_props} />
 
 <div>

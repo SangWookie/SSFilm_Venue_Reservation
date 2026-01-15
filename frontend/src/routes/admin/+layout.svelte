@@ -1,0 +1,43 @@
+<script lang="ts">
+    import './../../app.sass';
+    import Navbar from '$lib/components/ui/navbar.svelte';
+    import { onNavigate } from '$app/navigation';
+
+    let { children } = $props();
+    const navbar_props = {
+        items: [
+            { label: '예약 현황', href: '/admin/calendar' },
+            { label: '승인 관리', href: '/admin/approval' },
+            { label: '데이터 열람', href: '/admin/dataview' },
+            { label: '서비스 설정', href: '/admin/settings' }
+        ].map((item) => {
+            return {
+                ...item,
+                checkEnabled: (path: string) => path == item.href // FIXME: would be better to use state instead.
+            };
+        })
+    };
+
+    onNavigate((navigation) => {
+        if (!document.startViewTransition) return;
+
+        return new Promise((resolve) => {
+            document.startViewTransition(async () => {
+                resolve();
+                await navigation.complete;
+            });
+        });
+    });
+</script>
+
+<Navbar {...navbar_props} />
+
+<div>
+    {@render children()}
+</div>
+
+<style lang="sass">
+div
+    display: flex
+    flex-direction: column
+</style>

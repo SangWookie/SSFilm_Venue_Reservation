@@ -1,15 +1,14 @@
 <script module lang="ts">
-    import { defineMeta, setTemplate, type Args } from '@storybook/addon-svelte-csf';
-    import Button from './button.svelte';
-    import { fn } from '@storybook/test';
+    import { defineMeta, type Args } from '@storybook/addon-svelte-csf';
+    import Button, { type Props } from './button.svelte';
 
     const { Story } = defineMeta({
         title: 'UI/Button',
         component: Button,
         args: {
             state: 'enabled',
-            onClick: fn()
         },
+        render: template,
         argTypes: {
             state: {
                 control: 'radio',
@@ -19,11 +18,7 @@
     });
 </script>
 
-<script lang="ts">
-    setTemplate(template);
-</script>
-
-{#snippet template(args: Args<typeof Story>)}
+{#snippet template(args: Props | undefined)}
     <Button {...args}>Click ME</Button>
 {/snippet}
 
@@ -31,18 +26,3 @@
 <Story name="disabled" args={{ state: 'disabled' }} />
 <Story name="loading" args={{ state: 'loading' }} />
 
-<Story name="loading (interactive)">
-    {#snippet children(args)}
-        <Button
-            {...args}
-            onClick={fn(() => {
-                args.state = 'loading';
-                setTimeout(() => {
-                    args.state = 'enabled';
-                }, 2000);
-            })}
-        >
-            Click ME
-        </Button>
-    {/snippet}
-</Story>

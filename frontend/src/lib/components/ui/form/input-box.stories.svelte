@@ -1,6 +1,6 @@
 <script module lang="ts">
     import { defineMeta } from '@storybook/addon-svelte-csf';
-    import InputBox from './input-box.svelte'
+    import InputBox from './input-box.svelte';
 
     const { Story } = defineMeta({
         title: 'UI/Form/Input Box',
@@ -8,8 +8,11 @@
     });
 </script>
 
-<Story name="default" args={{ 
-    title: "Title",
-    description: "Description",
-    placeholder: "Placeholder"
-}}/>
+<Story
+    name="default"
+    args={{
+        title: 'Title',
+        description: 'Description',
+        placeholder: 'Placeholder'
+    }}
+/>

@@ -7,11 +7,10 @@
     import { untrack } from 'svelte';
 
     interface Props {
-        data: {
-            /// The dates to be displayed in the calendar
-            /// IT must be starts with Sunday and ends with Saturday
-            items: MinimalCalendarUIItemWithHref[];
-        };
+        /// The dates to be displayed in the calendar
+        /// IT must be starts with Sunday and ends with Saturday
+        items: MinimalCalendarUIItemWithHref[];
+        selected?: MinimalCalendarUIItemWithHref[];
         /**
          * The UI state of calendar, not the item.
          * available: The calendar is available
@@ -31,7 +30,7 @@
 
     const props: Props = $props();
 
-    let previous_data_items = props.data.items;
+    let previous_data_items: MinimalCalendarUIItemWithHref[] = [];
     let generated_calendars: (MinimalCalendarUIItemWithHref | undefined)[][] = $state([]);
 
     const generateDateText = (datetime?: DateTime) =>
@@ -43,17 +42,15 @@
 
     $effect(() => {
         // If generated calendars are not exist, or data is new, create it.
-        if (
-            generated_calendars == null||
-            generated_calendars.length === 0 ||
-            previous_data_items != props.data.items
-        )
-            generated_calendars = generateCalendarFromProps(untrack(() => props.data.items));
+        if (generated_calendars == null || previous_data_items != props.items) {
+            previous_data_items = props.items;
+            generated_calendars = generateCalendarFromProps(untrack(() => props.items));
+        }
     });
 
     const derivation = $derived.by(() => {
-        const start_day = props.data.items.at(0);
-        const end_day = props.data.items.at(-1);
+        const start_day = props.items.at(0);
+        const end_day = props.items.at(-1);
 
         const placeholders = {
             start_day: {
@@ -68,7 +65,7 @@
 
         const moveWeekDeltaCallback = (delta: number) =>
             placeholders.start_day.week &&
-            props.onPositionCcalendarhangeRequest?.(placeholders.start_day.week + delta);
+            props.onPositionChangeRequest?.(placeholders.start_day.week + delta);
 
         return { placeholders, moveWeekDeltaCallback };
     });
@@ -79,20 +76,22 @@
 {#snippet dateBlock(data?: MinimalCalendarUIItemWithHref)}
     {@const number = data?.date?.day?.toString()}
     {@const weekNumber = data?.date?.weekday}
-    <td class='date-block' 
+    <td
+        class="date-block"
         class:sun={weekNumber === 7}
         class:reserved={data?.mark?.reserved}
         class:unavailable={data?.mark?.unavailable}
         class:past={data?.mark?.past}
         class:today={data?.mark?.today}
-        class:selected={data?.mark?.selected}
+        class:selected={data && props.selected?.includes(data)}
+        class:blank={!number}
     >
-        <a href={data?.href} onclick={(e) => props?.onDateClick?.(data, e)}>
-            {#if number}
+        {#if number}
+            <a href={data?.href} onclick={(e) => props?.onDateClick?.(data, e)}>
                 {zeroPad(number)}
-            {/if}
-            <div class="indicator-dot"></div>
-        </a>
+                <div class="indicator-dot"></div>
+            </a>
+        {/if}
     </td>
 {/snippet}
 
@@ -147,8 +146,16 @@
 
 <style lang="sass">
 div.calendar
+    view-transition-name: calendar
     display: flex
     flex-direction: column
+    max-width: 500px
+    flex-grow: 1
+    &.disabled
+        opacity: .4
+        cursor: not-allowed
+        a
+            cursor: not-allowed !important
     div.header
         display: flex
         gap: 12px
@@ -191,17 +198,17 @@ div.calendar
                                 opacity: 1
                                 display: block
                     &.unavailable, &.past
-                        color: #ccc !important
                         a
+                            color: #ccc !important
                             text-decoration: line-through
                     &.today
                         border: 2px solid var(--color-bg)
                     &.selected
                         background: var(--color-bg)
-                        color: white !important
                         &:hover
                             background: var(--color-hover)
                         a
+                            color: white !important
                             .indicator-dot
                                 background-color: white
                     a
@@ -211,7 +218,9 @@ div.calendar
                         flex-direction: column
                         align-items: center
                         justify-content: center
+                        color: black
                         text-decoration: none
+                        cursor: pointer
                         div.indicator-dot
                             position: absolute
                             bottom: 8px
@@ -222,7 +231,14 @@ div.calendar
                             margin-top: 4px
                             display: none
                     &.sun
-                        color: var(--color-bg)
+                        a
+                            color: var(--color-bg)
+                    
+                    &.blank
+                        a
+                            display: none
+                        &:hover, &:active, &:focus
+                            background: none
 
                     &:hover
                         background: rgba(0, 0, 0, 0.1)
@@ -234,7 +250,7 @@ div.calendar.loading
 
 @keyframes pulse-loading
     0%, 100%
-        opacity: 0.4
+        opacity: 0.2
     50%
-        opacity: 0.7
+        opacity: 0.4
 </style>
