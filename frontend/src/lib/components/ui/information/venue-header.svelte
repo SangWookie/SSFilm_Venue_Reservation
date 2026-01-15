@@ -10,8 +10,6 @@
     </div>
 </div>
 
--->
-
 <style lang="sass">
 .hours-info
     display: flex
@@ -40,3 +38,5 @@
             font-size: 16px
             opacity: .6
 </style>
+
+-->

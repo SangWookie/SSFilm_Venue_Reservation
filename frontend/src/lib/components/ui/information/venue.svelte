@@ -96,52 +96,9 @@ div.venue-item
             font-size: 20px
     div.venue-name
         font-size: 30px
-    div.hours-list
-        display: flex
-        flex-wrap: wrap
-        font-size: 20px
-        gap: 0 8px
-        div.hours-inner
-            display: flex
-            flex-shrink: 0
-            gap: 8px
-            div.hour-single
-                font-family: "Space Mono", monospace, "Pretendard"
-                display: flex
-                align-items: center
-                justify-content: center
 
-                opacity: .2
-                color: var(--color-bg)
-                font-weight: 600
-                &.unavailable
-                    opacity: 1
 
-    div.unavailable-period
-        font-size: 20px
-        display: flex
-        flex-wrap: wrap
-        align-items: center
-        gap: 4px 12px
-        div.label
-            font-size: 16px
-            font-weight: 600
-            color: var(--color-bg)
-            flex-shrink: 0 
-        div.message
-            font-size: 16px
-        div.hours
-            font-family: "Space Mono", monospace, "Pretendard"
-            display: flex
-            align-items: center
-            gap: 8px
-            font-size: 20px
-            color: var(--color-bg)
-            font-weight: 600
-            .extra
-                font-size: 16px
-                font-weight: 500
-                opacity: .4
+
 
     div.reservation
         font-size: 20px
@@ -173,3 +130,52 @@ div.venue-item
 
 
 </style>
+<!--
+
+    div.hours-list
+        display: flex
+        flex-wrap: wrap
+        font-size: 20px
+        gap: 0 8px
+        div.hours-inner
+            display: flex
+            flex-shrink: 0
+            gap: 8px
+            div.hour-single
+                font-family: "Space Mono", monospace, "Pretendard"
+                display: flex
+                align-items: center
+                justify-content: center
+
+                opacity: .2
+                color: var(--color-bg)
+                font-weight: 600
+                &.unavailable
+                    opacity: 1
+    div.unavailable-period
+        font-size: 20px
+        display: flex
+        flex-wrap: wrap
+        align-items: center
+        gap: 4px 12px
+        div.label
+            font-size: 16px
+            font-weight: 600
+            color: var(--color-bg)
+            flex-shrink: 0 
+        div.message
+            font-size: 16px
+        div.hours
+            font-family: "Space Mono", monospace, "Pretendard"
+            display: flex
+            align-items: center
+            gap: 8px
+            font-size: 20px
+            color: var(--color-bg)
+            font-weight: 600
+            .extra
+                font-size: 16px
+                font-weight: 500
+                opacity: .4
+
+-->
